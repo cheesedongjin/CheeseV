@@ -8,7 +8,5 @@ This repository contains a small Python script that generates my personal websit
 * **Web Portfolio** – demos and links to my projects
 
 ## DevLog
-- [Hello World](https://cheesedongjin.github.io/CheeseV/devlog/hello-world.html)
 
 ## Web Portfolio
-- [Cool Script](https://cheesedongjin.github.io/CheeseV/portfolio/cool-script.html)
