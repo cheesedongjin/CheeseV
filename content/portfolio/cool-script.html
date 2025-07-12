@@ -3,15 +3,24 @@
     #typewriter {
         font-size: 1.4rem;
         white-space: pre-wrap;
-        border-right: 2px solid #0af;
-        width: fit-content;
-        overflow: hidden;
+        position: relative;
+        font-family: 'Roboto Mono', monospace;
+    }
+
+    #typewriter::after {
+        content: "";
+        position: absolute;
+        display: inline-block;
+        width: 2px;
+        height: 1.4rem;
+        background-color: #0af;
         animation: blink 1s step-end infinite;
+        transform: translateY(0.15rem);
     }
 
     @keyframes blink {
-        from, to { border-color: transparent }
-        50% { border-color: #0af; }
+        0%, 100% { opacity: 0; }
+        50% { opacity: 1; }
     }
 
     button {
