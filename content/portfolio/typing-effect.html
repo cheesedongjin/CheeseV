@@ -50,24 +50,30 @@
 const message = "Hello, World!\nThis is a typing effect.";
 const speed = 50;
 let i = 0;
+let typingSessionId = 0; // 각 루프의 고유 ID
+
 function startTyping() {
     const target = document.getElementById("typewriter");
-    if (typingTimer !== null) {
-        clearTimeout(typingTimer);
-        typingTimer = null;
-    }
+
+    // 새로운 타이핑 세션 ID 할당
+    const currentSession = ++typingSessionId;
+
     target.textContent = "";
     i = 0;
+
     function type() {
+        // 다른 세션이면 무시 (이전 루프 무효화)
+        if (currentSession !== typingSessionId) return;
+
         if (i < message.length) {
             target.textContent += message.charAt(i);
             i++;
             setTimeout(type, speed);
-        } else {
-            typingTimer = null; // 완료 후 리셋
         }
     }
+
     type();
 }
+
 window.addEventListener("DOMContentLoaded", startTyping);
 </script>
