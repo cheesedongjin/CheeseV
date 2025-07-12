@@ -52,6 +52,10 @@ const speed = 50;
 let i = 0;
 function startTyping() {
     const target = document.getElementById("typewriter");
+    if (typingTimer !== null) {
+        clearTimeout(typingTimer);
+        typingTimer = null;
+    }
     target.textContent = "";
     i = 0;
     function type() {
@@ -59,8 +63,11 @@ function startTyping() {
             target.textContent += message.charAt(i);
             i++;
             setTimeout(type, speed);
+        } else {
+            typingTimer = null; // 완료 후 리셋
         }
     }
     type();
 }
+window.addEventListener("DOMContentLoaded", startTyping);
 </script>
