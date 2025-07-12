@@ -75,9 +75,9 @@ def render_template(template_name, **context):
     return result
 
 
-def build_posts():
+def build_devlog():
     posts = []
-    posts_dir = os.path.join(CONTENT_DIR, 'posts')
+    posts_dir = os.path.join(CONTENT_DIR, 'devlog')
     for filename in sorted(os.listdir(posts_dir)):
         if filename.endswith('.md'):
             path = os.path.join(posts_dir, filename)
@@ -89,19 +89,19 @@ def build_posts():
             date_str = datetime.now().strftime('%Y-%m-%d')
             content = render_template('post.html', title=title, date=date_str, body=body)
             page = render_template('base.html', title=title, content=content)
-            output_path = os.path.join(OUTPUT_DIR, 'posts', f'{slug}.html')
+            output_path = os.path.join(OUTPUT_DIR, 'devlog', f'{slug}.html')
             write_file(output_path, page)
-            posts.append({'title': title, 'link': f'/posts/{slug}.html', 'date': date_str})
+            posts.append({'title': title, 'link': f'/devlog/{slug}.html', 'date': date_str})
     # create post index
-    list_content = render_template('list.html', title='Blog Posts', items=posts)
-    list_page = render_template('base.html', title='Blog Posts', content=list_content)
-    write_file(os.path.join(OUTPUT_DIR, 'posts', 'index.html'), list_page)
+    list_content = render_template('list.html', title='DevLog', items=posts)
+    list_page = render_template('base.html', title='DevLog', content=list_content)
+    write_file(os.path.join(OUTPUT_DIR, 'devlog', 'index.html'), list_page)
     return posts
 
 
-def build_programs():
+def build_portfolio():
     programs = []
-    programs_dir = os.path.join(CONTENT_DIR, 'programs')
+    programs_dir = os.path.join(CONTENT_DIR, 'portfolio')
     for filename in sorted(os.listdir(programs_dir)):
         if filename.endswith('.md'):
             path = os.path.join(programs_dir, filename)
@@ -112,22 +112,22 @@ def build_programs():
             slug = os.path.splitext(filename)[0]
             content = render_template('program.html', title=title, body=body)
             page = render_template('base.html', title=title, content=content)
-            output_path = os.path.join(OUTPUT_DIR, 'programs', f'{slug}.html')
+            output_path = os.path.join(OUTPUT_DIR, 'portfolio', f'{slug}.html')
             write_file(output_path, page)
-            programs.append({'title': title, 'link': f'/programs/{slug}.html'})
+            programs.append({'title': title, 'link': f'/portfolio/{slug}.html'})
     # create program index
-    list_content = render_template('list.html', title='Programs', items=programs)
-    list_page = render_template('base.html', title='Programs', content=list_content)
-    write_file(os.path.join(OUTPUT_DIR, 'programs', 'index.html'), list_page)
+    list_content = render_template('list.html', title='Web Portfolio', items=programs)
+    list_page = render_template('base.html', title='Web Portfolio', content=list_content)
+    write_file(os.path.join(OUTPUT_DIR, 'portfolio', 'index.html'), list_page)
     return programs
 
 
 def build_site():
-    posts = build_posts()
-    programs = build_programs()
+    posts = build_devlog()
+    programs = build_portfolio()
 
     # regenerate index with programs list
-    index_content = render_template('index.html', posts=posts, programs=programs)
+    index_content = render_template('index.html', devlog=posts, portfolio=programs)
     index_page = render_template('base.html', title='Home', content=index_content)
     write_file(os.path.join(OUTPUT_DIR, 'index.html'), index_page)
 

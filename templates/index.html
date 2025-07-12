@@ -1,14 +1,14 @@
 <h1>Dongwook Lee</h1>
 <p>Hi, I'm Dongwook Lee — a passionate self-taught developer from South Korea. I love building games, automating systems, and exploring new ideas through code.</p>
-<h2>Blog Posts</h2>
+<h2>DevLog</h2>
 <ul>
-{% for post in posts %}
+{% for post in devlog %}
     <li><a href="{{ post['link'] }}">{{ post['title'] }}</a> - {{ post['date'] }}</li>
 {% endfor %}
 </ul>
-<h2>Programs</h2>
+<h2>Web Portfolio</h2>
 <ul>
-{% for prog in programs %}
+{% for prog in portfolio %}
     <li><a href="{{ prog['link'] }}">{{ prog['title'] }}</a></li>
 {% endfor %}
 </ul>
