@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Format Converter</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #001020, #000);
+            color: #0ff;
+            font-family: 'Roboto Mono', monospace;
+            margin: 2rem;
+        }
+
+        h1 {
+            margin-bottom: 1rem;
+        }
+
+        #converter {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+        }
+
+        input, select {
+            background-color: #000;
+            color: #0ff;
+            border: 1px solid #0ff;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1rem;
+            margin: 0.5rem 0;
+            padding: 0.3rem 0.5rem;
+        }
+
+        button {
+            background-color: #0ff;
+            color: #000;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            margin-top: 1rem;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0cf;
+        }
+
+        #dropZone {
+            border: 2px dashed #0ff;
+            padding: 1rem;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        #dropZone.dragover {
+            background-color: rgba(0, 255, 255, 0.1);
+        }
+
+        #result {
+            margin-top: 1rem;
+            word-break: break-all;
+        }
+
+        #preview {
+            margin-top: 1rem;
+            max-width: 300px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Format Converter</h1>
+    <div id="converter">
+        <div id="dropZone">Drag &amp; drop an image file here</div>
+        <input type="file" id="fileInput" accept="image/*"><br>
+
+        <label for="formatSelect">Convert to:</label>
+        <select id="formatSelect">
+            <option value="image/png">PNG</option>
+            <option value="image/jpeg">JPEG</option>
+            <option value="image/webp">WebP</option>
+            <option value="image/avif">AVIF</option>
+            <option value="image/bmp">BMP</option>
+            <option value="image/tiff">TIFF</option>
+        </select><br>
+
+        <button id="convertBtn">Convert</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        let currentFile = null;
+
+        const fileInput = document.getElementById('fileInput');
+        const dropZone = document.getElementById('dropZone');
+        const convertBtn = document.getElementById('convertBtn');
+        const resultDiv = document.getElementById('result');
+
+        // 파일 선택했을 때 currentFile 업데이트
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length) {
+                currentFile = fileInput.files[0];
+                resultDiv.textContent = `Selected: ${currentFile.name}`;
+            }
+        });
+
+        // 드래그 오버 이벤트: 기본 동작 방지 & 시각 효과
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        // 드롭 이벤트: 파일 읽고 currentFile 설정
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                currentFile = e.dataTransfer.files[0];
+                resultDiv.textContent = `Dropped: ${currentFile.name}`;
+            }
+        });
+
+        // 변환 버튼 클릭 시 실행
+        convertBtn.addEventListener('click', () => {
+            resultDiv.innerHTML = '';
+
+            if (!currentFile) {
+                resultDiv.textContent = 'Please select or drop an image file.';
+                return;
+            }
+
+            const format = document.getElementById('formatSelect').value;
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+
+                    // 선택한 포맷으로 Blob 생성
+                    canvas.toBlob((blob) => {
+                        if (!blob) {
+                            resultDiv.textContent = 'This format is not supported by your browser.';
+                            return;
+                        }
+                        const url = URL.createObjectURL(blob);
+
+                        // 다운로드 링크
+                        const link = document.createElement('a');
+                        link.href = url;
+                        const ext = format.split('/')[1];
+                        link.download = `converted.${ext}`;
+                        link.textContent = 'Download Converted Image';
+                        link.style.display = 'block';
+                        resultDiv.appendChild(link);
+
+                        // 미리보기
+                        const preview = document.createElement('img');
+                        preview.id = 'preview';
+                        preview.src = url;
+                        resultDiv.appendChild(preview);
+                    }, format);
+                };
+                img.onerror = () => {
+                    resultDiv.textContent = 'Failed to load the image. Please try another file.';
+                };
+                img.src = event.target.result;
+            };
+
+            reader.readAsDataURL(currentFile);
+        });
+    </script>
+</body>
+</html>
