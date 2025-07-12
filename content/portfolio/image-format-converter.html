@@ -57,7 +57,6 @@
             background-color: rgba(0, 255, 255, 0.1);
         }
 
-        /* 드롭존 내 미리보기 스타일 */
         #dropZone img {
             max-width: 100%;
             max-height: 200px;
@@ -174,11 +173,19 @@
                             resultDiv.textContent = 'This format is not supported by your browser.';
                             return;
                         }
+
                         const url = URL.createObjectURL(blob);
                         const link = document.createElement('a');
                         link.href = url;
+
+                        // 원본 파일명에서 확장자 제거 후 "_converted" 추가
                         const ext = format.split('/')[1];
-                        link.download = `converted.${ext}`;
+                        const originalName = currentFile.name;
+                        const baseName = originalName.lastIndexOf('.') > 0
+                            ? originalName.substring(0, originalName.lastIndexOf('.'))
+                            : originalName;
+                        link.download = `${baseName}_converted.${ext}`;
+
                         link.textContent = 'Download Converted Image';
                         link.style.display = 'block';
                         resultDiv.appendChild(link);
