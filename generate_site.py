@@ -118,18 +118,32 @@ def build_portfolio(nav_links):
     if not os.path.isdir(programs_dir):
         return programs
     for filename in sorted(os.listdir(programs_dir)):
-        if filename.endswith('.md'):
-            path = os.path.join(programs_dir, filename)
+        path = os.path.join(programs_dir, filename)
+        slug, ext = os.path.splitext(filename)
+
+        if ext == '.md':
             md = read_file(path)
             title_line = md.splitlines()[0]
             title = title_line.lstrip('#').strip()
             body = simple_markdown('\n'.join(md.splitlines()[1:]))
-            slug = os.path.splitext(filename)[0]
-            content = render_template('program.html', title=title, body=body)
-            page = render_template('base.html', title=title, content=content, nav_links=nav_links)
-            output_path = os.path.join(OUTPUT_DIR, 'portfolio', f'{slug}.html')
-            write_file(output_path, page)
-            programs.append({'title': title, 'link': f'/portfolio/{slug}.html'})
+        elif ext == '.html':
+            html = read_file(path)
+            import re
+            m = re.search(r'<title>(.*?)</title>', html, re.S)
+            if m:
+                title = m.group(1).strip()
+                body = html.replace(m.group(0), '').strip()
+            else:
+                title = slug.replace('-', ' ').title()
+                body = html
+        else:
+            continue
+
+        content = render_template('program.html', title=title, body=body)
+        page = render_template('base.html', title=title, content=content, nav_links=nav_links)
+        output_path = os.path.join(OUTPUT_DIR, 'portfolio', f'{slug}.html')
+        write_file(output_path, page)
+        programs.append({'title': title, 'link': f'/portfolio/{slug}.html'})
     if programs:
         list_content = render_template('list.html', title='Web Portfolio', items=programs)
         list_page = render_template('base.html', title='Web Portfolio', content=list_content, nav_links=nav_links)
@@ -171,7 +185,10 @@ def build_site():
     portfolio_dir = os.path.join(CONTENT_DIR, 'portfolio')
 
     has_devlog = os.path.isdir(posts_dir) and any(f.endswith('.md') for f in os.listdir(posts_dir))
-    has_portfolio = os.path.isdir(portfolio_dir) and any(f.endswith('.md') for f in os.listdir(portfolio_dir))
+    has_portfolio = os.path.isdir(portfolio_dir) and any(
+        f.endswith('.md') or f.endswith('.html')
+        for f in os.listdir(portfolio_dir)
+    )
 
     nav_links = build_nav_links(has_devlog, has_portfolio)
 
