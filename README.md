@@ -1,14 +1,14 @@
 # [CheeseV](https://cheesedongjin.github.io/CheeseV/)
 
-Hi, I'm Dongwook Lee — a self-taught developer based in South Korea.  
-I enjoy building systems from the ground up, exploring creative ideas through code, and making small tools and games that solve real problems or simply bring joy.
+Hi, I’m Dongwook Lee — a self-taught developer from South Korea.
+I like turning ideas into small tools, games, and systems that work.
 
-This site includes:
+This site features:
 
-- **DevLog** – short write-ups on ideas, experiments, and progress from my personal projects
-- **Web Portfolio** – interactive demos and selected works
+* **DevLog** — thoughts and progress from personal projects
+* **Web Portfolio** — selected works and interactive demos
 
-I'm currently focused on game development, automation, and creative coding.  
-I like building things that are modular, extendable, and efficient — whether it’s a physics simulation, an indie game, or a productivity tool.
+Lately, I’ve been into game development, automation, and creative coding.
+I enjoy building things that are simple, modular, and fun to extend.
 
-> Always learning. Always building.
+> Still learning. Still making.
