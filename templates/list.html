@@ -1,0 +1,6 @@
+<h1>{{ title }}</h1>
+<ul>
+{% for item in items %}
+    <li><a href="{{ item['link'] }}">{{ item['title'] }}</a></li>
+{% endfor %}
+</ul>
