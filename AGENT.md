@@ -21,3 +21,12 @@ This document defines essential rules that must be followed by the automation ag
 ## 3. General Principles
 - Manual changes that conflict with the automated system are strictly prohibited.
 - If automation logic is updated, clearly document the changes in pull request descriptions or commit messages.
+
+## 4. Do Not Commit Auto-Generated Files
+- **Files generated automatically by running scripts must not be committed to the repository.**
+- These files are meant to be regenerated as needed and should be excluded from version control (e.g., via `.gitignore`).
+
+## 5. Revert Auto-Modified Files
+- If a script-run unintentionally modifies files that should remain untouched or are tracked manually,  
+  **those changes must be reverted immediately** unless explicitly intended by the update logic.
+- Always verify file changes after script execution and restore overwritten manual edits if necessary.
