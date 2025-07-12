@@ -30,3 +30,7 @@ This document defines essential rules that must be followed by the automation ag
 - If a script-run unintentionally modifies files that should remain untouched or are tracked manually,  
   **those changes must be reverted immediately** unless explicitly intended by the update logic.
 - Always verify file changes after script execution and restore overwritten manual edits if necessary.
+
+## 6. Do Not Modify `README.md` or `AGENT.md`
+- The files `README.md` and `AGENT.md` are **strictly protected** and must **never be modified or deleted** under any circumstances.
+- These files define essential project rules and structure. All edits must go through the project owner.
