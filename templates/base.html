@@ -32,6 +32,17 @@
             text-decoration: underline;
             color: #f0f;
         }
+        #cheesev-hint {
+            font-size: 0.6em;
+            cursor: pointer;
+            margin-left: 0.5rem;
+        }
+        #cheesev-popup {
+            display: none;
+            border: 1px solid #099;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -55,5 +66,13 @@
 <footer>
     <p>&copy; 2025 Jdeseech</p>
 </footer>
+<script>
+    function toggleCheeseV() {
+        var p = document.getElementById('cheesev-popup');
+        if (p) {
+            p.style.display = p.style.display === 'block' ? 'none' : 'block';
+        }
+    }
+</script>
 </body>
 </html>
