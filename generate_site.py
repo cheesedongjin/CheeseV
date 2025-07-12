@@ -104,7 +104,7 @@ def build_devlog(nav_links):
             page = render_template('base.html', title=title, content=content, nav_links=nav_links)
             output_path = os.path.join(OUTPUT_DIR, 'devlog', f'{slug}.html')
             write_file(output_path, page)
-            posts.append({'title': title, 'link': f'/devlog/{slug}.html', 'date': date_str})
+            posts.append({'title': title, 'link': f'devlog/{slug}.html', 'date': date_str})
     if posts:
         list_content = render_template('list.html', title='DevLog', items=posts)
         list_page = render_template('base.html', title='DevLog', content=list_content, nav_links=nav_links)
@@ -143,7 +143,7 @@ def build_portfolio(nav_links):
         page = render_template('base.html', title=title, content=content, nav_links=nav_links)
         output_path = os.path.join(OUTPUT_DIR, 'portfolio', f'{slug}.html')
         write_file(output_path, page)
-        programs.append({'title': title, 'link': f'/portfolio/{slug}.html'})
+        programs.append({'title': title, 'link': f'portfolio/{slug}.html'})
     if programs:
         list_content = render_template('list.html', title='Web Portfolio', items=programs)
         list_page = render_template('base.html', title='Web Portfolio', content=list_content, nav_links=nav_links)
