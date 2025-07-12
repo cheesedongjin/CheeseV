@@ -31,16 +31,28 @@
 <body>
     <div id="info">마우스를 움직이거나 클릭하여 입자를 생성해보세요!</div>
     <canvas id="canvas"></canvas>
+    <!-- 기존 HTML 맨 아래, </body> 바로 위에 삽입 -->
     <script>
-        const canvas = document.getElementById('canvas');
+    document.addEventListener('DOMContentLoaded', () => {
+        // 캔버스 생성 및 스타일링
+        const canvas = document.createElement('canvas');
+        canvas.id = 'particle-canvas';
+        Object.assign(canvas.style, {
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%',
+            zIndex: '-1',
+            pointerEvents: 'none'
+        });
+        document.body.prepend(canvas);
+
         const ctx = canvas.getContext('2d');
         let particles = [];
-        const maxParticles = 200;   // 최대 입자 수
-        let hue = 0;                // 색상 변화용
-
-        // 거리 비교용 상수
-        const maxDist = 100;
-        const maxDistSq = maxDist * maxDist;
+        const maxParticles = 200;
+        let hue = 0;
+        const maxDist = 100, maxDistSq = maxDist * maxDist;
 
         // 캔버스 크기 조절
         function resize() {
@@ -74,7 +86,6 @@
             }
         }
 
-        // 입자 간 연결선 (입자가 많으면 스킵)
         function connectParticles() {
             if (particles.length > 150) return;
             const len = particles.length;
@@ -98,49 +109,40 @@
             }
         }
 
-        // 애니메이션 루프
         function animate() {
-            // 잔상 효과
             ctx.fillStyle = 'rgba(17, 17, 17, 0.2)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // 입자 업데이트 및 그리기
             particles.forEach(p => {
                 p.update();
                 p.draw();
             });
 
-            // 크기가 작아진 입자는 한 번에 제거
             particles = particles.filter(p => p.size >= 0.5);
 
-            // 최대 개수 유지
             if (particles.length > maxParticles) {
                 particles.splice(0, particles.length - maxParticles);
             }
 
-            // 연결선
             connectParticles();
 
-            // 색상 변화
             hue = (hue + 0.5) % 360;
-
             requestAnimationFrame(animate);
         }
         animate();
 
-        // 마우스 이동 시 입자 생성량 조절(3개)
+        // 이벤트 바인딩
         canvas.addEventListener('mousemove', e => {
             for (let i = 0; i < 3; i++) {
-                particles.push(new Particle(e.offsetX, e.offsetY));
+                particles.push(new Particle(e.clientX, e.clientY));
             }
         });
-
-        // 클릭 시 버스트 효과(20개)
         canvas.addEventListener('click', e => {
             for (let i = 0; i < 20; i++) {
-                particles.push(new Particle(e.offsetX, e.offsetY));
+                particles.push(new Particle(e.clientX, e.clientY));
             }
         });
+    });
     </script>
 </body>
 </html>
