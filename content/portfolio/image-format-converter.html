@@ -50,29 +50,38 @@
             padding: 1rem;
             text-align: center;
             margin: 1rem 0;
+            cursor: pointer;
         }
 
         #dropZone.dragover {
             background-color: rgba(0, 255, 255, 0.1);
         }
 
+        /* 드롭존 내 미리보기 스타일 */
+        #dropZone img {
+            max-width: 100%;
+            max-height: 200px;
+            display: block;
+            margin: 0.5rem auto;
+        }
+
+        #dropZone p {
+            margin: 0.5rem 0 0;
+            color: #0ff;
+            font-size: 0.9rem;
+        }
+
         #result {
             margin-top: 1rem;
             word-break: break-all;
-        }
-
-        #preview {
-            margin-top: 1rem;
-            max-width: 300px;
-            display: block;
         }
     </style>
 </head>
 <body>
     <div id="converter">
-        <div id="dropZone">Drag &amp; drop an image file here</div>
-        <input type="file" id="fileInput" accept="image/*"><br>
-
+        <div id="dropZone">Drag &amp; drop an image here, or click to select</div>
+        <input type="file" id="fileInput" accept="image/*" style="display:none;">
+        <br>
         <label for="formatSelect">Convert to:</label>
         <select id="formatSelect">
             <option value="image/png">PNG</option>
@@ -81,8 +90,8 @@
             <option value="image/avif">AVIF</option>
             <option value="image/bmp">BMP</option>
             <option value="image/tiff">TIFF</option>
-        </select><br>
-
+        </select>
+        <br>
         <button id="convertBtn">Convert</button>
         <div id="result"></div>
     </div>
@@ -95,15 +104,19 @@
         const convertBtn = document.getElementById('convertBtn');
         const resultDiv = document.getElementById('result');
 
-        // 파일 선택했을 때 currentFile 업데이트
+        // 드롭존 클릭 시 파일 선택 창 열기
+        dropZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // 파일 선택 시 처리
         fileInput.addEventListener('change', () => {
             if (fileInput.files.length) {
-                currentFile = fileInput.files[0];
-                resultDiv.textContent = `Selected: ${currentFile.name}`;
+                handleFile(fileInput.files[0]);
             }
         });
 
-        // 드래그 오버 이벤트: 기본 동작 방지 & 시각 효과
+        // 드래그 오버 효과
         dropZone.addEventListener('dragover', (e) => {
             e.preventDefault();
             dropZone.classList.add('dragover');
@@ -113,15 +126,27 @@
             dropZone.classList.remove('dragover');
         });
 
-        // 드롭 이벤트: 파일 읽고 currentFile 설정
+        // 파일 드롭 시 처리
         dropZone.addEventListener('drop', (e) => {
             e.preventDefault();
             dropZone.classList.remove('dragover');
             if (e.dataTransfer.files.length) {
-                currentFile = e.dataTransfer.files[0];
-                resultDiv.textContent = `Dropped: ${currentFile.name}`;
+                handleFile(e.dataTransfer.files[0]);
             }
         });
+
+        // 파일 처리 함수: 미리보기 및 이름 표시
+        function handleFile(file) {
+            currentFile = file;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                dropZone.innerHTML = `
+                    <img src="${event.target.result}" alt="${file.name}">
+                    <p>${file.name}</p>
+                `;
+            };
+            reader.readAsDataURL(file);
+        }
 
         // 변환 버튼 클릭 시 실행
         convertBtn.addEventListener('click', () => {
@@ -144,15 +169,12 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0);
 
-                    // 선택한 포맷으로 Blob 생성
                     canvas.toBlob((blob) => {
                         if (!blob) {
                             resultDiv.textContent = 'This format is not supported by your browser.';
                             return;
                         }
                         const url = URL.createObjectURL(blob);
-
-                        // 다운로드 링크
                         const link = document.createElement('a');
                         link.href = url;
                         const ext = format.split('/')[1];
@@ -161,10 +183,10 @@
                         link.style.display = 'block';
                         resultDiv.appendChild(link);
 
-                        // 미리보기
                         const preview = document.createElement('img');
                         preview.id = 'preview';
                         preview.src = url;
+                        preview.style.maxWidth = '300px';
                         resultDiv.appendChild(preview);
                     }, format);
                 };
