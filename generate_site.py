@@ -77,9 +77,20 @@ def render_template(template_name, **context):
     return result
 
 
-def build_devlog():
+def build_nav_links(has_devlog: bool, has_portfolio: bool) -> str:
+    links = ['<a href="index.html">Home</a>']
+    if has_devlog:
+        links.append('<a href="devlog/index.html">DevLog</a>')
+    if has_portfolio:
+        links.append('<a href="portfolio/index.html">Portfolio</a>')
+    return "\n    ".join(links)
+
+
+def build_devlog(nav_links):
     posts = []
     posts_dir = os.path.join(CONTENT_DIR, 'devlog')
+    if not os.path.isdir(posts_dir):
+        return posts
     for filename in sorted(os.listdir(posts_dir)):
         if filename.endswith('.md'):
             path = os.path.join(posts_dir, filename)
@@ -90,20 +101,22 @@ def build_devlog():
             slug = os.path.splitext(filename)[0]
             date_str = datetime.now().strftime('%Y-%m-%d')
             content = render_template('post.html', title=title, date=date_str, body=body)
-            page = render_template('base.html', title=title, content=content)
+            page = render_template('base.html', title=title, content=content, nav_links=nav_links)
             output_path = os.path.join(OUTPUT_DIR, 'devlog', f'{slug}.html')
             write_file(output_path, page)
             posts.append({'title': title, 'link': f'/devlog/{slug}.html', 'date': date_str})
-    # create post index
-    list_content = render_template('list.html', title='DevLog', items=posts)
-    list_page = render_template('base.html', title='DevLog', content=list_content)
-    write_file(os.path.join(OUTPUT_DIR, 'devlog', 'index.html'), list_page)
+    if posts:
+        list_content = render_template('list.html', title='DevLog', items=posts)
+        list_page = render_template('base.html', title='DevLog', content=list_content, nav_links=nav_links)
+        write_file(os.path.join(OUTPUT_DIR, 'devlog', 'index.html'), list_page)
     return posts
 
 
-def build_portfolio():
+def build_portfolio(nav_links):
     programs = []
     programs_dir = os.path.join(CONTENT_DIR, 'portfolio')
+    if not os.path.isdir(programs_dir):
+        return programs
     for filename in sorted(os.listdir(programs_dir)):
         if filename.endswith('.md'):
             path = os.path.join(programs_dir, filename)
@@ -113,14 +126,14 @@ def build_portfolio():
             body = simple_markdown('\n'.join(md.splitlines()[1:]))
             slug = os.path.splitext(filename)[0]
             content = render_template('program.html', title=title, body=body)
-            page = render_template('base.html', title=title, content=content)
+            page = render_template('base.html', title=title, content=content, nav_links=nav_links)
             output_path = os.path.join(OUTPUT_DIR, 'portfolio', f'{slug}.html')
             write_file(output_path, page)
             programs.append({'title': title, 'link': f'/portfolio/{slug}.html'})
-    # create program index
-    list_content = render_template('list.html', title='Web Portfolio', items=programs)
-    list_page = render_template('base.html', title='Web Portfolio', content=list_content)
-    write_file(os.path.join(OUTPUT_DIR, 'portfolio', 'index.html'), list_page)
+    if programs:
+        list_content = render_template('list.html', title='Web Portfolio', items=programs)
+        list_page = render_template('base.html', title='Web Portfolio', content=list_content, nav_links=nav_links)
+        write_file(os.path.join(OUTPUT_DIR, 'portfolio', 'index.html'), list_page)
     return programs
 
 
@@ -136,25 +149,51 @@ def update_readme(posts, programs):
         "* **Web Portfolio** – demos and links to my projects\n\n"
     )
 
-    devlog_lines = ["## DevLog"]
-    for post in posts:
-        devlog_lines.append(f"- [{post['title']}]({base_url}{post['link']})")
+    sections = []
+    if posts:
+        devlog_lines = ["## DevLog"]
+        for post in posts:
+            devlog_lines.append(f"- [{post['title']}]({base_url}{post['link']})")
+        sections.append("\n".join(devlog_lines))
 
-    program_lines = ["## Web Portfolio"]
-    for prog in programs:
-        program_lines.append(f"- [{prog['title']}]({base_url}{prog['link']})")
+    if programs:
+        program_lines = ["## Web Portfolio"]
+        for prog in programs:
+            program_lines.append(f"- [{prog['title']}]({base_url}{prog['link']})")
+        sections.append("\n".join(program_lines))
 
-    readme_content = header + "\n".join(devlog_lines) + "\n\n" + "\n".join(program_lines) + "\n"
+    readme_content = header + "\n\n".join(sections) + "\n"
     write_file("README.md", readme_content)
 
 
 def build_site():
-    posts = build_devlog()
-    programs = build_portfolio()
+    posts_dir = os.path.join(CONTENT_DIR, 'devlog')
+    portfolio_dir = os.path.join(CONTENT_DIR, 'portfolio')
 
-    # regenerate index with programs list
-    index_content = render_template('index.html', devlog=posts, portfolio=programs)
-    index_page = render_template('base.html', title='Home', content=index_content)
+    has_devlog = os.path.isdir(posts_dir) and any(f.endswith('.md') for f in os.listdir(posts_dir))
+    has_portfolio = os.path.isdir(portfolio_dir) and any(f.endswith('.md') for f in os.listdir(portfolio_dir))
+
+    nav_links = build_nav_links(has_devlog, has_portfolio)
+
+    posts = build_devlog(nav_links) if has_devlog else []
+    programs = build_portfolio(nav_links) if has_portfolio else []
+
+    devlog_section = ''
+    if posts:
+        items = '\n'.join(
+            f'<li><a href="{p["link"]}">{p["title"]}</a> - {p["date"]}</li>' for p in posts
+        )
+        devlog_section = f'<h2>DevLog</h2>\n<ul>\n{items}\n</ul>'
+
+    portfolio_section = ''
+    if programs:
+        items = '\n'.join(
+            f'<li><a href="{p["link"]}">{p["title"]}</a></li>' for p in programs
+        )
+        portfolio_section = f'<h2>Web Portfolio</h2>\n<ul>\n{items}\n</ul>'
+
+    index_content = render_template('index.html', devlog_section=devlog_section, portfolio_section=portfolio_section)
+    index_page = render_template('base.html', title='Home', content=index_content, nav_links=nav_links)
     write_file(os.path.join(OUTPUT_DIR, 'index.html'), index_page)
 
     update_readme(posts, programs)
