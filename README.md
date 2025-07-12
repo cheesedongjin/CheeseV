@@ -6,7 +6,3 @@ This repository contains a small Python script that generates my personal websit
 
 * **DevLog** – a collection of short development posts
 * **Web Portfolio** – demos and links to my projects
-
-## DevLog
-
-## Web Portfolio

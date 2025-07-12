@@ -1,79 +1,87 @@
-<title>Particles Playground</title>
-<style>
-    html, body {
-        margin: 0;
-        padding: 0;
-        background-color: #111;
-        overflow: hidden;
-    }
-    canvas {
-        display: block;
-    }
-    #info {
-        pointer-events: none;
-        position: absolute;
-        top: 1rem;
-        left: 1rem;
-        color: #fff;
-        font-family: 'Roboto Mono', monospace;
-        font-size: 1rem;
-        padding: 0.5rem 0;
-        border-radius: 8px;
-    }
-</style>
-<div id="info">Move your mouse to scatter particles!</div>
-<canvas id="canvas"></canvas>
-<script>
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Particles Playground</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            background-color: #111;
+            overflow: hidden;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: block;
+        }
+        #info {
+            pointer-events: none;
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            color: #fff;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">Move your mouse to scatter particles!</div>
+    <canvas id="canvas"></canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
 
-    function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
 
-    class Particle {
-        constructor(x, y) {
-            this.x = x;
-            this.y = y;
-            this.size = Math.random() * 3 + 1;
-            this.speedX = (Math.random() - 0.5) * 4;
-            this.speedY = (Math.random() - 0.5) * 4;
-            this.color = `hsl(${Math.random() * 360}, 100%, 70%)`;
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = (Math.random() - 0.5) * 4;
+                this.speedY = (Math.random() - 0.5) * 4;
+                this.color = `hsl(${Math.random() * 360}, 100%, 70%)`;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.size *= 0.95;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
         }
 
-        update() {
-            this.x += this.speedX;
-            this.y += this.speedY;
-            this.size *= 0.95;
+        function animate() {
+            ctx.fillStyle = 'rgba(17, 17, 17, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p, i) => {
+                p.update();
+                p.draw();
+                if (p.size < 0.5) particles.splice(i, 1);
+            });
+            requestAnimationFrame(animate);
         }
+        animate();
 
-        draw() {
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fillStyle = this.color;
-            ctx.fill();
-        }
-    }
-
-    function animate() {
-        ctx.fillStyle = 'rgba(17, 17, 17, 0.2)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        particles.forEach((p, i) => {
-            p.update();
-            p.draw();
-            if (p.size < 0.5) particles.splice(i, 1);
+        // ★ 여기만 바뀌었습니다
+        canvas.addEventListener('mousemove', e => {
+            for (let i = 0; i < 5; i++) {
+                particles.push(new Particle(e.offsetX, e.offsetY));
+            }
         });
-        requestAnimationFrame(animate);
-    }
-    animate();
-
-    canvas.addEventListener('mousemove', e => {
-        for (let i = 0; i < 5; i++) {
-            particles.push(new Particle(e.clientX, e.clientY));
-        }
-    });
-</script>
+    </script>
+</body>
+</html>
