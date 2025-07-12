@@ -12,7 +12,9 @@ def read_file(path):
 
 
 def write_file(path, content):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
+    dirpath = os.path.dirname(path)
+    if dirpath:
+        os.makedirs(dirpath, exist_ok=True)
     with open(path, 'w', encoding='utf-8') as f:
         f.write(content)
 
@@ -122,6 +124,30 @@ def build_portfolio():
     return programs
 
 
+def update_readme(posts, programs):
+    base_url = "https://cheesedongjin.github.io/CheeseV"
+    header = (
+        "# [CheeseV](https://cheesedongjin.github.io/CheeseV/)\n\n"
+        "Hi, I'm Dongwook Lee — a passionate self‑taught developer from South Korea. "
+        "I love building games, automating systems, and exploring new ideas through code.\n\n"
+        "This repository contains a small Python script that generates my personal website. "
+        "The site features two sections:\n\n"
+        "* **DevLog** – a collection of short development posts\n"
+        "* **Web Portfolio** – demos and links to my projects\n\n"
+    )
+
+    devlog_lines = ["## DevLog"]
+    for post in posts:
+        devlog_lines.append(f"- [{post['title']}]({base_url}{post['link']})")
+
+    program_lines = ["## Web Portfolio"]
+    for prog in programs:
+        program_lines.append(f"- [{prog['title']}]({base_url}{prog['link']})")
+
+    readme_content = header + "\n".join(devlog_lines) + "\n\n" + "\n".join(program_lines) + "\n"
+    write_file("README.md", readme_content)
+
+
 def build_site():
     posts = build_devlog()
     programs = build_portfolio()
@@ -130,6 +156,8 @@ def build_site():
     index_content = render_template('index.html', devlog=posts, portfolio=programs)
     index_page = render_template('base.html', title='Home', content=index_content)
     write_file(os.path.join(OUTPUT_DIR, 'index.html'), index_page)
+
+    update_readme(posts, programs)
 
 
 if __name__ == '__main__':
