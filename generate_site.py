@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 CONTENT_DIR = 'content'
-OUTPUT_DIR = 'output'
+OUTPUT_DIR = 'docs'
 TEMPLATES_DIR = 'templates'
 
 
