@@ -86,6 +86,15 @@ def build_nav_links(has_devlog: bool, has_portfolio: bool) -> str:
     return "\n    ".join(links)
 
 
+def automation_comment(section: str) -> str:
+    return (
+        f"<!-- Don't insert {section} section manually.\n"
+        "The code will add it automatically.\n"
+        "This is for GitHub management purposes.\n"
+        "Never delete this comment. -->"
+    )
+
+
 def build_devlog(nav_links):
     posts = []
     posts_dir = os.path.join(CONTENT_DIR, 'devlog')
@@ -101,13 +110,25 @@ def build_devlog(nav_links):
             slug = os.path.splitext(filename)[0]
             date_str = datetime.now().strftime('%Y-%m-%d')
             content = render_template('post.html', title=title, date=date_str, body=body)
-            page = render_template('base.html', title=title, content=content, nav_links=nav_links)
+            page = render_template(
+                'base.html',
+                title=title,
+                content=content,
+                nav_links=nav_links,
+                after_nav=""
+            )
             output_path = os.path.join(OUTPUT_DIR, 'devlog', f'{slug}.html')
             write_file(output_path, page)
             posts.append({'title': title, 'link': f'devlog/{slug}.html', 'date': date_str})
     if posts:
         list_content = render_template('list.html', title='DevLog', items=posts)
-        list_page = render_template('base.html', title='DevLog', content=list_content, nav_links=nav_links)
+        list_page = render_template(
+            'base.html',
+            title='DevLog',
+            content=list_content,
+            nav_links=nav_links,
+            after_nav=automation_comment('devlog')
+        )
         write_file(os.path.join(OUTPUT_DIR, 'devlog', 'index.html'), list_page)
     return posts
 
@@ -140,13 +161,25 @@ def build_portfolio(nav_links):
             continue
 
         content = render_template('program.html', title=title, body=body)
-        page = render_template('base.html', title=title, content=content, nav_links=nav_links)
+        page = render_template(
+            'base.html',
+            title=title,
+            content=content,
+            nav_links=nav_links,
+            after_nav=""
+        )
         output_path = os.path.join(OUTPUT_DIR, 'portfolio', f'{slug}.html')
         write_file(output_path, page)
         programs.append({'title': title, 'link': f'portfolio/{slug}.html'})
     if programs:
         list_content = render_template('list.html', title='Web Portfolio', items=programs)
-        list_page = render_template('base.html', title='Web Portfolio', content=list_content, nav_links=nav_links)
+        list_page = render_template(
+            'base.html',
+            title='Web Portfolio',
+            content=list_content,
+            nav_links=nav_links,
+            after_nav=automation_comment('portfolio')
+        )
         write_file(os.path.join(OUTPUT_DIR, 'portfolio', 'index.html'), list_page)
     return programs
 
@@ -183,7 +216,13 @@ def build_site():
         portfolio_section = f'<h2>Web Portfolio</h2>\n<ul>\n{items}\n</ul>'
 
     index_content = render_template('index.html', devlog_section=devlog_section, portfolio_section=portfolio_section)
-    index_page = render_template('base.html', title='Home', content=index_content, nav_links=nav_links)
+    index_page = render_template(
+        'base.html',
+        title='Home',
+        content=index_content,
+        nav_links=nav_links,
+        after_nav=""
+    )
     write_file(os.path.join(OUTPUT_DIR, 'index.html'), index_page)
 
 
