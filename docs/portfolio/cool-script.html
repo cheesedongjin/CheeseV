@@ -25,6 +25,35 @@
         a:hover {
             text-decoration: underline;
         }
+
+        #typewriter {
+            font-size: 1.4rem;
+            white-space: pre-wrap;
+            border-right: 2px solid #0af;
+            width: fit-content;
+            overflow: hidden;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            from, to { border-color: transparent }
+            50% { border-color: #0af; }
+        }
+
+        button {
+            background-color: #0af;
+            color: #111;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            margin-top: 1rem;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #08d;
+        }
     </style>
 </head>
 <body>
@@ -35,10 +64,32 @@
 </nav>
 <h1>Cool Script</h1>
 
-<p>This program prints `Hello, GitHub Pages!` to the console.</p>
+<div id="typewriter"></div>
+<button onclick="startTyping()">Run Cool Script</button>
 
 <footer>
     <p>&copy; 2025 Jdeseech</p>
 </footer>
+
+<script>
+    const message = "Hello, GitHub Pages!\nThis is a cool typing effect.";
+    const speed = 50;
+    let i = 0;
+
+    function startTyping() {
+        const target = document.getElementById("typewriter");
+        target.textContent = "";
+        i = 0;
+
+        function type() {
+            if (i < message.length) {
+                target.textContent += message.charAt(i);
+                i++;
+                setTimeout(type, speed);
+            }
+        }
+        type();
+    }
+</script>
 </body>
 </html>
