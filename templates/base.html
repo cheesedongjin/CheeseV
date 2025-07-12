@@ -5,26 +5,59 @@
     <base href="/CheeseV/">
     <title>{{ title }}</title>
     <style>
+        /* 기본 스타일 */
         body {
+            margin: 0;
             font-family: 'Roboto Mono', monospace;
-            margin: 2rem;
-            max-width: 900px;
             background: linear-gradient(135deg, #001020, #000);
             color: #0ff;
+            overflow-x: hidden;
+        }
+        nav {
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
         }
         nav a {
             margin-right: 1rem;
             color: #0ff;
             text-decoration: none;
         }
-        nav a svg.icon {
+        nav a.svg-icon {
             width: 1.1rem;
             height: 1.1rem;
-            vertical-align: -0.15rem; /* 글자와 높이 맞춤 */
-            fill: currentColor;       /* 링크 색상을 그대로 사용 */
+            vertical-align: -0.15rem;
+            fill: currentColor;
+        }
+        /* 고정 배경 캔버스 */
+        #background-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+        }
+        /* SVG 마스크 정의 숨기기 */
+        svg#mask-defs {
+            position: absolute;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+        }
+        /* 마스크된 콘텐츠 */
+        .masked-content {
+            max-width: 900px;
+            margin: 0 auto 2rem;
+            padding: 1rem;
+            background: rgba(0, 16, 32, 0.8);
+            clip-path: url(#section-mask);
         }
         footer {
-            margin-top: 2rem;
+            text-align: center;
+            margin: 2rem 0;
             font-size: 0.8rem;
             color: #099;
         }
@@ -32,50 +65,76 @@
             text-decoration: underline;
             color: #f0f;
         }
-        #cheesev-hint {
-            font-size: 0.4em;
-            cursor: pointer;
-            margin-left: 0.5rem;
-            color: #0cc;
-        }
-        #cheesev-popup {
-            display: none;
-            border: 1px solid #099;
-            padding: 0.4rem;
-            margin-bottom: 0.5rem;
-            font-size: 0.85em;
-            max-width: 20rem;
-        }
     </style>
 </head>
 <body>
-<nav>
-    {{ nav_links }}
-    <a href="https://github.com/cheesedongjin" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-        <svg class="icon" viewBox="0 0 16 16" aria-hidden="true">
-            <path d="M8 .198a8 8 0 0 0-2.53 15.594c.4.074.547-.174.547-.386
-                     0-.19-.007-.693-.01-1.36-2.225.483-2.695-1.073-2.695-1.073
-                     -.364-.924-.89-1.17-.89-1.17-.727-.497.055-.487.055-.487
-                     .804.057 1.227.825 1.227.825.714 1.223 1.873.87 2.33.665
-                     .073-.517.28-.87.507-1.07-1.777-.202-3.644-.888-3.644-3.953
-                     0-.873.312-1.588.823-2.148-.083-.203-.357-1.018.078-2.122
-                     0 0 .672-.215 2.2.82a7.633 7.633 0 0 1 2.003-.27 7.63 7.63 0 0 1 2.003.27c1.528-1.035 2.2-.82 2.2-.82.435 1.104.161 1.919.079 2.122.512.56.823 1.275.823 2.148 0 3.073-1.87 3.748-3.65 3.947
-                     .288.248.543.737.543 1.484 0 1.073-.01 1.939-.01 2.203 0 .213.145.463.55.384A8 8 0 0 0 8 .198z"/>
-        </svg>
-    </a>
-</nav>
-{{ after_nav }}
-{{ content }}
-<footer>
-    <p>&copy; 2025 Jdeseech</p>
-</footer>
-<script>
-    function toggleCheeseV() {
-        var p = document.getElementById('cheesev-popup');
-        if (p) {
-            p.style.display = p.style.display === 'block' ? 'none' : 'block';
+    <!-- 내비게이션 -->
+    <nav>
+        {{ nav_links }}
+        <a href="https://github.com/cheesedongjin" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <svg class="svg-icon" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M8 .198a8 8 0 0 0-2.53 15.594c.4.074.547-.174.547-.386 0-.19-.007-.693-.01-1.36-2.225.483-2.695-1.073-2.695-1.073-.364-.924-.89-1.17-.89-1.17-.727-.497.055-.487.055-.487.804.057 1.227.825 1.227.825.714 1.223 1.873.87 2.33.665.073-.517.28-.87.507-1.07-1.777-.202-3.644-.888-3.644-3.953 0-.873.312-1.588.823-2.148-.083-.203-.357-1.018.078-2.122 0 0 .672-.215 2.2.82a7.633 7.633 0 0 1 2.003-.27 7.63 7.63 0 0 1 2.003.27c1.528-1.035 2.2-.82 2.2-.82.435 1.104.161 1.919.079 2.122.512.56.823 1.275.823 2.148 0 3.073-1.87 3.748-3.65 3.947.288.248.543.737.543 1.484 0 1.073-.01 1.939-.01 2.203 0 .213.145.463.55.384A8 8 0 0 0 8 .198z"/>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- Three.js 배경 캔버스 -->
+    <canvas id="background-canvas"></canvas>
+
+    {{ after_nav }}
+
+    <!-- SVG 마스크 정의 -->
+    <svg id="mask-defs" aria-hidden="true">
+        <defs>
+            <clipPath id="section-mask" clipPathUnits="objectBoundingBox">
+                <path d="M0,0 H1 V0.8 C0.8,0.7,0.2,0.9,0,0.8 Z"/>
+            </clipPath>
+        </defs>
+    </svg>
+
+    <!-- 마스크된 콘텐츠 구역 -->
+    <div class="masked-content">
+        {{ content }}
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Jdeseech</p>
+    </footer>
+
+    <!-- Three.js 배경 스크립트 -->
+    <script type="module">
+        import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.module.js';
+
+        // 배경 씬 초기화
+        const bgCanvas = document.getElementById('background-canvas');
+        const bgRenderer = new THREE.WebGLRenderer({ canvas: bgCanvas, antialias: true });
+        const bgScene = new THREE.Scene();
+        const bgCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+        bgCamera.position.set(0, 0, 5);
+
+        const bgGeometry = new THREE.TorusKnotGeometry(1, 0.3, 100, 16);
+        const bgMaterial = new THREE.MeshStandardMaterial({ color: 0x0ff, wireframe: true });
+        const bgMesh = new THREE.Mesh(bgGeometry, bgMaterial);
+        bgScene.add(bgMesh);
+
+        const bgLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        bgLight.position.set(5, 5, 5);
+        bgScene.add(bgLight);
+
+        function animateBackground() {
+            requestAnimationFrame(animateBackground);
+            bgMesh.rotation.x += 0.005;
+            bgMesh.rotation.y += 0.005;
+            bgRenderer.setSize(window.innerWidth, window.innerHeight);
+            bgRenderer.render(bgScene, bgCamera);
         }
-    }
-</script>
+        animateBackground();
+
+        // 창 크기 조정 대응
+        window.addEventListener('resize', () => {
+            bgCamera.aspect = window.innerWidth / window.innerHeight;
+            bgCamera.updateProjectionMatrix();
+        });
+    </script>
 </body>
 </html>
