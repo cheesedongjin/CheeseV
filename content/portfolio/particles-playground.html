@@ -4,15 +4,9 @@
     <meta charset="UTF-8">
     <title>Particles Playground</title>
     <style>
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            display: block;
-        }
         #info {
             pointer-events: none;
-            position: absolute;
+            position: relative;
             top: 1rem;
             left: 1rem;
             color: #fff;
@@ -23,7 +17,7 @@
     </style>
 </head>
 <body>
-    <div id="info">마우스를 움직이거나 클릭하여 입자를 생성해보세요!</div>
+    <div id="info">마우스를 움직여 입자를 생성해보세요!</div>
     <canvas id="canvas"></canvas>
     <script>
         const canvas = document.getElementById('canvas');
@@ -125,13 +119,6 @@
         // 마우스 이동 시 입자 생성량 조절(3개)
         canvas.addEventListener('mousemove', e => {
             for (let i = 0; i < 3; i++) {
-                particles.push(new Particle(e.offsetX, e.offsetY));
-            }
-        });
-
-        // 클릭 시 버스트 효과(20개)
-        canvas.addEventListener('click', e => {
-            for (let i = 0; i < 20; i++) {
                 particles.push(new Particle(e.offsetX, e.offsetY));
             }
         });
