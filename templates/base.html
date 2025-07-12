@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: 'Roboto Mono', monospace;
-            margin: 0;
+            margin: 2rem;
             padding: 2rem;
             max-width: 900px;
             background-color: #000004;
@@ -118,13 +118,13 @@
         scene.add(dirLight);
 
         // 파동 플레인 메쉬 생성
-        const width = 200, height = 200, segments = 100;
+        const width = 500, height = 200, segments = 50;
         const geometry = new THREE.PlaneGeometry(width, height, segments, segments);
         const material = new THREE.MeshStandardMaterial({
             color: 0x00ffff,
             wireframe: true,
             transparent: true,
-            opacity: 0.6
+            opacity: 0.1
         });
         const plane = new THREE.Mesh(geometry, material);
         plane.rotation.x = -Math.PI / 2;
@@ -144,8 +144,8 @@
                 const ix = i * 3;
                 const x = posAttr.array[ix];
                 const y = posAttr.array[ix + 1];
-                posAttr.array[ix + 2] = 5 * Math.sin(x * 0.1 + elapsed)
-                                      + 5 * Math.cos(y * 0.1 + elapsed);
+                posAttr.array[ix + 2] = 5 * Math.sin(x * 0.05 + elapsed)
+                                      + 5 * Math.cos(y * 0.05 + elapsed);
             }
             posAttr.needsUpdate = true;
 
