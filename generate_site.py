@@ -151,36 +151,9 @@ def build_portfolio(nav_links):
     return programs
 
 
-def update_readme(posts, programs):
-    base_url = "https://cheesedongjin.github.io/CheeseV"
-    header = (
-        "# [CheeseV](https://cheesedongjin.github.io/CheeseV/)\n\n"
-        "Hi, I'm Dongwook Lee — a passionate self‑taught developer from South Korea. "
-        "I love building games, automating systems, and exploring new ideas through code.\n\n"
-        "This repository contains a small Python script that generates my personal website. "
-        "The site features two sections:\n\n"
-        "* **DevLog** – a collection of short development posts\n"
-        "* **Web Portfolio** – demos and links to my projects\n\n"
-    )
-
-    sections = []
-    if posts:
-        devlog_lines = ["## DevLog"]
-        for post in posts:
-            devlog_lines.append(f"- [{post['title']}]({base_url}{post['link']})")
-        sections.append("\n".join(devlog_lines))
-
-    if programs:
-        program_lines = ["## Web Portfolio"]
-        for prog in programs:
-            program_lines.append(f"- [{prog['title']}]({base_url}{prog['link']})")
-        sections.append("\n".join(program_lines))
-
-    readme_content = header + "\n\n".join(sections) + "\n"
-    write_file("README.md", readme_content)
-
-
 def build_site():
+    # Do not perform manually what this function handles automatically.
+    # This is for GitHub management purposes.
     posts_dir = os.path.join(CONTENT_DIR, 'devlog')
     portfolio_dir = os.path.join(CONTENT_DIR, 'portfolio')
 
@@ -212,8 +185,6 @@ def build_site():
     index_content = render_template('index.html', devlog_section=devlog_section, portfolio_section=portfolio_section)
     index_page = render_template('base.html', title='Home', content=index_content, nav_links=nav_links)
     write_file(os.path.join(OUTPUT_DIR, 'index.html'), index_page)
-
-    update_readme(posts, programs)
 
 
 if __name__ == '__main__':

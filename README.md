@@ -6,10 +6,3 @@ This repository contains a small Python script that generates my personal websit
 
 * **DevLog** – a collection of short development posts
 * **Web Portfolio** – demos and links to my projects
-
-## DevLog
-- [Hello World](https://cheesedongjin.github.io/CheeseVdevlog/hello-world.html)
-
-## Web Portfolio
-- [Particles Playground](https://cheesedongjin.github.io/CheeseVportfolio/particles-playground.html)
-- [Typing Effect](https://cheesedongjin.github.io/CheeseVportfolio/typing-effect.html)
