@@ -109,7 +109,11 @@ def build_devlog(nav_links):
             title = title_line.lstrip('#').strip()
             body = simple_markdown('\n'.join(md.splitlines()[1:]))
             slug = os.path.splitext(filename)[0]
-            date_str = datetime.now().strftime('%Y-%m-%d')
+            # Use the file's creation time for the post date rather than the
+            # current date so that the listing reflects when the entry was
+            # actually added.
+            timestamp = os.path.getmtime(path)
+            date_str = datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d')
             content = render_template('post.html', title=title, date=date_str, body=body)
             page = render_template(
                 'base.html',
@@ -122,7 +126,7 @@ def build_devlog(nav_links):
             write_file(output_path, page)
             posts.append({'title': title, 'link': f'devlog/{slug}.html', 'date': date_str})
     if posts:
-        list_content = render_template('list.html', title=SITE_NAME+'DevLog', items=posts)
+        list_content = render_template('devlog_list.html', title=SITE_NAME+'DevLog', items=posts)
         list_page = render_template(
             'base.html',
             title=SITE_NAME+'DevLog',
