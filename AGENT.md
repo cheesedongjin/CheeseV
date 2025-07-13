@@ -34,3 +34,8 @@ This document defines essential rules that must be followed by the automation ag
 ## 6. Do Not Modify `README.md` or `AGENT.md`
 - The files `README.md` and `AGENT.md` are **strictly protected** and must **never be modified or deleted** under any circumstances.
 - These files define essential project rules and structure. All edits must go through the project owner.
+
+## 7. `content/` Folder Is Owner-Only
+- The `content/` directory and all of its contents are **manually curated by the project owner**.
+- It is **not** managed by automation and **must not be edited, deleted, or added to by any other contributor or script**.
+- Any proposals for changes to this folder must be submitted as suggestions and approved by the owner.
