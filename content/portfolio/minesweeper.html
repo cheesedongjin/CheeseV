@@ -82,6 +82,7 @@ const cols = 10;
 const minesCount = 20;
 let board = [];
 let gameActive = true;
+let firstClick = true;
 
 const flagSvg = `
 <svg xmlns="http://www.w3.org/2000/svg"
@@ -102,6 +103,7 @@ const mineSvg = `
 
 function init() {
     gameActive = true;
+    firstClick = true;
     board = [];
     const gameEl = document.getElementById('game');
     gameEl.innerHTML = '';
@@ -116,24 +118,6 @@ function createBoard() {
         }
     }
 
-    let placed = 0;
-    while (placed < minesCount) {
-        const r = Math.floor(Math.random() * rows);
-        const c = Math.floor(Math.random() * cols);
-        if (!board[r][c].mine) {
-            board[r][c].mine = true;
-            placed++;
-        }
-    }
-
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-            if (!board[r][c].mine) {
-                board[r][c].adjacent = countAdjacent(r, c);
-            }
-        }
-    }
-
     const gameEl = document.getElementById('game');
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
@@ -144,6 +128,40 @@ function createBoard() {
             btn.addEventListener('click', onCellClick);
             btn.addEventListener('contextmenu', onCellRightClick);
             gameEl.appendChild(btn);
+        }
+    }
+}
+
+function placeMines(firstR, firstC) {
+    let placed = 0;
+    const forbidden = new Set();
+    // 첫 클릭 칸과 주변 3x3 영역을 지뢰 배치 금지 구역으로 설정
+    for (let dr = -1; dr <= 1; dr++) {
+        for (let dc = -1; dc <= 1; dc++) {
+            const nr = firstR + dr, nc = firstC + dc;
+            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+                forbidden.add(`${nr},${nc}`);
+            }
+        }
+    }
+
+    // 지뢰 배치
+    while (placed < minesCount) {
+        const r = Math.floor(Math.random() * rows);
+        const c = Math.floor(Math.random() * cols);
+        const key = `${r},${c}`;
+        if (!board[r][c].mine && !forbidden.has(key)) {
+            board[r][c].mine = true;
+            placed++;
+        }
+    }
+
+    // 인접 지뢰 수 계산
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            if (!board[r][c].mine) {
+                board[r][c].adjacent = countAdjacent(r, c);
+            }
         }
     }
 }
@@ -165,6 +183,12 @@ function onCellClick(e) {
     if (!gameActive) return;
     const r = +e.currentTarget.dataset.r;
     const c = +e.currentTarget.dataset.c;
+
+    if (firstClick) {
+        firstClick = false;
+        placeMines(r, c);
+    }
+
     openCell(r, c);
     checkWin();
 }
