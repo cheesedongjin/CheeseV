@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+import re
 
 CONTENT_DIR = 'content'
 OUTPUT_DIR = 'docs'
@@ -105,15 +105,20 @@ def build_devlog(nav_links):
         if filename.endswith('.md'):
             path = os.path.join(posts_dir, filename)
             md = read_file(path)
-            title_line = md.splitlines()[0]
+            lines = md.splitlines()
+            title_line = lines[0]
             title = title_line.lstrip('#').strip()
-            body = simple_markdown('\n'.join(md.splitlines()[1:]))
+            body_lines = lines[1:]
+            date_str = None
+            date_re = re.compile(r'\d{4}-\d{2}-\d{2}')
+            for i, line in enumerate(body_lines):
+                m = date_re.search(line)
+                if m:
+                    date_str = m.group(0)
+                    body_lines.pop(i)
+                    break
+            body = simple_markdown('\n'.join(body_lines))
             slug = os.path.splitext(filename)[0]
-            # Use the file's creation time for the post date rather than the
-            # current date so that the listing reflects when the entry was
-            # actually added.
-            timestamp = os.path.getmtime(path)
-            date_str = datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d')
             content = render_template('post.html', title=title, date=date_str, body=body)
             page = render_template(
                 'base.html',
@@ -126,7 +131,11 @@ def build_devlog(nav_links):
             write_file(output_path, page)
             posts.append({'title': title, 'link': f'devlog/{slug}.html', 'date': date_str})
     if posts:
-        list_content = render_template('devlog_list.html', title=SITE_NAME+'DevLog', items=posts)
+        list_items = []
+        for p in posts:
+            display = f"{p['title']} - {p['date']}" if p['date'] else p['title']
+            list_items.append({'link': p['link'], 'display': display})
+        list_content = render_template('devlog_list.html', title=SITE_NAME+'DevLog', items=list_items)
         list_page = render_template(
             'base.html',
             title=SITE_NAME+'DevLog',
@@ -208,9 +217,11 @@ def build_site():
 
     devlog_section = ''
     if posts:
-        items = '\n'.join(
-            f'<li><a href="{p["link"]}">{p["title"]}</a> - {p["date"]}</li>' for p in posts
-        )
+        item_lines = []
+        for p in posts:
+            date_part = f' - {p["date"]}' if p['date'] else ''
+            item_lines.append(f'<li><a href="{p["link"]}">{p["title"]}</a>{date_part}</li>')
+        items = '\n'.join(item_lines)
         devlog_section = f'<h2>DevLog</h2>\n<ul>\n{items}\n</ul>'
 
     portfolio_section = ''
