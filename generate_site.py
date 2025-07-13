@@ -4,7 +4,7 @@ from datetime import datetime
 CONTENT_DIR = 'content'
 OUTPUT_DIR = 'docs'
 TEMPLATES_DIR = 'templates'
-SITE_NAME = 'CheeseV' + '-'
+SITE_NAME = 'CheeseV' + ' - '
 
 
 def read_file(path):
@@ -113,7 +113,7 @@ def build_devlog(nav_links):
             content = render_template('post.html', title=SITE_NAME+title, date=date_str, body=body)
             page = render_template(
                 'base.html',
-                title=SITE_NAME+title,
+                title=title,
                 content=content,
                 nav_links=nav_links,
                 after_nav=""
@@ -164,7 +164,7 @@ def build_portfolio(nav_links):
         content = render_template('program.html', title=SITE_NAME+title, body=body)
         page = render_template(
             'base.html',
-            title=SITE_NAME+title,
+            title=title,
             content=content,
             nav_links=nav_links,
             after_nav=""
