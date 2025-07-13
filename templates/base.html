@@ -47,13 +47,13 @@
 
         nav {
             display: flex;
-            gap: 2rem;
+            align-items: center;
+            gap: 1.5rem;
             padding: 1rem 0;
             flex-wrap: wrap;
         }
 
-        nav a:link,
-        nav a:visited {
+        nav a {
             color: var(--primary-color);
             text-decoration: none;
             transition: color 0.3s ease, transform 0.2s ease;
@@ -63,6 +63,23 @@
         nav a:active {
             color: var(--accent-color);
             transform: translateY(-2px);
+        }
+
+        nav .logo {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 2rem;
+        }
+
+        nav .logo-icon {
+            width: 1.8rem;
+            height: 1.8rem;
+            fill: currentColor;
+            transition: fill 0.3s ease;
+        }
+
+        nav .logo-icon:hover {
+            fill: var(--accent-color);
         }
 
         nav a svg.icon {
@@ -134,7 +151,20 @@
     <canvas id="bg-canvas"></canvas>
 
     <nav role="navigation" aria-label="Main navigation">
+        <!-- Home logo icon link -->
+        <a href="index.html" class="logo" aria-label="홈으로 이동">
+            <svg class="logo-icon" viewBox="0 0 100 100" aria-hidden="true">
+                <polygon points="50,5 95,95 5,95" />
+                <circle cx="35" cy="65" r="8" fill="var(--bg-color)" />
+                <circle cx="60" cy="45" r="6" fill="var(--bg-color)" />
+                <circle cx="45" cy="85" r="5" fill="var(--bg-color)" />
+            </svg>
+        </a>
+
+        <!-- Existing navigation links -->
         {{ nav_links }}
+
+        <!-- GitHub profile link -->
         <a href="https://github.com/cheesedongjin"
            target="_blank"
            rel="noopener noreferrer"
@@ -171,7 +201,6 @@
             ? parseFloat(stored)
             : (sessionStorage.setItem('startTime', String(performance.now())), performance.now());
 
-        // Scene setup
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(
             60,
@@ -187,15 +216,13 @@
             antialias: true
         });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Optimize for performance
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-        // Lighting
         scene.add(new THREE.AmbientLight(0x888888));
         const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
         dirLight.position.set(0, 50, 50);
         scene.add(dirLight);
 
-        // Dynamic plane geometry
         const width = 500, height = 200, segments = 50;
         const geometry = new THREE.PlaneGeometry(width, height, segments, segments);
         const material = new THREE.MeshStandardMaterial({
@@ -212,12 +239,11 @@
         const posAttr = geometry.attributes.position;
         const vertexCount = posAttr.count;
 
-        // Gradient effect
         const colors = new Float32Array(vertexCount * 3);
         for (let i = 0; i < vertexCount; i++) {
-            colors[i * 3] = 0; // R
-            colors[i * 3 + 1] = 1; // G
-            colors[i * 3 + 2] = 1 - (i / vertexCount); // B
+            colors[i * 3] = 0;
+            colors[i * 3 + 1] = 1;
+            colors[i * 3 + 2] = 1 - (i / vertexCount);
         }
         geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
         material.vertexColors = true;
@@ -226,7 +252,6 @@
             requestAnimationFrame(animate);
             const elapsed = (performance.now() - startTime) / 4000;
 
-            // Dynamic wave animation
             for (let i = 0; i < vertexCount; i++) {
                 const ix = i * 3;
                 const x = posAttr.array[ix];
@@ -236,21 +261,17 @@
             }
             posAttr.needsUpdate = true;
 
-            // Rotate plane subtly
             plane.rotation.z = Math.sin(elapsed * 0.2) * 0.1;
-
             renderer.render(scene, camera);
         }
         animate();
 
-        // Resize handler
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // Keyboard navigation for accessibility
         document.querySelectorAll('nav a').forEach(link => {
             link.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
