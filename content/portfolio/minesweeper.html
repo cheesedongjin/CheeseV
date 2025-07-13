@@ -13,8 +13,16 @@
         overflow-x: hidden;
     }
 
+    /* 보드 전체를 감싸는 컨테이너 */
+    #board-container {
+        background-color: rgba(24, 48, 64, 0.8);
+        padding: 3rem;
+        border: 2px solid #0ff;
+        border-radius: 0.5rem;
+        display: inline-block;
+    }
+
     #game {
-        margin-top: 1rem;
         display: grid;
         grid-template-columns: repeat(10, 2rem);
         grid-template-rows: repeat(10, 2rem);
@@ -73,7 +81,11 @@
 </style>
 
 <button id="reset">New Game</button>
-<div id="game"></div>
+
+<!-- 보드 컨테이너 -->
+<div id="board-container">
+    <div id="game"></div>
+</div>
 
 <script>
 const rows = 10;
@@ -239,3 +251,4 @@ function checkWin() {
 window.addEventListener("DOMContentLoaded", init);
 document.getElementById("reset").addEventListener("click", init);
 </script>
+</html>
