@@ -74,12 +74,11 @@
         nav .logo-icon {
             width: 1.8rem;
             height: 1.8rem;
-            fill: currentColor;
-            transition: fill 0.3s ease;
+            transition: opacity 0.3s ease;
         }
 
         nav .logo-icon:hover {
-            fill: var(--accent-color);
+            opacity: 0.8;
         }
 
         nav a svg.icon {
@@ -153,12 +152,7 @@
     <nav role="navigation" aria-label="Main navigation">
         <!-- Home logo icon link -->
         <a href="index.html" class="logo" aria-label="홈으로 이동">
-            <svg class="logo-icon" viewBox="0 0 100 100" aria-hidden="true">
-                <polygon points="50,5 95,95 5,95" />
-                <circle cx="35" cy="65" r="8" fill="var(--bg-color)" />
-                <circle cx="60" cy="45" r="6" fill="var(--bg-color)" />
-                <circle cx="45" cy="85" r="5" fill="var(--bg-color)" />
-            </svg>
+            <img class="logo-icon" src="favicon.ico" alt="Home icon">
         </a>
 
         <!-- Existing navigation links -->
