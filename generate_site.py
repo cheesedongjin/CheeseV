@@ -4,6 +4,7 @@ from datetime import datetime
 CONTENT_DIR = 'content'
 OUTPUT_DIR = 'docs'
 TEMPLATES_DIR = 'templates'
+SITE_NAME = 'CheeseV' + '-'
 
 
 def read_file(path):
@@ -109,10 +110,10 @@ def build_devlog(nav_links):
             body = simple_markdown('\n'.join(md.splitlines()[1:]))
             slug = os.path.splitext(filename)[0]
             date_str = datetime.now().strftime('%Y-%m-%d')
-            content = render_template('post.html', title=title, date=date_str, body=body)
+            content = render_template('post.html', title=SITE_NAME+title, date=date_str, body=body)
             page = render_template(
                 'base.html',
-                title=title,
+                title=SITE_NAME+title,
                 content=content,
                 nav_links=nav_links,
                 after_nav=""
@@ -121,10 +122,10 @@ def build_devlog(nav_links):
             write_file(output_path, page)
             posts.append({'title': title, 'link': f'devlog/{slug}.html', 'date': date_str})
     if posts:
-        list_content = render_template('list.html', title='DevLog', items=posts)
+        list_content = render_template('list.html', title=SITE_NAME+'DevLog', items=posts)
         list_page = render_template(
             'base.html',
-            title='DevLog',
+            title=SITE_NAME+'DevLog',
             content=list_content,
             nav_links=nav_links,
             after_nav=automation_comment('devlog')
@@ -160,10 +161,10 @@ def build_portfolio(nav_links):
         else:
             continue
 
-        content = render_template('program.html', title=title, body=body)
+        content = render_template('program.html', title=SITE_NAME+title, body=body)
         page = render_template(
             'base.html',
-            title=title,
+            title=SITE_NAME+title,
             content=content,
             nav_links=nav_links,
             after_nav=""
@@ -172,10 +173,10 @@ def build_portfolio(nav_links):
         write_file(output_path, page)
         programs.append({'title': title, 'link': f'portfolio/{slug}.html'})
     if programs:
-        list_content = render_template('list.html', title='Web Portfolio', items=programs)
+        list_content = render_template('list.html', title=SITE_NAME+'Web Portfolio', items=programs)
         list_page = render_template(
             'base.html',
-            title='Web Portfolio',
+            title=SITE_NAME+'Web Portfolio',
             content=list_content,
             nav_links=nav_links,
             after_nav=automation_comment('portfolio')
@@ -218,7 +219,7 @@ def build_site():
     index_content = render_template('index.html', devlog_section=devlog_section, portfolio_section=portfolio_section)
     index_page = render_template(
         'base.html',
-        title='Home',
+        title=SITE_NAME+'Home',
         content=index_content,
         nav_links=nav_links,
         after_nav=""
