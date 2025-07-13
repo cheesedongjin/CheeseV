@@ -2,43 +2,106 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="/CheeseV/">
     <title>{{ title }}</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Roboto+Mono:wght@400;700&display=swap">
     <style>
+        :root {
+            --primary-color: #0ff;
+            --accent-color: #f0f;
+            --bg-color: #000004;
+            --text-secondary: #099;
+        }
+
+        * {
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'Roboto Mono', monospace;
-            margin: 2rem;
-            padding: 2rem;
-            max-width: 900px;
-            background-color: #000004;
-            color: #0ff;
+            font-family: 'Inter', 'Roboto Mono', monospace;
+            margin: 1rem;
+            padding: 1.5rem;
+            max-width: 1000px;
+            background: linear-gradient(135deg, #000004 0%, #001a33 100%);
+            color: var(--primary-color);
             position: relative;
             overflow-x: hidden;
-            margin: 2rem;
+            line-height: 1.6;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
         }
+
+        @media (min-width: 768px) {
+            body {
+                margin: 2rem auto;
+                padding: 2rem;
+            }
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            padding: 1rem 0;
+            flex-wrap: wrap;
+        }
+
         nav a:link,
         nav a:visited {
-            color: #0ff;
+            color: var(--primary-color);
             text-decoration: none;
+            transition: color 0.3s ease, transform 0.2s ease;
         }
+
         nav a:hover,
         nav a:active {
-            color: #f0f;
+            color: var(--accent-color);
+            transform: translateY(-2px);
         }
+
         nav a svg.icon {
-            width: 1.1rem;
-            height: 1.1rem;
-            vertical-align: -0.15rem;
+            width: 1.2rem;
+            height: 1.2rem;
+            vertical-align: -0.2rem;
             fill: currentColor;
+            transition: fill 0.3s ease;
         }
+
         footer {
-            margin-top: 2rem;
-            font-size: 0.8rem;
-            color: #099;
+            margin-top: 3rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0, 255, 255, 0.2);
+            opacity: 0;
+            animation: fadeIn 1s ease-out forwards;
+            animation-delay: 0.5s;
         }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: var(--accent-color);
+        }
+
         a:hover {
             text-decoration: underline;
         }
+
         #bg-canvas {
             position: fixed;
             top: 0;
@@ -46,24 +109,31 @@
             width: 100vw;
             height: 100vh;
             z-index: -1;
+            filter: blur(2px);
         }
+
         #cheesev-hint {
-            font-size: 0.4em;
+            font-size: 0.5em;
             cursor: pointer;
-            margin-left: 0.5rem;
+            margin-left: 0.75rem;
             color: #0cc;
+            transition: color 0.3s ease;
+        }
+
+        #cheesev-hint:hover {
+            color: var(--accent-color);
         }
     </style>
 </head>
 <body>
     <canvas id="bg-canvas"></canvas>
 
-    <nav>
+    <nav role="navigation" aria-label="Main navigation">
         {{ nav_links }}
         <a href="https://github.com/cheesedongjin"
            target="_blank"
            rel="noopener noreferrer"
-           aria-label="GitHub">
+           aria-label="Visit my GitHub profile">
             <svg class="icon" viewBox="0 0 16 16" aria-hidden="true">
                 <path d="M8 .198a8 8 0 0 0-2.53 15.594c.4.074.547-.174.547-.386
                          0-.19-.007-.693-.01-1.36-2.225.483-2.695-1.073-2.695-1.073
@@ -81,19 +151,23 @@
     {{ content }}
 
     <footer>
-        <p>&copy; 2025 Jdeseech</p>
+        <p>© 2025 Jdeseech</p>
+        <div class="social-links">
+            <a href="https://x.com/cheesedongjin" target="_blank" rel="noopener noreferrer" aria-label="X profile">X</a> |
+            <a href="mailto:contact@jdeseech.com" aria-label="Email">Email</a>
+        </div>
     </footer>
 
     <script type="module">
         import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.module.js';
 
-        // sessionStorage 에서 startTime을 가져오거나 새로 저장
+        // Session storage for startTime
         const stored = sessionStorage.getItem('startTime');
         const startTime = stored
             ? parseFloat(stored)
             : (sessionStorage.setItem('startTime', String(performance.now())), performance.now());
 
-        // 씬, 카메라, 렌더러 설정
+        // Scene setup
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(
             60,
@@ -109,22 +183,23 @@
             antialias: true
         });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Optimize for performance
 
-        // 조명
+        // Lighting
         scene.add(new THREE.AmbientLight(0x888888));
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
         dirLight.position.set(0, 50, 50);
         scene.add(dirLight);
 
-        // 파동 플레인 메쉬 생성
+        // Dynamic plane geometry
         const width = 500, height = 200, segments = 50;
         const geometry = new THREE.PlaneGeometry(width, height, segments, segments);
         const material = new THREE.MeshStandardMaterial({
             color: 0x00ffff,
             wireframe: true,
             transparent: true,
-            opacity: 0.1
+            opacity: 0.15,
+            side: THREE.DoubleSide
         });
         const plane = new THREE.Mesh(geometry, material);
         plane.rotation.x = -Math.PI / 2;
@@ -133,31 +208,52 @@
         const posAttr = geometry.attributes.position;
         const vertexCount = posAttr.count;
 
+        // Gradient effect
+        const colors = new Float32Array(vertexCount * 3);
+        for (let i = 0; i < vertexCount; i++) {
+            colors[i * 3] = 0; // R
+            colors[i * 3 + 1] = 1; // G
+            colors[i * 3 + 2] = 1 - (i / vertexCount); // B
+        }
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        material.vertexColors = true;
+
         function animate() {
             requestAnimationFrame(animate);
+            const elapsed = (performance.now() - startTime) / 4000;
 
-            // 페이지 로드 이후 경과 시간을 초 단위로 계산
-            const elapsed = (performance.now() - startTime) / 6000;
-
-            // 각 정점 Z 좌표를 사인파로 업데이트
+            // Dynamic wave animation
             for (let i = 0; i < vertexCount; i++) {
                 const ix = i * 3;
                 const x = posAttr.array[ix];
                 const y = posAttr.array[ix + 1];
-                posAttr.array[ix + 2] = 5 * Math.sin(x * 0.05 + elapsed)
-                                      + 5 * Math.cos(y * 0.05 + elapsed);
+                posAttr.array[ix + 2] = 6 * Math.sin(x * 0.05 + elapsed * 1.5)
+                                     + 4 * Math.cos(y * 0.05 + elapsed * 1.2);
             }
             posAttr.needsUpdate = true;
+
+            // Rotate plane subtly
+            plane.rotation.z = Math.sin(elapsed * 0.2) * 0.1;
 
             renderer.render(scene, camera);
         }
         animate();
 
-        // 리사이즈 처리
+        // Resize handler
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Keyboard navigation for accessibility
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    link.click();
+                }
+            });
         });
     </script>
 </body>
