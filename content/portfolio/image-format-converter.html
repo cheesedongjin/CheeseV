@@ -67,11 +67,15 @@
             margin-top: 1rem;
             word-break: break-all;
         }
+
+        #qualityInput {
+            width: 100px;
+        }
     </style>
 </head>
 <body>
     <div id="converter">
-        <div id="dropZone">Drag &amp; drop an image here, or click to select</div>
+        <div id="dropZone">Drag & drop an image here, or click to select</div>
         <input type="file" id="fileInput" accept="image/*" style="display:none;">
         <br>
         <label for="formatSelect">Convert to:</label>
@@ -82,18 +86,93 @@
             <option value="image/avif">AVIF</option>
             <option value="image/bmp">BMP</option>
             <option value="image/tiff">TIFF</option>
+            <option value="image/x-icon">ICO</option>
         </select>
+        <br>
+        <label for="qualityInput">Quality (0-1, for JPEG/WebP):</label>
+        <input type="number" id="qualityInput" min="0" max="1" step="0.1" value="0.8">
         <br>
         <button id="convertBtn">Convert</button>
         <div id="result"></div>
     </div>
 
     <script>
+        // PNG2ICOjs implementation (simplified, inspired by https://github.com/datvm/PNG2ICOjs)
+        class PngIcoConverter {
+            static async convertToBlobAsync(inputs, mime = 'image/x-icon') {
+                const buffers = await Promise.all(inputs.map(async input => {
+                    const arrayBuffer = await input.png.arrayBuffer();
+                    return new Uint8Array(arrayBuffer);
+                }));
+
+                const icoData = this.createICO(buffers);
+                return new Blob([icoData], { type: mime });
+            }
+
+            static createICO(pngBuffers) {
+                const images = pngBuffers.map(buffer => ({
+                    buffer,
+                    width: 256, // Default size, adjust as needed
+                    height: 256
+                }));
+
+                const header = new Uint8Array(6);
+                header[0] = 0; // Reserved
+                header[1] = 0;
+                header[2] = 1; // Type (1 for ICO)
+                header[3] = 0;
+                header[4] = images.length & 0xFF; // Number of images
+                header[5] = (images.length >> 8) & 0xFF;
+
+                const entries = [];
+                const imageData = [];
+                let offset = 6 + 16 * images.length; // Header + directory entries
+
+                images.forEach((image, i) => {
+                    const entry = new Uint8Array(16);
+                    entry[0] = image.width > 255 ? 0 : image.width; // Width (256 -> 0)
+                    entry[1] = image.height > 255 ? 0 : image.height; // Height (256 -> 0)
+                    entry[2] = 0; // Color palette
+                    entry[3] = 0; // Reserved
+                    entry[4] = 1; // Color planes
+                    entry[5] = 0;
+                    entry[6] = 32; // Bits per pixel
+                    entry[7] = 0;
+                    entry[8] = image.buffer.length & 0xFF; // Size
+                    entry[9] = (image.buffer.length >> 8) & 0xFF;
+                    entry[10] = (image.buffer.length >> 16) & 0xFF;
+                    entry[11] = (image.buffer.length >> 24) & 0xFF;
+                    entry[12] = offset & 0xFF; // Offset
+                    entry[13] = (offset >> 8) & 0xFF;
+                    entry[14] = (offset >> 16) & 0xFF;
+                    entry[15] = (offset >> 24) & 0xFF;
+
+                    entries.push(entry);
+                    imageData.push(image.buffer);
+                    offset += image.buffer.length;
+                });
+
+                const totalLength = 6 + 16 * images.length + images.reduce((sum, img) => sum + img.buffer.length, 0);
+                const result = new Uint8Array(totalLength);
+                result.set(header, 0);
+                entries.forEach((entry, i) => result.set(entry, 6 + i * 16));
+                let dataOffset = 6 + 16 * images.length;
+                imageData.forEach(data => {
+                    result.set(data, dataOffset);
+                    dataOffset += data.length;
+                });
+
+                return result;
+            }
+        }
+
         let currentFile = null;
 
         const fileInput = document.getElementById('fileInput');
         const dropZone = document.getElementById('dropZone');
         const convertBtn = document.getElementById('convertBtn');
+        const formatSelect = document.getElementById('formatSelect');
+        const qualityInput = document.getElementById('qualityInput');
         const resultDiv = document.getElementById('result');
 
         // 드롭존 클릭 시 파일 선택 창 열기
@@ -141,7 +220,7 @@
         }
 
         // 변환 버튼 클릭 시 실행
-        convertBtn.addEventListener('click', () => {
+        convertBtn.addEventListener('click', async () => {
             resultDiv.innerHTML = '';
 
             if (!currentFile) {
@@ -149,21 +228,24 @@
                 return;
             }
 
-            const format = document.getElementById('formatSelect').value;
+            const format = formatSelect.value;
+            const quality = parseFloat(qualityInput.value) || 0.8;
+
             const reader = new FileReader();
-
-            reader.onload = (event) => {
+            reader.onload = async (event) => {
                 const img = new Image();
-                img.onload = () => {
+                img.onload = async () => {
                     const canvas = document.createElement('canvas');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
+                    // ICO는 최대 256x256 지원
+                    const size = format === 'image/x-icon' ? Math.min(img.width, img.height, 256) : img.width;
+                    canvas.width = size;
+                    canvas.height = size;
                     const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
+                    ctx.drawImage(img, 0, 0, size, size);
 
-                    canvas.toBlob((blob) => {
+                    const convertCallback = (blob) => {
                         if (!blob) {
-                            resultDiv.textContent = 'This format is not supported by your browser.';
+                            resultDiv.textContent = `The ${format.split('/')[1].toUpperCase()} format is not supported by your browser.`;
                             return;
                         }
 
@@ -172,7 +254,7 @@
                         link.href = url;
 
                         // 원본 파일명에서 확장자 제거 후 "_converted" 추가
-                        const ext = format.split('/')[1];
+                        const ext = format === 'image/x-icon' ? 'ico' : format.split('/')[1];
                         const originalName = currentFile.name;
                         const baseName = originalName.lastIndexOf('.') > 0
                             ? originalName.substring(0, originalName.lastIndexOf('.'))
@@ -188,7 +270,21 @@
                         preview.src = url;
                         preview.style.maxWidth = '300px';
                         resultDiv.appendChild(preview);
-                    }, format);
+                    };
+
+                    if (format === 'image/x-icon') {
+                        // ICO 변환: Canvas에서 PNG로 변환 후 PNG2ICOjs로 ICO 생성
+                        canvas.toBlob(async (pngBlob) => {
+                            if (!pngBlob) {
+                                resultDiv.textContent = 'Failed to generate PNG for ICO conversion.';
+                                return;
+                            }
+                            const icoBlob = await PngIcoConverter.convertToBlobAsync([{ png: pngBlob }]);
+                            convertCallback(icoBlob);
+                        }, 'image/png');
+                    } else {
+                        canvas.toBlob(convertCallback, format, quality);
+                    }
                 };
                 img.onerror = () => {
                     resultDiv.textContent = 'Failed to load the image. Please try another file.';

@@ -234,7 +234,7 @@ def build_site():
     index_content = render_template('index.html', devlog_section=devlog_section, portfolio_section=portfolio_section)
     index_page = render_template(
         'base.html',
-        title=SITE_NAME+'Home',
+        title=SITE_NAME,
         content=index_content,
         nav_links=nav_links,
         after_nav=""
