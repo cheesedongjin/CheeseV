@@ -4,7 +4,7 @@ import re
 CONTENT_DIR = 'content'
 OUTPUT_DIR = 'docs'
 TEMPLATES_DIR = 'templates'
-SITE_NAME = 'CheeseV' + ' - '
+SITE_NAME = 'CheeseV'
 
 
 def read_file(path):
@@ -135,10 +135,10 @@ def build_devlog(nav_links):
         for p in posts:
             display = f"{p['title']} - {p['date']}" if p['date'] else p['title']
             list_items.append({'link': p['link'], 'display': display})
-        list_content = render_template('devlog_list.html', title=SITE_NAME+'DevLog', items=list_items)
+        list_content = render_template('devlog_list.html', title=SITE_NAME+" - "+'DevLog', items=list_items)
         list_page = render_template(
             'base.html',
-            title=SITE_NAME+'DevLog',
+            title=SITE_NAME+" - "+'DevLog',
             content=list_content,
             nav_links=nav_links,
             after_nav=automation_comment('devlog')
@@ -186,10 +186,10 @@ def build_portfolio(nav_links):
         write_file(output_path, page)
         programs.append({'title': title, 'link': f'portfolio/{slug}.html'})
     if programs:
-        list_content = render_template('list.html', title=SITE_NAME+'Portfolio', items=programs)
+        list_content = render_template('list.html', title=SITE_NAME+" - "+'Portfolio', items=programs)
         list_page = render_template(
             'base.html',
-            title=SITE_NAME+'Portfolio',
+            title=SITE_NAME+" - "+'Portfolio',
             content=list_content,
             nav_links=nav_links,
             after_nav=automation_comment('portfolio')
