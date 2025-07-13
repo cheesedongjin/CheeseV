@@ -79,11 +79,11 @@ def render_template(template_name, **context):
 
 
 def build_nav_links(has_devlog: bool, has_portfolio: bool) -> str:
-    links = ['<a href="index.html">Home</a>']
+    links = ['<a href="./">Home</a>']
     if has_devlog:
-        links.append('<a href="devlog/index.html">DevLog</a>')
+        links.append('<a href="devlog">DevLog</a>')
     if has_portfolio:
-        links.append('<a href="portfolio/index.html">Portfolio</a>')
+        links.append('<a href="portfolio">Portfolio</a>')
     return "\n    ".join(links)
 
 
