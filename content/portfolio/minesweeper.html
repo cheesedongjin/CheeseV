@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>Minesweeper</title>
+<style>
+    body {
+        font-family: 'Roboto Mono', monospace;
+        margin: 2rem;
+        padding: 2rem;
+        max-width: 900px;
+        background-color: #000004;
+        color: #0ff;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    #game {
+        margin-top: 1rem;
+        display: grid;
+        grid-template-columns: repeat(10, 2rem);
+        grid-template-rows: repeat(10, 2rem);
+        gap: 2px;
+    }
+
+    .cell {
+        width: 2rem;
+        height: 2rem;
+        background-color: #001020;
+        color: #0ff;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        text-align: center;
+        line-height: 2rem;
+        user-select: none;
+    }
+
+    .cell:focus {
+        outline: none;
+    }
+
+    .cell.revealed {
+        background-color: #0ff;
+        color: #000;
+        cursor: default;
+    }
+
+    .cell.mine.revealed {
+        background-color: #f00;
+        color: #000;
+    }
+
+    .cell.flagged {
+        color: #f00;
+    }
+    .cell.flagged svg {
+        vertical-align: middle;
+    }
+
+    button {
+        background-color: #0ff;
+        color: #000;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+        border: none;
+        margin-top: 1rem;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0cf;
+    }
+</style>
+
+<button id="reset">New Game</button>
+<div id="game"></div>
+
+<script>
+const rows = 10;
+const cols = 10;
+const minesCount = 20;
+let board = [];
+let gameActive = true;
+
+const flagSvg = `
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1.2rem" height="1.2rem"
+     viewBox="0 0 512 512"
+     fill="currentColor">
+  <path d="M80 32v448h32V288h320l-64-96 64-96H112V32z"/>
+</svg>`;
+
+const mineSvg = `
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1.2rem" height="1.2rem"
+     viewBox="0 0 496 512"
+     fill="currentColor">
+  <path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 448c-110.3 0-200-89.7-200-200S137.7 56 248 56s200 89.7 200 200-89.7 200-200 200z"/>
+  <circle cx="248" cy="256" r="80"/>
+</svg>`;
+
+function init() {
+    gameActive = true;
+    board = [];
+    const gameEl = document.getElementById('game');
+    gameEl.innerHTML = '';
+    createBoard();
+}
+
+function createBoard() {
+    for (let r = 0; r < rows; r++) {
+        board[r] = [];
+        for (let c = 0; c < cols; c++) {
+            board[r][c] = { mine: false, adjacent: 0, revealed: false, flagged: false };
+        }
+    }
+
+    let placed = 0;
+    while (placed < minesCount) {
+        const r = Math.floor(Math.random() * rows);
+        const c = Math.floor(Math.random() * cols);
+        if (!board[r][c].mine) {
+            board[r][c].mine = true;
+            placed++;
+        }
+    }
+
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            if (!board[r][c].mine) {
+                board[r][c].adjacent = countAdjacent(r, c);
+            }
+        }
+    }
+
+    const gameEl = document.getElementById('game');
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            const btn = document.createElement('button');
+            btn.classList.add('cell');
+            btn.dataset.r = r;
+            btn.dataset.c = c;
+            btn.addEventListener('click', onCellClick);
+            btn.addEventListener('contextmenu', onCellRightClick);
+            gameEl.appendChild(btn);
+        }
+    }
+}
+
+function countAdjacent(r, c) {
+    let count = 0;
+    for (let dr = -1; dr <= 1; dr++) {
+        for (let dc = -1; dc <= 1; dc++) {
+            const nr = r + dr, nc = c + dc;
+            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+                if (board[nr][nc].mine) count++;
+            }
+        }
+    }
+    return count;
+}
+
+function onCellClick(e) {
+    if (!gameActive) return;
+    const r = +e.currentTarget.dataset.r;
+    const c = +e.currentTarget.dataset.c;
+    openCell(r, c);
+    checkWin();
+}
+
+function onCellRightClick(e) {
+    e.preventDefault();
+    if (!gameActive) return;
+    const r = +e.currentTarget.dataset.r;
+    const c = +e.currentTarget.dataset.c;
+    const cell = board[r][c];
+    if (cell.revealed) return;
+
+    const btn = e.currentTarget;
+    cell.flagged = !cell.flagged;
+    btn.classList.toggle('flagged', cell.flagged);
+    btn.innerHTML = cell.flagged ? flagSvg : '';
+}
+
+function openCell(r, c) {
+    const cell = board[r][c];
+    const btn = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+    if (cell.revealed || cell.flagged) return;
+
+    cell.revealed = true;
+    btn.classList.add('revealed');
+
+    if (cell.mine) {
+        btn.innerHTML = mineSvg;
+        btn.classList.add('mine');
+        revealAllMines();
+        gameActive = false;
+        setTimeout(() => alert('Game Over!'), 10);
+    } else if (cell.adjacent > 0) {
+        btn.textContent = cell.adjacent;
+    } else {
+        for (let dr = -1; dr <= 1; dr++) {
+            for (let dc = -1; dc <= 1; dc++) {
+                const nr = r + dr, nc = c + dc;
+                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+                    openCell(nr, nc);
+                }
+            }
+        }
+    }
+}
+
+function revealAllMines() {
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            if (board[r][c].mine && !board[r][c].revealed) {
+                const btn = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+                board[r][c].revealed = true;
+                btn.classList.add('revealed', 'mine');
+                btn.innerHTML = mineSvg;
+            }
+        }
+    }
+}
+
+function checkWin() {
+    let opened = 0;
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            if (board[r][c].revealed) opened++;
+        }
+    }
+    if (opened === rows * cols - minesCount) {
+        gameActive = false;
+        setTimeout(() => alert('You Win!'), 10);
+    }
+}
+
+window.addEventListener("DOMContentLoaded", init);
+document.getElementById("reset").addEventListener("click", init);
+</script>
