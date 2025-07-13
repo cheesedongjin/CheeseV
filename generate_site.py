@@ -110,7 +110,7 @@ def build_devlog(nav_links):
             body = simple_markdown('\n'.join(md.splitlines()[1:]))
             slug = os.path.splitext(filename)[0]
             date_str = datetime.now().strftime('%Y-%m-%d')
-            content = render_template('post.html', title=SITE_NAME+title, date=date_str, body=body)
+            content = render_template('post.html', title=title, date=date_str, body=body)
             page = render_template(
                 'base.html',
                 title=title,
@@ -161,7 +161,7 @@ def build_portfolio(nav_links):
         else:
             continue
 
-        content = render_template('program.html', title=SITE_NAME+title, body=body)
+        content = render_template('program.html', title=title, body=body)
         page = render_template(
             'base.html',
             title=title,
@@ -173,10 +173,10 @@ def build_portfolio(nav_links):
         write_file(output_path, page)
         programs.append({'title': title, 'link': f'portfolio/{slug}.html'})
     if programs:
-        list_content = render_template('list.html', title=SITE_NAME+'Web Portfolio', items=programs)
+        list_content = render_template('list.html', title=SITE_NAME+'Portfolio', items=programs)
         list_page = render_template(
             'base.html',
-            title=SITE_NAME+'Web Portfolio',
+            title=SITE_NAME+'Portfolio',
             content=list_content,
             nav_links=nav_links,
             after_nav=automation_comment('portfolio')
