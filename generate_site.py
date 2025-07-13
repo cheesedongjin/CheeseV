@@ -24,29 +24,73 @@ def simple_markdown(md):
     lines = md.splitlines()
     html_lines = []
     in_list = False
+    in_code_block = False
+
+    # Helper function to process inline Markdown
+    def process_inline(text):
+        # Process **bold** or __bold__
+        text = re.sub(r'\*\*(.*?)\*\*|__(.*?)__', r'<strong>\1\2</strong>', text)
+        # Process *italic* or _italic_
+        text = re.sub(r'\*(.*?)\*|_(.*?)_', r'<em>\1\2</em>', text)
+        # Process `inline code`
+        text = re.sub(r'`(.*?)`', r'<code>\1</code>', text)
+        # Process [link text](url)
+        text = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2">\1</a>', text)
+        return text
+
     for line in lines:
         line = line.rstrip()
+
+        # Handle code blocks
+        if line.strip() == '```':
+            if not in_code_block:
+                html_lines.append('<pre><code>')
+                in_code_block = True
+            else:
+                html_lines.append('</code></pre>')
+                in_code_block = False
+            continue
+
+        # Skip processing if inside a code block
+        if in_code_block:
+            html_lines.append(line)
+            continue
+
+        # Handle headers
         if line.startswith('# '):
-            html_lines.append(f"<h1>{line[2:].strip()}</h1>")
+            html_lines.append(f"<h1>{process_inline(line[2:].strip())}</h1>")
         elif line.startswith('## '):
-            html_lines.append(f"<h2>{line[3:].strip()}</h2>")
+            html_lines.append(f"<h2>{process_inline(line[3:].strip())}</h2>")
         elif line.startswith('### '):
-            html_lines.append(f"<h3>{line[4:].strip()}</h3>")
+            html_lines.append(f"<h3>{process_inline(line[4:].strip())}</h3>")
+        # Handle images
+        elif line.startswith('!['):
+            match = re.match(r'!\$\$ (.*?) \$\$\$\$ (.*?)(?:\s+"(.*?)")? \$\$', line)
+            if match:
+                alt_text, src, title = match.groups()
+                title_attr = f' title="{title}"' if title else ''
+                html_lines.append(f'<img src="{src}" alt="{alt_text}"{title_attr}>')
+        # Handle lists
         elif line.startswith('- ') or line.startswith('* '):
             if not in_list:
                 html_lines.append('<ul>')
                 in_list = True
-            html_lines.append(f"<li>{line[2:].strip()}</li>")
+            html_lines.append(f"<li>{process_inline(line[2:].strip())}</li>")
         else:
             if in_list:
                 html_lines.append('</ul>')
                 in_list = False
             if line:
-                html_lines.append(f"<p>{line}</p>")
+                html_lines.append(f"<p>{process_inline(line)}</p>")
             else:
                 html_lines.append('')
+
+    # Close any open tags
     if in_list:
         html_lines.append('</ul>')
+    if in_code_block:
+        html_lines.append('</code></pre>')
+
     return '\n'.join(html_lines)
 
 
