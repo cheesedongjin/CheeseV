@@ -301,13 +301,13 @@
         dirLight.position.set(0, 50, 50);
         scene.add(dirLight);
 
-        const width = 550, height = 200, segments = 50;
+        const width = 550, height = 200, segments = 30;
         const geometry = new THREE.PlaneGeometry(width, height, segments, segments);
         const material = new THREE.MeshStandardMaterial({
             color: 0x00ffff,
             wireframe: true,
             transparent: true,
-            opacity: 0.05,
+            opacity: 0.08,
             side: THREE.DoubleSide
         });
         const plane = new THREE.Mesh(geometry, material);
