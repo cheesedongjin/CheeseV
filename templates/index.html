@@ -1,15 +1,56 @@
 <h1>CheeseV</h1>
 
-<p>
-    Hi, I'm Dongwook Lee — a self-taught developer based in South Korea.<br>
-    I build tools, systems, and games from scratch, often starting with small ideas and shaping them through code.<br>
-    My current interests include game development, automation, and systems programming. I learn best by making things.
-</p>
+<div id="intro"></div>
 
 <p>
     You can find more of my work on
     <a href="https://github.com/cheesedongjin" target="_blank" rel="noopener noreferrer">GitHub</a>.
 </p>
+
+<style>
+    #intro {
+        font-size: 1rem;
+        white-space: pre-wrap;
+        position: relative;
+        min-height: 5.6rem;
+        font-family: 'Roboto Mono', monospace;
+    }
+
+    #intro::after {
+        content: "";
+        position: absolute;
+        width: 2px;
+        height: 1em;
+        background-color: var(--primary-color);
+        animation: blink 1s step-end infinite;
+        transform: translateY(0.15em);
+    }
+
+    @keyframes blink {
+        0%, 100% { opacity: 0; }
+        50% { opacity: 1; }
+    }
+</style>
+
+<script>
+const introText = `Hi, I'm Dongwook Lee — a self-taught developer based in South Korea.
+I build tools, systems, and games from scratch, often starting with small ideas and shaping them through code.
+My current interests include game development, automation, and systems programming. I learn best by making things.`;
+
+const speed = 30;
+let i = 0;
+const target = document.getElementById('intro');
+
+function type() {
+    if (i < introText.length) {
+        target.textContent += introText.charAt(i);
+        i++;
+        setTimeout(type, speed);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', type);
+</script>
 
 {{ devlog_section }}
 {{ portfolio_section }}
