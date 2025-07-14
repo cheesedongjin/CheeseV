@@ -146,36 +146,33 @@
         }
 
         #intro {
-            /* 블록 레벨 대신 inline-block 으로 설정하면 텍스트 폭에 딱 맞춰 애니메이션이 적용됩니다 */
-            display: inline-block;
+            display: inline-block;              /* 텍스트 폭에 맞춰 그라디언트가 적용되게 */
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1rem;
+            line-height: 1.4;
+            color: transparent;                  /* 표준 */
+            -webkit-text-fill-color: transparent;/* WebKit 계열 필수 */
 
-            /* 텍스트 색상은 투명으로 설정해야 클리핑된 배경만 보입니다 */
-            color: transparent;
-            -webkit-text-fill-color: transparent;
-
-            /* 그라디언트 배경 (단일 색상이라도 동작하지만, 필요하면 두 색을 다르게 지정 가능) */
             background-image: linear-gradient(
-                90deg,
+                to right,
                 var(--primary-color) 0%,
                 var(--primary-color) 100%
             );
+            background-clip: text;               /* 표준 */
+            -webkit-background-clip: text;       /* WebKit */
+            background-repeat: no-repeat;        /* 반복 방지 */
+            background-size: 0% 100%;            /* 애니메이션 시작 지점 */
+            background-position: 0 0;            /* 왼쪽에서 시작 */
 
-            /* 애니메이션 시작 시 폭 0 → 끝나면 100% */
-            background-size: 0% 100%;
-            background-position: 0 0;
-
-            /* 표준과 WebKit 프리픽스 둘 다 지정 */
-            background-clip: text;
-            -webkit-background-clip: text;
-
-            /* 2.5초 동안 애니메이션을 앞→뒤 방향(forwards)으로 진행 */
             animation: revealText 2.5s forwards;
         }
 
         @keyframes revealText {
-            to {
-                background-size: 100% 100%;
-            }
+            to { background-size: 100% 100%; }
+        }
+        /* WebKit 전용 키프레임 */
+        @-webkit-keyframes revealText {
+            to { background-size: 100% 100%; }
         }
     </style>
 </head>
