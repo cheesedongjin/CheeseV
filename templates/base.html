@@ -150,12 +150,13 @@
             font-family: 'Roboto Mono', monospace;
             font-size: 1rem;
             line-height: 1.4;
+            /* 텍스트를 투명으로 만들어 배경-클립된 그라디언트만 보이도록 설정 */
             color: transparent;
             -webkit-text-fill-color: transparent;
 
-            /* 45° 대각선 그라디언트 */
+            /* 글자에 적용할 컬러 그라디언트(단색도 상관없음) */
             background-image: linear-gradient(
-                45deg,
+                to right,
                 var(--primary-color) 0%,
                 var(--primary-color) 100%
             );
@@ -163,17 +164,37 @@
             -webkit-background-clip: text;
             background-repeat: no-repeat;
 
-            /* 대각선 방향으로 0% 0% → 100% 100% */
-            background-size: 0% 0%;
-            background-position: 0 0;
+            /* diagonal mask 정의 (135deg 기준으로 투명/불투명 분할) */
+            mask-image: linear-gradient(
+                135deg,
+                transparent 0%,
+                transparent 50%,
+                black 50%,
+                black 100%
+            );
+            -webkit-mask-image: linear-gradient(
+                135deg,
+                transparent 0%,
+                transparent 50%,
+                black 50%,
+                black 100%
+            );
+            /* 마스크 전체 크기를 글자 크기의 두 배로 설정 */
+            mask-size: 200% 200%;
+            -webkit-mask-size: 200% 200%;
+            /* 시작 위치: 완전 “투명 영역”만 보이도록 위쪽 왼쪽으로 이동 */
+            mask-position: -100% -100%;
+            -webkit-mask-position: -100% -100%;
+
+            /* 2.5초 동안 mask-position을 (0,0)으로 이동시켜 대각선 리빌 */
             animation: revealDiagonal 2.5s forwards;
         }
 
         @keyframes revealDiagonal {
-            to { background-size: 100% 100%; }
-        }
-        @-webkit-keyframes revealDiagonal {
-            to { background-size: 100% 100%; }
+            to {
+                mask-position: 0 0;
+                -webkit-mask-position: 0 0;
+            }
         }
     </style>
 </head>
