@@ -146,32 +146,33 @@
         }
 
         #intro {
-            display: inline-block;              /* 텍스트 폭에 맞춰 그라디언트가 적용되게 */
+            display: inline-block;
             font-family: 'Roboto Mono', monospace;
             font-size: 1rem;
             line-height: 1.4;
-            color: transparent;                  /* 표준 */
-            -webkit-text-fill-color: transparent;/* WebKit 계열 필수 */
+            color: transparent;
+            -webkit-text-fill-color: transparent;
 
+            /* 45° 대각선 그라디언트 */
             background-image: linear-gradient(
-                to right,
+                45deg,
                 var(--primary-color) 0%,
                 var(--primary-color) 100%
             );
-            background-clip: text;               /* 표준 */
-            -webkit-background-clip: text;       /* WebKit */
-            background-repeat: no-repeat;        /* 반복 방지 */
-            background-size: 0% 100%;            /* 애니메이션 시작 지점 */
-            background-position: 0 0;            /* 왼쪽에서 시작 */
+            background-clip: text;
+            -webkit-background-clip: text;
+            background-repeat: no-repeat;
 
-            animation: revealText 2.5s forwards;
+            /* 대각선 방향으로 0% 0% → 100% 100% */
+            background-size: 0% 0%;
+            background-position: 0 0;
+            animation: revealDiagonal 2.5s forwards;
         }
 
-        @keyframes revealText {
+        @keyframes revealDiagonal {
             to { background-size: 100% 100%; }
         }
-        /* WebKit 전용 키프레임 */
-        @-webkit-keyframes revealText {
+        @-webkit-keyframes revealDiagonal {
             to { background-size: 100% 100%; }
         }
     </style>
