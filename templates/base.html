@@ -286,7 +286,7 @@
             0.1,
             1000
         );
-        camera.position.set(0, 30, 100);
+        camera.position.set(0, 30, 200);
 
         const renderer = new THREE.WebGLRenderer({
             canvas: document.getElementById('bg-canvas'),
@@ -301,13 +301,13 @@
         dirLight.position.set(0, 50, 50);
         scene.add(dirLight);
 
-        const width = 500, height = 200, segments = 50;
+        const width = 550, height = 400, segments = 50;
         const geometry = new THREE.PlaneGeometry(width, height, segments, segments);
         const material = new THREE.MeshStandardMaterial({
             color: 0x00ffff,
             wireframe: true,
             transparent: true,
-            opacity: 0.15,
+            opacity: 0.03,
             side: THREE.DoubleSide
         });
         const plane = new THREE.Mesh(geometry, material);
@@ -328,7 +328,7 @@
 
         function animate() {
             requestAnimationFrame(animate);
-            const elapsed = (performance.now() - startTime) / 4000;
+            const elapsed = (performance.now() - startTime) / 10000;
 
             for (let i = 0; i < vertexCount; i++) {
                 const ix = i * 3;
