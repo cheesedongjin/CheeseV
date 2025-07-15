@@ -27,7 +27,7 @@ def simple_markdown(md):
     list_stack = []
 
     def process_inline(text):
-        # 인라인 코드 먼저 추출해 임시 토큰으로 대체
+        # 인라인 코드 먼저 임시 토큰으로 추출
         code_spans = {}
         def repl_code(m):
             key = f"{{{{code{len(code_spans)}}}}}"
@@ -66,20 +66,22 @@ def simple_markdown(md):
         return text
 
     for line in lines:
-        # 코드 블록 시작/종료
+        # 코드 블록 시작/종료 처리
         if line.strip() == '```':
             if not in_code_block:
-                # 코드 블록 진입 전 열린 리스트 모두 닫기
+                # 진입 전 열린 리스트 모두 닫기
                 while list_stack:
                     html_lines.append('</ul>')
                     list_stack.pop()
-                html_lines.append('<pre><code>')
+                # div.wrapper 추가
+                html_lines.append('<div class="code-block"><pre><code>')
                 in_code_block = True
             else:
-                html_lines.append('</code></pre>')
+                html_lines.append('</code></pre></div>')
                 in_code_block = False
             continue
 
+        # 코드 블록 내부는 그대로
         if in_code_block:
             html_lines.append(line)
             continue
@@ -95,7 +97,7 @@ def simple_markdown(md):
             html_lines.append(f'<h{level}>{content}</h{level}>')
             continue
 
-        # 리스트 항목 처리 (들여쓰기 기반 중첩 지원)
+        # 리스트 처리 (들여쓰기 기반 중첩 지원)
         m_list = re.match(r'^(\s*)[-*]\s+(.*)', line)
         if m_list:
             indent = len(m_list.group(1))
@@ -124,7 +126,7 @@ def simple_markdown(md):
 
     # 남은 코드 블록 및 리스트 닫기
     if in_code_block:
-        html_lines.append('</code></pre>')
+        html_lines.append('</code></pre></div>')
     if list_stack:
         while list_stack:
             html_lines.append('</ul>')
