@@ -40,7 +40,3 @@ This document defines essential rules that must be followed by the automation ag
 - The `content/` directory and all of its contents are **manually curated by the project owner**.
 - It is **not** managed by automation and **must not be edited, deleted, or added to by any other contributor or script**.
 - Any proposals for changes to this folder must be submitted as suggestions and approved by the owner.
-
-## 8. Sitemap Commit Exception
-Normally, auto-generated files must not be committed to the repository.
-However, the automation workflow may commit the `docs/sitemap.xml` file after the site is built.
