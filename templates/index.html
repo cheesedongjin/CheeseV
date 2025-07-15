@@ -10,11 +10,67 @@
     <a href="https://github.com/cheesedongjin" target="_blank" rel="noopener noreferrer">GitHub</a>.
 </p>
 
-<ul class="directory-tree">
-    <li>
-        {{ devlog_section }}
-    </li>
-    <li>
-        {{ portfolio_section }}
-    </li>
-</ul>
+<div class="directory-container">
+    <svg id="tree-lines"></svg>
+    <ul class="directory-tree">
+        <li>
+            {{ devlog_section }}
+        </li>
+        <li>
+            {{ portfolio_section }}
+        </li>
+    </ul>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.querySelector('.directory-container');
+    const tree = container.querySelector('.directory-tree');
+    const svg = container.querySelector('#tree-lines');
+    const NS = 'http://www.w3.org/2000/svg';
+
+    function addPath(d) {
+        const path = document.createElementNS(NS, 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('stroke', 'var(--primary-color)');
+        path.setAttribute('fill', 'none');
+        svg.appendChild(path);
+    }
+
+    function getLabelCenter(li, rect) {
+        const label = li.querySelector(':scope > h1, :scope > h2, :scope > h3, :scope > h4, :scope > h5, :scope > h6, :scope > a, :scope > span');
+        const r = (label || li).getBoundingClientRect();
+        return r.top - rect.top + r.height / 2;
+    }
+
+    function connect(ul, rect, parentY = undefined) {
+        const items = Array.from(ul.children).filter(el => el.tagName === 'LI');
+        if (!items.length) return;
+
+        const ulRect = ul.getBoundingClientRect();
+        const x = ulRect.left - rect.left;
+        const firstY = getLabelCenter(items[0], rect);
+        const lastY = getLabelCenter(items[items.length - 1], rect);
+        const startY = parentY !== undefined ? parentY : firstY;
+        addPath(`M${x} ${startY}V${lastY}`);
+
+        items.forEach(li => {
+            const y = getLabelCenter(li, rect);
+            const lx = li.getBoundingClientRect().left - rect.left;
+            addPath(`M${x} ${y}H${lx}`);
+            li.querySelectorAll(':scope > ul').forEach(childUl => connect(childUl, rect, y));
+        });
+    }
+
+    function drawLines() {
+        svg.innerHTML = '';
+        const rect = container.getBoundingClientRect();
+        svg.setAttribute('width', rect.width);
+        svg.setAttribute('height', rect.height);
+        connect(tree, rect, 0);
+    }
+
+    drawLines();
+    window.addEventListener('resize', drawLines);
+});
+</script>
