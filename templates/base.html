@@ -228,6 +228,40 @@
         #intro.revealed::after {
             display: none;
         }
+
+        /* Directory tree layout for main page */
+        .directory-tree,
+        .directory-tree ul {
+            list-style: none;
+            margin: 0;
+            padding-left: 1.2em;
+            position: relative;
+        }
+
+        .directory-tree ul::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            border-left: 1px solid var(--primary-color);
+        }
+
+        .directory-tree li {
+            margin: 0;
+            padding-left: 0.8em;
+            position: relative;
+        }
+
+        .directory-tree li::before {
+            content: '';
+            position: absolute;
+            top: 0.8em;
+            left: -0.8em;
+            width: 0.8em;
+            border-top: 1px solid var(--primary-color);
+            border-left: 1px solid var(--primary-color);
+        }
     </style>
 </head>
 <body>
