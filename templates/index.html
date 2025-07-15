@@ -10,11 +10,45 @@
     <a href="https://github.com/cheesedongjin" target="_blank" rel="noopener noreferrer">GitHub</a>.
 </p>
 
-<ul class="directory-tree">
-    <li>
-        {{ devlog_section }}
-    </li>
-    <li>
-        {{ portfolio_section }}
-    </li>
-</ul>
+<div class="directory-container">
+    <svg id="tree-lines"></svg>
+    <ul class="directory-tree">
+        <li>
+            {{ devlog_section }}
+        </li>
+        <li>
+            {{ portfolio_section }}
+        </li>
+    </ul>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.querySelector('.directory-container');
+    const tree = container.querySelector('.directory-tree');
+    const svg = container.querySelector('#tree-lines');
+
+    function drawLines() {
+        svg.innerHTML = '';
+        const rect = container.getBoundingClientRect();
+        tree.querySelectorAll('li').forEach(li => {
+            const parent = li.parentElement.closest('li');
+            if (!parent) return;
+            const pr = parent.getBoundingClientRect();
+            const lr = li.getBoundingClientRect();
+            const startX = pr.left - rect.left;
+            const startY = pr.top - rect.top + pr.height / 2;
+            const endX = lr.left - rect.left;
+            const endY = lr.top - rect.top + lr.height / 2;
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', `M${startX} ${startY}V${endY}H${endX}`);
+            path.setAttribute('stroke', 'var(--primary-color)');
+            path.setAttribute('fill', 'none');
+            svg.appendChild(path);
+        });
+    }
+
+    drawLines();
+    window.addEventListener('resize', drawLines);
+});
+</script>
