@@ -179,7 +179,7 @@ def build_devlog(nav_links):
             )
             output_path = os.path.join(OUTPUT_DIR, 'devlog', slug, 'index.html')
             write_file(output_path, page)
-            item = {'title': title, 'link': f'devlog/{slug}/', 'date': date_str}
+            item = {'title': title, 'link': f'devlog/{slug}', 'date': date_str}
             posts.append(item)
             cat = os.path.relpath(root, posts_dir)
             if cat == '.':
@@ -272,7 +272,7 @@ def build_portfolio(nav_links):
             )
             output_path = os.path.join(OUTPUT_DIR, 'portfolio', slug, 'index.html')
             write_file(output_path, page)
-            item = {'title': title, 'link': f'portfolio/{slug}/'}
+            item = {'title': title, 'link': f'portfolio/{slug}'}
             programs.append(item)
             cat = os.path.relpath(root, programs_dir)
             if cat == '.':
