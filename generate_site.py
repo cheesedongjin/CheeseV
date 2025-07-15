@@ -347,37 +347,33 @@ def build_site():
 
     devlog_section = ''
     if posts:
-        sections = []
+        root_items = []
         if '' in posts_by_cat:
-            items_html = []
             for p in posts_by_cat['']:
                 date_part = f' - {p["date"]}' if p['date'] else ''
-                items_html.append(f'<li><a href="{p["link"]}">{p["title"]}</a>{date_part}</li>')
-            sections.append('<ul>\n' + '\n'.join(items_html) + '\n</ul>')
+                root_items.append(f'<li><a href="{p["link"]}">{p["title"]}</a>{date_part}</li>')
         for cat in sorted(k for k in posts_by_cat.keys() if k):
             items_html = []
             for p in posts_by_cat[cat]:
                 date_part = f' - {p["date"]}' if p['date'] else ''
                 items_html.append(f'<li><a href="{p["link"]}">{p["title"]}</a>{date_part}</li>')
-            section = f'<h3>{cat}</h3>\n<ul>\n' + '\n'.join(items_html) + '\n</ul>'
-            sections.append(section)
-        devlog_section = '<h2>DevLog</h2>\n' + '\n'.join(sections)
+            cat_ul = '<ul>\n' + '\n'.join(items_html) + '\n</ul>'
+            root_items.append(f'<li><h3>{cat}</h3>\n{cat_ul}</li>')
+        devlog_section = '<h2>DevLog</h2>\n<ul>\n' + '\n'.join(root_items) + '\n</ul>'
 
     portfolio_section = ''
     if programs:
-        sections = []
+        root_items = []
         if '' in programs_by_cat:
-            items_html = []
             for p in programs_by_cat['']:
-                items_html.append(f'<li><a href="{p["link"]}">{p["title"]}</a></li>')
-            sections.append('<ul>\n' + '\n'.join(items_html) + '\n</ul>')
+                root_items.append(f'<li><a href="{p["link"]}">{p["title"]}</a></li>')
         for cat in sorted(k for k in programs_by_cat.keys() if k):
             items_html = []
             for p in programs_by_cat[cat]:
                 items_html.append(f'<li><a href="{p["link"]}">{p["title"]}</a></li>')
-            section = f'<h3>{cat}</h3>\n<ul>\n' + '\n'.join(items_html) + '\n</ul>'
-            sections.append(section)
-        portfolio_section = '<h2>Web Portfolio</h2>\n' + '\n'.join(sections)
+            cat_ul = '<ul>\n' + '\n'.join(items_html) + '\n</ul>'
+            root_items.append(f'<li><h3>{cat}</h3>\n{cat_ul}</li>')
+        portfolio_section = '<h2>Web Portfolio</h2>\n<ul>\n' + '\n'.join(root_items) + '\n</ul>'
 
     index_content = render_template('index.html', devlog_section=devlog_section, portfolio_section=portfolio_section)
     index_page = render_template(
