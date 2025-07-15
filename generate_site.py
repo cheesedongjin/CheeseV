@@ -23,27 +23,43 @@ def write_file(path, content):
 def simple_markdown(md):
     lines = md.splitlines()
     html_lines = []
-    in_list = False
     in_code_block = False
+    list_stack = []  # 각 중첩 리스트 단계의 들여쓰기 너비를 저장
 
-    # Helper function to process inline Markdown
+    # 인라인 Markdown 변환 함수
     def process_inline(text):
-        # Process **bold** or __bold__
-        text = re.sub(r'\*\*(.*?)\*\*|__(.*?)__', r'<strong>\1\2</strong>', text)
-        # Process *italic* or _italic_
-        text = re.sub(r'\*(.*?)\*|_(.*?)_', r'<em>\1\2</em>', text)
-        # Process `inline code`
-        text = re.sub(r'`(.*?)`', r'<code>\1</code>', text)
-        # Process [link text](url)
-        text = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2">\1</a>', text)
+        # 굵은 글씨 (**bold** 또는 __bold__)
+        text = re.sub(r'\*\*(.+?)\*\*|__(.+?)__', r'<strong>\1\2</strong>', text)
+        # 기울임 글씨 (*italic* 또는 _italic_)
+        text = re.sub(r'\*(.+?)\*|_(.+?)_', r'<em>\1\2</em>', text)
+        # 인라인 코드 (`code`)
+        text = re.sub(r'`(.+?)`', r'<code>\1</code>', text)
+        # 링크 [text](url "title")
+        text = re.sub(
+            r'\[([^\]]+)\]\(([^ )]+)(?:\s+"([^"]+)")?\)',
+            lambda m: f'<a href="{m.group(2)}"' +
+                      (f' title="{m.group(3)}"' if m.group(3) else '') +
+                      f'>{m.group(1)}</a>',
+            text
+        )
+        # 이미지 ![alt](src "title")
+        text = re.sub(
+            r'!\[([^\]]*)\]\(([^ )]+)(?:\s+"([^"]+)")?\)',
+            lambda m: f'<img src="{m.group(2)}" alt="{m.group(1)}"' +
+                      (f' title="{m.group(3)}"' if m.group(3) else '') +
+                      '>',
+            text
+        )
         return text
 
     for line in lines:
-        line = line.rstrip()
-
-        # Handle code blocks
+        # 코드 블록 시작/종료
         if line.strip() == '```':
+            # 코드 블록 진입 전, 열린 리스트 닫기
             if not in_code_block:
+                while list_stack:
+                    html_lines.append('</ul>')
+                    list_stack.pop()
                 html_lines.append('<pre><code>')
                 in_code_block = True
             else:
@@ -51,48 +67,62 @@ def simple_markdown(md):
                 in_code_block = False
             continue
 
-        # Skip processing if inside a code block
+        # 코드 블록 내부는 그대로 출력
         if in_code_block:
             html_lines.append(line)
             continue
 
-        # Handle headers
-        if line.startswith('# '):
-            html_lines.append(f"<h1>{process_inline(line[2:].strip())}</h1>")
-        elif line.startswith('## '):
-            html_lines.append(f"<h2>{process_inline(line[3:].strip())}</h2>")
-        elif line.startswith('### '):
-            html_lines.append(f"<h3>{process_inline(line[4:].strip())}</h3>")
-        # Handle images
-        elif line.startswith('!['):
-            match = re.match(r'!\$\$ (.*?) \$\$\$\$ (.*?)(?:\s+"(.*?)")? \$\$', line)
-            if match:
-                alt_text, src, title = match.groups()
-                title_attr = f' title="{title}"' if title else ''
-                html_lines.append(f'<img src="{src}" alt="{alt_text}"{title_attr}>')
-        # Handle lists
-        elif line.startswith('- ') or line.startswith('* '):
-            if not in_list:
-                html_lines.append('<ul>')
-                in_list = True
-            html_lines.append(f"<li>{process_inline(line[2:].strip())}</li>")
-        else:
-            if in_list:
+        # 헤더 처리 (#, ##, ###, …)
+        m_h = re.match(r'^(#{1,6})\s+(.*)', line)
+        if m_h:
+            # 헤더 직전에 열린 리스트가 있으면 닫기
+            while list_stack:
                 html_lines.append('</ul>')
-                in_list = False
-            if line:
-                html_lines.append(f"<p>{process_inline(line)}</p>")
-            else:
-                html_lines.append('')
+                list_stack.pop()
+            level = len(m_h.group(1))
+            content = process_inline(m_h.group(2).strip())
+            html_lines.append(f'<h{level}>{content}</h{level}>')
+            continue
 
-    # Close any open tags
-    if in_list:
-        html_lines.append('</ul>')
+        # 리스트 항목 처리 (- 또는 *), 들여쓰기 기반 중첩 지원
+        m_list = re.match(r'^(\s*)([-*])\s+(.*)', line)
+        if m_list:
+            indent = len(m_list.group(1))
+            content = process_inline(m_list.group(3).strip())
+            # 새 리스트 레벨 진입
+            if not list_stack or indent > list_stack[-1]:
+                html_lines.append('<ul>')
+                list_stack.append(indent)
+            else:
+                # 상위 레벨로 돌아가며 리스트 닫기
+                while list_stack and indent < list_stack[-1]:
+                    html_lines.append('</ul>')
+                    list_stack.pop()
+                # 같은 레벨이면 아무 추가 동작 없이 항목만 추가
+            html_lines.append(f'<li>{content}</li>')
+            continue
+
+        # 리스트가 끝났다면 모두 닫기
+        if list_stack:
+            while list_stack:
+                html_lines.append('</ul>')
+                list_stack.pop()
+
+        # 빈 줄은 빈 문자열로, 아니면 단락(<p>)으로 감싸기
+        if line.strip() == '':
+            html_lines.append('')
+        else:
+            html_lines.append(f'<p>{process_inline(line.strip())}</p>')
+
+    # 문서 끝에서 남은 코드 블록이나 리스트 닫기
     if in_code_block:
         html_lines.append('</code></pre>')
+    if list_stack:
+        while list_stack:
+            html_lines.append('</ul>')
+            list_stack.pop()
 
     return '\n'.join(html_lines)
-
 
 def render_template(template_name, **context):
     template_path = os.path.join(TEMPLATES_DIR, template_name)
