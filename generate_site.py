@@ -328,10 +328,16 @@ def build_site():
     posts_dir = os.path.join(CONTENT_DIR, 'devlog')
     portfolio_dir = os.path.join(CONTENT_DIR, 'portfolio')
 
-    has_devlog = os.path.isdir(posts_dir) and any(f.endswith('.md') for f in os.listdir(posts_dir))
-    has_portfolio = os.path.isdir(portfolio_dir) and any(
-        f.endswith('.md') or f.endswith('.html')
-        for f in os.listdir(portfolio_dir)
+    def has_markdown_files(directory, exts):
+        for root, _, files in os.walk(directory):
+            for name in files:
+                if any(name.endswith(ext) for ext in exts):
+                    return True
+        return False
+
+    has_devlog = os.path.isdir(posts_dir) and has_markdown_files(posts_dir, ['.md'])
+    has_portfolio = os.path.isdir(portfolio_dir) and has_markdown_files(
+        portfolio_dir, ['.md', '.html']
     )
 
     nav_links = build_nav_links(has_devlog, has_portfolio)
