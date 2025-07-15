@@ -337,7 +337,6 @@ def build_sitemap(paths):
             clean = p[:-5]
         else:
             clean = p
-        clean = clean.rstrip('/')
         lines.append('  <url>')
         if clean:
             loc = f"{base_url}/{clean}"
