@@ -145,7 +145,7 @@ def build_devlog(nav_links):
     posts = []
     posts_dir = os.path.join(CONTENT_DIR, 'devlog')
     if not os.path.isdir(posts_dir):
-        return posts
+        return posts, {}
 
     posts_by_cat = {}
     for root, _, files in os.walk(posts_dir):
@@ -199,7 +199,7 @@ def build_devlog(nav_links):
             for p in posts_by_cat[cat]:
                 disp = f"{p['title']} - {p['date']}" if p['date'] else p['title']
                 items_html.append(f'<li><a href="{p["link"]}">{disp}</a></li>')
-            section = f'<h2><a href="{cat}/">{cat}</a></h2>\n<ul>\n' + '\n'.join(items_html) + '\n</ul>'
+            section = f'<h2>{cat}</h2>\n<ul>\n' + '\n'.join(items_html) + '\n</ul>'
             sections.append(section)
             cat_content = '<ul>\n' + '\n'.join(items_html) + '\n</ul>'
             cat_list = render_template(
@@ -229,14 +229,14 @@ def build_devlog(nav_links):
             after_nav=automation_comment('devlog'),
         )
         write_file(os.path.join(OUTPUT_DIR, 'devlog', 'index.html'), list_page)
-    return posts
+    return posts, posts_by_cat
 
 
 def build_portfolio(nav_links):
     programs = []
     programs_dir = os.path.join(CONTENT_DIR, 'portfolio')
     if not os.path.isdir(programs_dir):
-        return programs
+        return programs, {}
 
     programs_by_cat = {}
     for root, _, files in os.walk(programs_dir):
@@ -290,7 +290,7 @@ def build_portfolio(nav_links):
             items_html = []
             for p in programs_by_cat[cat]:
                 items_html.append(f'<li><a href="{p["link"]}">{p["title"]}</a></li>')
-            section = f'<h2><a href="{cat}/">{cat}</a></h2>\n<ul>\n' + '\n'.join(items_html) + '\n</ul>'
+            section = f'<h2>{cat}</h2>\n<ul>\n' + '\n'.join(items_html) + '\n</ul>'
             sections.append(section)
             cat_content = '<ul>\n' + '\n'.join(items_html) + '\n</ul>'
             cat_list = render_template(
@@ -320,7 +320,7 @@ def build_portfolio(nav_links):
             after_nav=automation_comment('portfolio'),
         )
         write_file(os.path.join(OUTPUT_DIR, 'portfolio', 'index.html'), list_page)
-    return programs
+    return programs, programs_by_cat
 
 def build_site():
     # Do not perform manually what this function handles automatically.
@@ -342,24 +342,42 @@ def build_site():
 
     nav_links = build_nav_links(has_devlog, has_portfolio)
 
-    posts = build_devlog(nav_links) if has_devlog else []
-    programs = build_portfolio(nav_links) if has_portfolio else []
+    posts, posts_by_cat = build_devlog(nav_links) if has_devlog else ([], {})
+    programs, programs_by_cat = build_portfolio(nav_links) if has_portfolio else ([], {})
 
     devlog_section = ''
     if posts:
-        item_lines = []
-        for p in posts:
-            date_part = f' - {p["date"]}' if p['date'] else ''
-            item_lines.append(f'<li><a href="{p["link"]}">{p["title"]}</a>{date_part}</li>')
-        items = '\n'.join(item_lines)
-        devlog_section = f'<h2>DevLog</h2>\n<ul>\n{items}\n</ul>'
+        sections = []
+        if '' in posts_by_cat:
+            items_html = []
+            for p in posts_by_cat['']:
+                date_part = f' - {p["date"]}' if p['date'] else ''
+                items_html.append(f'<li><a href="{p["link"]}">{p["title"]}</a>{date_part}</li>')
+            sections.append('<ul>\n' + '\n'.join(items_html) + '\n</ul>')
+        for cat in sorted(k for k in posts_by_cat.keys() if k):
+            items_html = []
+            for p in posts_by_cat[cat]:
+                date_part = f' - {p["date"]}' if p['date'] else ''
+                items_html.append(f'<li><a href="{p["link"]}">{p["title"]}</a>{date_part}</li>')
+            section = f'<h3>{cat}</h3>\n<ul>\n' + '\n'.join(items_html) + '\n</ul>'
+            sections.append(section)
+        devlog_section = '<h2>DevLog</h2>\n' + '\n'.join(sections)
 
     portfolio_section = ''
     if programs:
-        items = '\n'.join(
-            f'<li><a href="{p["link"]}">{p["title"]}</a></li>' for p in programs
-        )
-        portfolio_section = f'<h2>Web Portfolio</h2>\n<ul>\n{items}\n</ul>'
+        sections = []
+        if '' in programs_by_cat:
+            items_html = []
+            for p in programs_by_cat['']:
+                items_html.append(f'<li><a href="{p["link"]}">{p["title"]}</a></li>')
+            sections.append('<ul>\n' + '\n'.join(items_html) + '\n</ul>')
+        for cat in sorted(k for k in programs_by_cat.keys() if k):
+            items_html = []
+            for p in programs_by_cat[cat]:
+                items_html.append(f'<li><a href="{p["link"]}">{p["title"]}</a></li>')
+            section = f'<h3>{cat}</h3>\n<ul>\n' + '\n'.join(items_html) + '\n</ul>'
+            sections.append(section)
+        portfolio_section = '<h2>Web Portfolio</h2>\n' + '\n'.join(sections)
 
     index_content = render_template('index.html', devlog_section=devlog_section, portfolio_section=portfolio_section)
     index_page = render_template(
