@@ -322,6 +322,27 @@ def build_portfolio(nav_links):
         write_file(os.path.join(OUTPUT_DIR, 'portfolio', 'index.html'), list_page)
     return programs, programs_by_cat
 
+
+def build_sitemap(paths):
+    """Generate sitemap.xml including the provided relative paths."""
+    base_url = "https://cheesedongjin.github.io/CheeseV/"
+    lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ]
+    for p in paths:
+        if p.endswith('index.html'):
+            clean = p[:-10]
+        elif p.endswith('.html'):
+            clean = p[:-5]
+        else:
+            clean = p
+        lines.append('  <url>')
+        lines.append(f'    <loc>{base_url}{clean}</loc>')
+        lines.append('  </url>')
+    lines.append('</urlset>')
+    write_file(os.path.join(OUTPUT_DIR, 'sitemap.xml'), '\n'.join(lines))
+
 def build_site():
     # Do not perform manually what this function handles automatically.
     # This is for GitHub management purposes.
@@ -384,6 +405,21 @@ def build_site():
         after_nav=""
     )
     write_file(os.path.join(OUTPUT_DIR, 'index.html'), index_page)
+
+    sitemap_entries = ['index.html']
+    if posts:
+        sitemap_entries.append('devlog/index.html')
+        for cat in posts_by_cat:
+            if cat:
+                sitemap_entries.append(f'devlog/{cat}/index.html')
+        sitemap_entries.extend(p['link'] for p in posts)
+    if programs:
+        sitemap_entries.append('portfolio/index.html')
+        for cat in programs_by_cat:
+            if cat:
+                sitemap_entries.append(f'portfolio/{cat}/index.html')
+        sitemap_entries.extend(p['link'] for p in programs)
+    build_sitemap(sitemap_entries)
 
 
 if __name__ == '__main__':
