@@ -1,10 +1,10 @@
 # Contributing Guide
 
-Thank you for your interest in contributing! Before you start, please be aware of several restrictions defined in `AGENT.md`.
+Thank you for your interest in contributing! Before you start, please be aware of several restrictions defined in `AGENTS.md`.
 
 ## Repository Restrictions
 
-- **Protected files** — `AGENT.md` and `README.md` must never be modified.
+- **Protected files** — `AGENTS.md` and `README.md` must never be modified.
 - **Owner-managed content** — Everything inside `content/` is maintained manually by the project owner. Do not add to or edit files in this directory.
 - **Auto-generated output** — The `docs/` directory is produced by scripts. Generated files should not be committed. If running the site generator changes files here, revert them before committing.
 
