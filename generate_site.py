@@ -123,7 +123,7 @@ def render_template(template_name, **context):
 
 
 def build_nav_links(has_devlog: bool, has_portfolio: bool) -> str:
-    links = ['<a href="/CheeseV/">Home</a>']
+    links = ['<a href="/CheeseV">Home</a>']
     if has_devlog:
         links.append('<a href="devlog">DevLog</a>')
     if has_portfolio:
@@ -177,9 +177,9 @@ def build_devlog(nav_links):
                 nav_links=nav_links,
                 after_nav="",
             )
-            output_path = os.path.join(OUTPUT_DIR, 'devlog', f'{slug}.html')
+            output_path = os.path.join(OUTPUT_DIR, 'devlog', slug)
             write_file(output_path, page)
-            item = {'title': title, 'link': f'devlog/{slug}.html', 'date': date_str}
+            item = {'title': title, 'link': f'devlog/{slug}', 'date': date_str}
             posts.append(item)
             cat = os.path.relpath(root, posts_dir)
             if cat == '.':
@@ -270,9 +270,9 @@ def build_portfolio(nav_links):
                 nav_links=nav_links,
                 after_nav="",
             )
-            output_path = os.path.join(OUTPUT_DIR, 'portfolio', f'{slug}.html')
+            output_path = os.path.join(OUTPUT_DIR, 'portfolio', slug)
             write_file(output_path, page)
-            item = {'title': title, 'link': f'portfolio/{slug}.html'}
+            item = {'title': title, 'link': f'portfolio/{slug}'}
             programs.append(item)
             cat = os.path.relpath(root, programs_dir)
             if cat == '.':
@@ -325,7 +325,7 @@ def build_portfolio(nav_links):
 
 def build_sitemap(paths):
     """Generate sitemap.xml including the provided relative paths."""
-    base_url = "https://cheesedongjin.github.io/CheeseV/"
+    base_url = "https://cheesedongjin.github.io/CheeseV"
     lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
@@ -338,7 +338,8 @@ def build_sitemap(paths):
         else:
             clean = p
         lines.append('  <url>')
-        lines.append(f'    <loc>{base_url}{clean}</loc>')
+        loc = f"{base_url}/{clean}" if clean else base_url
+        lines.append(f'    <loc>{loc}</loc>')
         lines.append('  </url>')
     lines.append('</urlset>')
     write_file(os.path.join(OUTPUT_DIR, 'sitemap.xml'), '\n'.join(lines))
