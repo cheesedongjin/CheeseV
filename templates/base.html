@@ -45,6 +45,17 @@
             }
         }
 
+        a {
+            color: var(--primary-color); /* 기본 링크 색 */
+            text-decoration: none;       /* 밑줄 제거 */
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--accent-color);  /* 마우스 올렸을 때 색 */
+            text-decoration: underline;  /* 밑줄 생김 */
+        }
+
         nav {
             display: flex;
             align-items: center;
