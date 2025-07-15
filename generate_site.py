@@ -202,6 +202,7 @@ def build_devlog(nav_links):
                 title=SITE_NAME + ' - ' + cat,
                 content=cat_list,
                 nav_links=nav_links,
+                after_nav="",
             )
             write_file(os.path.join(OUTPUT_DIR, 'devlog', cat, 'index.html'), cat_page)
         categories_content = '\n'.join(sections)
@@ -215,6 +216,7 @@ def build_devlog(nav_links):
             title=SITE_NAME + ' - ' + 'DevLog',
             content=list_content,
             nav_links=nav_links,
+            after_nav="",
         )
         write_file(os.path.join(OUTPUT_DIR, 'devlog', 'index.html'), list_page)
     return posts, posts_by_cat
@@ -291,6 +293,7 @@ def build_portfolio(nav_links):
                 title=SITE_NAME + ' - ' + cat,
                 content=cat_list,
                 nav_links=nav_links,
+                after_nav="",
             )
             write_file(os.path.join(OUTPUT_DIR, 'portfolio', cat, 'index.html'), cat_page)
         categories_content = '\n'.join(sections)
@@ -304,6 +307,7 @@ def build_portfolio(nav_links):
             title=SITE_NAME + ' - ' + 'Portfolio',
             content=list_content,
             nav_links=nav_links,
+            after_nav="",
         )
         write_file(os.path.join(OUTPUT_DIR, 'portfolio', 'index.html'), list_page)
     return programs, programs_by_cat
