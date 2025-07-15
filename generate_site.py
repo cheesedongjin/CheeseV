@@ -66,31 +66,33 @@ def simple_markdown(md):
         return text
 
     for line in lines:
-        leading = line[:len(line) - len(line.lstrip(' '))]
-        stripped = line.strip()
-        # 코드 블록 펜스 (``` 또는 ```lang) 처리, 들여쓰기 반영
-        if stripped.startswith('```'):
-            indent_str = leading
+        # 코드 블록 펜스 감지 (` ``` ` 또는 `    ``` `)
+        m_fence = re.match(r'^(\s*)(```)', line)
+        if m_fence:
+            indent = len(m_fence.group(1))
             if not in_code_block:
-                # 진입 전 열린 리스트 닫기
-                while list_stack:
-                    html_lines.append('</ul>')
-                    list_stack.pop()
-                html_lines.append(f'{indent_str}<div class="code-block"><pre><code>')
+                # 열린 리스트는 이어서 유지
+                # 코드 블록 시작, 마진으로 들여쓰기 반영
+                html_lines.append(
+                    f'<div class="code-block" style="margin-left: {indent * 8}px"><pre><code>'
+                )
                 in_code_block = True
             else:
-                html_lines.append(f'{indent_str}</code></pre></div>')
+                html_lines.append('</code></pre></div>')
                 in_code_block = False
             continue
 
-        # 코드 블록 내부는 원본 들여쓰기 그대로
+        # 코드 블록 내부: 앞서 감지된 indent만큼 제거하고 그대로 출력
         if in_code_block:
-            html_lines.append(line)
+            # 원본 들여쓰기 제거
+            code_line = line[m_fence.end(1):] if m_fence else line
+            html_lines.append(code_line)
             continue
 
         # 헤더 처리
         m_h = re.match(r'^(#{1,6})\s+(.*)', line)
         if m_h:
+            # 열린 리스트 닫기
             while list_stack:
                 html_lines.append('</ul>')
                 list_stack.pop()
@@ -99,19 +101,19 @@ def simple_markdown(md):
             html_lines.append(f'<h{level}>{content}</h{level}>')
             continue
 
-        # 리스트 항목 처리 (들여쓰기 기반 중첩 지원)
+        # 리스트 처리
         m_list = re.match(r'^(\s*)[-*]\s+(.*)', line)
         if m_list:
             indent = len(m_list.group(1))
             content = process_inline(m_list.group(2).strip())
             if not list_stack or indent > list_stack[-1]:
-                html_lines.append(f'{leading}<ul>')
+                html_lines.append('<ul>')
                 list_stack.append(indent)
             else:
                 while list_stack and indent < list_stack[-1]:
                     html_lines.append('</ul>')
                     list_stack.pop()
-            html_lines.append(f'{leading}<li>{content}</li>')
+            html_lines.append(f'<li>{content}</li>')
             continue
 
         # 리스트 닫기
@@ -120,15 +122,19 @@ def simple_markdown(md):
                 html_lines.append('</ul>')
                 list_stack.pop()
 
-        # 빈 줄 또는 단락
+        # 단락: 원본 선행 공백은 &nbsp;로 변환하여 들여쓰기 반영
+        leading_spaces = len(line) - len(line.lstrip(' '))
+        stripped = line.lstrip(' ')
         if stripped == '':
             html_lines.append('')
         else:
-            html_lines.append(f'{leading}<p>{process_inline(stripped)}</p>')
+            indent_html = '&nbsp;' * leading_spaces
+            content = process_inline(stripped)
+            html_lines.append(f'<p>{indent_html}{content}</p>')
 
-    # 문서 끝에서 코드 블록 및 리스트 닫기
+    # 마무리 닫기
     if in_code_block:
-        html_lines.append(f'{leading}</code></pre></div>')
+        html_lines.append('</code></pre></div>')
     if list_stack:
         while list_stack:
             html_lines.append('</ul>')
