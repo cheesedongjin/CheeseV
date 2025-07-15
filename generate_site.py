@@ -199,8 +199,22 @@ def build_devlog(nav_links):
             for p in posts_by_cat[cat]:
                 disp = f"{p['title']} - {p['date']}" if p['date'] else p['title']
                 items_html.append(f'<li><a href="{p["link"]}">{disp}</a></li>')
-            section = f'<h2>{cat}</h2>\n<ul>\n' + '\n'.join(items_html) + '\n</ul>'
+            section = f'<h2><a href="{cat}/">{cat}</a></h2>\n<ul>\n' + '\n'.join(items_html) + '\n</ul>'
             sections.append(section)
+            cat_content = '<ul>\n' + '\n'.join(items_html) + '\n</ul>'
+            cat_list = render_template(
+                'devlog_list.html',
+                title=SITE_NAME + ' - ' + 'DevLog',
+                categories_content=cat_content,
+            )
+            cat_page = render_template(
+                'base.html',
+                title=SITE_NAME + ' - ' + cat,
+                content=cat_list,
+                nav_links=nav_links,
+                after_nav=automation_comment('devlog'),
+            )
+            write_file(os.path.join(OUTPUT_DIR, 'devlog', cat, 'index.html'), cat_page)
         categories_content = '\n'.join(sections)
         list_content = render_template(
             'devlog_list.html',
@@ -276,8 +290,22 @@ def build_portfolio(nav_links):
             items_html = []
             for p in programs_by_cat[cat]:
                 items_html.append(f'<li><a href="{p["link"]}">{p["title"]}</a></li>')
-            section = f'<h2>{cat}</h2>\n<ul>\n' + '\n'.join(items_html) + '\n</ul>'
+            section = f'<h2><a href="{cat}/">{cat}</a></h2>\n<ul>\n' + '\n'.join(items_html) + '\n</ul>'
             sections.append(section)
+            cat_content = '<ul>\n' + '\n'.join(items_html) + '\n</ul>'
+            cat_list = render_template(
+                'list.html',
+                title=SITE_NAME + ' - ' + 'Portfolio',
+                categories_content=cat_content,
+            )
+            cat_page = render_template(
+                'base.html',
+                title=SITE_NAME + ' - ' + cat,
+                content=cat_list,
+                nav_links=nav_links,
+                after_nav=automation_comment('portfolio'),
+            )
+            write_file(os.path.join(OUTPUT_DIR, 'portfolio', cat, 'index.html'), cat_page)
         categories_content = '\n'.join(sections)
         list_content = render_template(
             'list.html',
