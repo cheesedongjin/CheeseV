@@ -43,6 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return r.top - rect.top + r.height / 2;
     }
 
+    const CHILD_OFFSET = 6;
+
     function connect(ul, rect, parentY = undefined) {
         const items = Array.from(ul.children).filter(el => el.tagName === 'LI');
         if (!items.length) return;
@@ -58,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const y = getLabelCenter(li, rect);
             const lx = li.getBoundingClientRect().left - rect.left;
             addPath(`M${x} ${y}H${lx}`);
-            li.querySelectorAll(':scope > ul').forEach(childUl => connect(childUl, rect, y));
+            li.querySelectorAll(':scope > ul').forEach(childUl => connect(childUl, rect, y + CHILD_OFFSET));
         });
     }
 
@@ -67,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rect = container.getBoundingClientRect();
         svg.setAttribute('width', rect.width);
         svg.setAttribute('height', rect.height);
-        connect(tree, rect, 0);
+        connect(tree, rect);
     }
 
     drawLines();
