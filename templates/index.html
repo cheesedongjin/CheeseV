@@ -27,25 +27,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.querySelector('.directory-container');
     const tree = container.querySelector('.directory-tree');
     const svg = container.querySelector('#tree-lines');
+    const NS = 'http://www.w3.org/2000/svg';
+
+    function addPath(d) {
+        const path = document.createElementNS(NS, 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('stroke', 'var(--primary-color)');
+        path.setAttribute('fill', 'none');
+        svg.appendChild(path);
+    }
+
+    function connect(ul, rect) {
+        const items = Array.from(ul.children).filter(el => el.tagName === 'LI');
+        if (!items.length) return;
+
+        const ulRect = ul.getBoundingClientRect();
+        const first = items[0].getBoundingClientRect();
+        const last = items[items.length - 1].getBoundingClientRect();
+        const x = ulRect.left - rect.left;
+        const y1 = first.top - rect.top + first.height / 2;
+        const y2 = last.top - rect.top + last.height / 2;
+        addPath(`M${x} ${y1}V${y2}`);
+
+        items.forEach(li => {
+            const lr = li.getBoundingClientRect();
+            const y = lr.top - rect.top + lr.height / 2;
+            const lx = lr.left - rect.left;
+            addPath(`M${x} ${y}H${lx}`);
+            li.querySelectorAll(':scope > ul').forEach(childUl => connect(childUl, rect));
+        });
+    }
 
     function drawLines() {
         svg.innerHTML = '';
         const rect = container.getBoundingClientRect();
-        tree.querySelectorAll('li').forEach(li => {
-            const parent = li.parentElement.closest('li');
-            if (!parent) return;
-            const pr = parent.getBoundingClientRect();
-            const lr = li.getBoundingClientRect();
-            const startX = pr.left - rect.left;
-            const startY = pr.top - rect.top + pr.height / 2;
-            const endX = lr.left - rect.left;
-            const endY = lr.top - rect.top + lr.height / 2;
-            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            path.setAttribute('d', `M${startX} ${startY}V${endY}H${endX}`);
-            path.setAttribute('stroke', 'var(--primary-color)');
-            path.setAttribute('fill', 'none');
-            svg.appendChild(path);
-        });
+        svg.setAttribute('width', rect.width);
+        svg.setAttribute('height', rect.height);
+        connect(tree, rect);
     }
 
     drawLines();
