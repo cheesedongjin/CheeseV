@@ -192,17 +192,13 @@ def build_devlog(nav_links):
             items_html = []
             for p in posts_by_cat['']:
                 disp = f"{p['title']} - {p['date']}" if p['date'] else p['title']
-                items_html.append(
-                    f'<li data-title="{p["title"]}" data-date="{p["date"] or ""}"><a href="{p["link"]}">{disp}</a></li>'
-                )
+                items_html.append(f'<li><a href="{p["link"]}">{disp}</a></li>')
             sections.append('<ul>\n' + '\n'.join(items_html) + '\n</ul>')
         for cat in sorted(k for k in posts_by_cat.keys() if k):
             items_html = []
             for p in posts_by_cat[cat]:
                 disp = f"{p['title']} - {p['date']}" if p['date'] else p['title']
-                items_html.append(
-                    f'<li data-title="{p["title"]}" data-date="{p["date"] or ""}"><a href="{p["link"]}">{disp}</a></li>'
-                )
+                items_html.append(f'<li><a href="{p["link"]}">{disp}</a></li>')
             section = f'<h2>{cat}</h2>\n<ul>\n' + '\n'.join(items_html) + '\n</ul>'
             sections.append(section)
             cat_content = '<ul>\n' + '\n'.join(items_html) + '\n</ul>'
@@ -288,16 +284,12 @@ def build_portfolio(nav_links):
         if '' in programs_by_cat:
             items_html = []
             for p in programs_by_cat['']:
-                items_html.append(
-                    f'<li data-title="{p["title"]}" data-date=""><a href="{p["link"]}">{p["title"]}</a></li>'
-                )
+                items_html.append(f'<li><a href="{p["link"]}">{p["title"]}</a></li>')
             sections.append('<ul>\n' + '\n'.join(items_html) + '\n</ul>')
         for cat in sorted(k for k in programs_by_cat.keys() if k):
             items_html = []
             for p in programs_by_cat[cat]:
-                items_html.append(
-                    f'<li data-title="{p["title"]}" data-date=""><a href="{p["link"]}">{p["title"]}</a></li>'
-                )
+                items_html.append(f'<li><a href="{p["link"]}">{p["title"]}</a></li>')
             section = f'<h2>{cat}</h2>\n<ul>\n' + '\n'.join(items_html) + '\n</ul>'
             sections.append(section)
             cat_content = '<ul>\n' + '\n'.join(items_html) + '\n</ul>'
@@ -360,17 +352,13 @@ def build_site():
             items_html = []
             for p in posts_by_cat['']:
                 date_part = f' - {p["date"]}' if p['date'] else ''
-                items_html.append(
-                    f'<li data-title="{p["title"]}" data-date="{p["date"] or ""}"><a href="{p["link"]}">{p["title"]}</a>{date_part}</li>'
-                )
+                items_html.append(f'<li><a href="{p["link"]}">{p["title"]}</a>{date_part}</li>')
             sections.append('<ul>\n' + '\n'.join(items_html) + '\n</ul>')
         for cat in sorted(k for k in posts_by_cat.keys() if k):
             items_html = []
             for p in posts_by_cat[cat]:
                 date_part = f' - {p["date"]}' if p['date'] else ''
-                items_html.append(
-                    f'<li data-title="{p["title"]}" data-date="{p["date"] or ""}"><a href="{p["link"]}">{p["title"]}</a>{date_part}</li>'
-                )
+                items_html.append(f'<li><a href="{p["link"]}">{p["title"]}</a>{date_part}</li>')
             section = f'<h3>{cat}</h3>\n<ul>\n' + '\n'.join(items_html) + '\n</ul>'
             sections.append(section)
         devlog_section = '<h2>DevLog</h2>\n' + '\n'.join(sections)
@@ -381,16 +369,12 @@ def build_site():
         if '' in programs_by_cat:
             items_html = []
             for p in programs_by_cat['']:
-                items_html.append(
-                    f'<li data-title="{p["title"]}" data-date=""><a href="{p["link"]}">{p["title"]}</a></li>'
-                )
+                items_html.append(f'<li><a href="{p["link"]}">{p["title"]}</a></li>')
             sections.append('<ul>\n' + '\n'.join(items_html) + '\n</ul>')
         for cat in sorted(k for k in programs_by_cat.keys() if k):
             items_html = []
             for p in programs_by_cat[cat]:
-                items_html.append(
-                    f'<li data-title="{p["title"]}" data-date=""><a href="{p["link"]}">{p["title"]}</a></li>'
-                )
+                items_html.append(f'<li><a href="{p["link"]}">{p["title"]}</a></li>')
             section = f'<h3>{cat}</h3>\n<ul>\n' + '\n'.join(items_html) + '\n</ul>'
             sections.append(section)
         portfolio_section = '<h2>Web Portfolio</h2>\n' + '\n'.join(sections)
