@@ -31,16 +31,6 @@ jobs:
       - name: Generate static site
         run: python generate_site.py
 
-      - name: Commit sitemap
-        if: github.actor != 'github-actions[bot]'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          if [ -n "$(git status --porcelain docs/sitemap.xml)" ]; then
-            git add docs/sitemap.xml
-            git commit -m "Automated update of sitemap" && git push
-          fi
-
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
         with:
