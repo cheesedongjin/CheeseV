@@ -36,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
         path.setAttribute('fill', 'none');
         svg.appendChild(path);
     }
-
     function connect(ul, rect, isRoot = false) {
         const items = Array.from(ul.children).filter(el => el.tagName === 'LI');
         if (!items.length) return;
