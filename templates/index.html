@@ -36,24 +36,29 @@ document.addEventListener('DOMContentLoaded', () => {
         path.setAttribute('fill', 'none');
         svg.appendChild(path);
     }
-    function connect(ul, rect, isRoot = false) {
+
+    function getLabelCenter(li, rect) {
+        const label = li.querySelector(':scope > h1, :scope > h2, :scope > h3, :scope > h4, :scope > h5, :scope > h6, :scope > a, :scope > span');
+        const r = (label || li).getBoundingClientRect();
+        return r.top - rect.top + r.height / 2;
+    }
+
+    function connect(ul, rect, parentY = undefined) {
         const items = Array.from(ul.children).filter(el => el.tagName === 'LI');
         if (!items.length) return;
 
         const ulRect = ul.getBoundingClientRect();
-        const first = items[0].getBoundingClientRect();
-        const last = items[items.length - 1].getBoundingClientRect();
         const x = ulRect.left - rect.left;
-        const startY = isRoot ? 0 : first.top - rect.top + first.height / 2;
-        const endY = last.top - rect.top + last.height / 2;
-        addPath(`M${x} ${startY}V${endY}`);
+        const firstY = getLabelCenter(items[0], rect);
+        const lastY = getLabelCenter(items[items.length - 1], rect);
+        const startY = parentY !== undefined ? parentY : firstY;
+        addPath(`M${x} ${startY}V${lastY}`);
 
         items.forEach(li => {
-            const lr = li.getBoundingClientRect();
-            const y = lr.top - rect.top + lr.height / 2;
-            const lx = lr.left - rect.left;
+            const y = getLabelCenter(li, rect);
+            const lx = li.getBoundingClientRect().left - rect.left;
             addPath(`M${x} ${y}H${lx}`);
-            li.querySelectorAll(':scope > ul').forEach(childUl => connect(childUl, rect));
+            li.querySelectorAll(':scope > ul').forEach(childUl => connect(childUl, rect, y));
         });
     }
 
@@ -62,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rect = container.getBoundingClientRect();
         svg.setAttribute('width', rect.width);
         svg.setAttribute('height', rect.height);
-        connect(tree, rect, true);
+        connect(tree, rect, 0);
     }
 
     drawLines();
