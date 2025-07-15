@@ -36,8 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         path.setAttribute('fill', 'none');
         svg.appendChild(path);
     }
-
-    function connect(ul, rect) {
+    function connect(ul, rect, isRoot = false) {
         const items = Array.from(ul.children).filter(el => el.tagName === 'LI');
         if (!items.length) return;
 
@@ -45,9 +44,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const first = items[0].getBoundingClientRect();
         const last = items[items.length - 1].getBoundingClientRect();
         const x = ulRect.left - rect.left;
-        const y1 = first.top - rect.top + first.height / 2;
-        const y2 = last.top - rect.top + last.height / 2;
-        addPath(`M${x} ${y1}V${y2}`);
+        const startY = isRoot ? 0 : first.top - rect.top + first.height / 2;
+        const endY = last.top - rect.top + last.height / 2;
+        addPath(`M${x} ${startY}V${endY}`);
 
         items.forEach(li => {
             const lr = li.getBoundingClientRect();
@@ -63,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rect = container.getBoundingClientRect();
         svg.setAttribute('width', rect.width);
         svg.setAttribute('height', rect.height);
-        connect(tree, rect);
+        connect(tree, rect, true);
     }
 
     drawLines();
