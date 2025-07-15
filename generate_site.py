@@ -24,39 +24,52 @@ def simple_markdown(md):
     lines = md.splitlines()
     html_lines = []
     in_code_block = False
-    list_stack = []  # 각 중첩 리스트 단계의 들여쓰기 너비를 저장
+    list_stack = []
 
-    # 인라인 Markdown 변환 함수
     def process_inline(text):
-        # 굵은 글씨 (**bold** 또는 __bold__)
-        text = re.sub(r'\*\*(.+?)\*\*|__(.+?)__', r'<strong>\1\2</strong>', text)
-        # 기울임 글씨 (*italic* 또는 _italic_)
-        text = re.sub(r'\*(.+?)\*|_(.+?)_', r'<em>\1\2</em>', text)
-        # 인라인 코드 (`code`)
-        text = re.sub(r'`(.+?)`', r'<code>\1</code>', text)
-        # 링크 [text](url "title")
+        # 인라인 코드 먼저 추출해 임시 토큰으로 대체
+        code_spans = {}
+        def repl_code(m):
+            key = f"{{{{code{len(code_spans)}}}}}"
+            code_spans[key] = f"<code>{m.group(1)}</code>"
+            return key
+        text = re.sub(r'`([^`]+?)`', repl_code, text)
+
+        # 이미지
         text = re.sub(
-            r'\[([^\]]+)\]\(([^ )]+)(?:\s+"([^"]+)")?\)',
-            lambda m: f'<a href="{m.group(2)}"' +
-                      (f' title="{m.group(3)}"' if m.group(3) else '') +
-                      f'>{m.group(1)}</a>',
+            r'!\[([^\]]*?)\]\((\S+?)(?:\s+"(.*?)")?\)',
+            lambda m: (
+                f'<img src="{m.group(2)}" alt="{m.group(1)}"'
+                + (f' title="{m.group(3)}"' if m.group(3) else '')
+                + '>'
+            ),
             text
         )
-        # 이미지 ![alt](src "title")
+        # 링크
         text = re.sub(
-            r'!\[([^\]]*)\]\(([^ )]+)(?:\s+"([^"]+)")?\)',
-            lambda m: f'<img src="{m.group(2)}" alt="{m.group(1)}"' +
-                      (f' title="{m.group(3)}"' if m.group(3) else '') +
-                      '>',
+            r'\[([^\]]+?)\]\((\S+?)(?:\s+"(.*?)")?\)',
+            lambda m: (
+                f'<a href="{m.group(2)}"'
+                + (f' title="{m.group(3)}"' if m.group(3) else '')
+                + f'>{m.group(1)}</a>'
+            ),
             text
         )
+        # 굵은 글씨
+        text = re.sub(r'(\*\*|__)(.+?)\1', r'<strong>\2</strong>', text)
+        # 기울임 글씨
+        text = re.sub(r'(\*|_)(.+?)\1', r'<em>\2</em>', text)
+
+        # 임시 토큰 복원
+        for key, val in code_spans.items():
+            text = text.replace(key, val)
         return text
 
     for line in lines:
         # 코드 블록 시작/종료
         if line.strip() == '```':
-            # 코드 블록 진입 전, 열린 리스트 닫기
             if not in_code_block:
+                # 코드 블록 진입 전 열린 리스트 모두 닫기
                 while list_stack:
                     html_lines.append('</ul>')
                     list_stack.pop()
@@ -67,15 +80,13 @@ def simple_markdown(md):
                 in_code_block = False
             continue
 
-        # 코드 블록 내부는 그대로 출력
         if in_code_block:
             html_lines.append(line)
             continue
 
-        # 헤더 처리 (#, ##, ###, …)
+        # 헤더 처리
         m_h = re.match(r'^(#{1,6})\s+(.*)', line)
         if m_h:
-            # 헤더 직전에 열린 리스트가 있으면 닫기
             while list_stack:
                 html_lines.append('</ul>')
                 list_stack.pop()
@@ -84,37 +95,34 @@ def simple_markdown(md):
             html_lines.append(f'<h{level}>{content}</h{level}>')
             continue
 
-        # 리스트 항목 처리 (- 또는 *), 들여쓰기 기반 중첩 지원
-        m_list = re.match(r'^(\s*)([-*])\s+(.*)', line)
+        # 리스트 항목 처리 (들여쓰기 기반 중첩 지원)
+        m_list = re.match(r'^(\s*)[-*]\s+(.*)', line)
         if m_list:
             indent = len(m_list.group(1))
-            content = process_inline(m_list.group(3).strip())
-            # 새 리스트 레벨 진입
+            content = process_inline(m_list.group(2).strip())
             if not list_stack or indent > list_stack[-1]:
                 html_lines.append('<ul>')
                 list_stack.append(indent)
             else:
-                # 상위 레벨로 돌아가며 리스트 닫기
                 while list_stack and indent < list_stack[-1]:
                     html_lines.append('</ul>')
                     list_stack.pop()
-                # 같은 레벨이면 아무 추가 동작 없이 항목만 추가
             html_lines.append(f'<li>{content}</li>')
             continue
 
-        # 리스트가 끝났다면 모두 닫기
+        # 리스트가 끝나면 닫기
         if list_stack:
             while list_stack:
                 html_lines.append('</ul>')
                 list_stack.pop()
 
-        # 빈 줄은 빈 문자열로, 아니면 단락(<p>)으로 감싸기
+        # 빈 줄 또는 단락
         if line.strip() == '':
             html_lines.append('')
         else:
             html_lines.append(f'<p>{process_inline(line.strip())}</p>')
 
-    # 문서 끝에서 남은 코드 블록이나 리스트 닫기
+    # 남은 코드 블록 및 리스트 닫기
     if in_code_block:
         html_lines.append('</code></pre>')
     if list_stack:
@@ -123,6 +131,7 @@ def simple_markdown(md):
             list_stack.pop()
 
     return '\n'.join(html_lines)
+
 
 def render_template(template_name, **context):
     template_path = os.path.join(TEMPLATES_DIR, template_name)
