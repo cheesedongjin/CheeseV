@@ -24,11 +24,10 @@ def simple_markdown(md):
     lines = md.splitlines()
     html_lines = []
     in_code_block = False
-    code_lang = ''
     list_stack = []
 
     def process_inline(text):
-        # 1) 인라인 코드를 토큰으로 추출
+        # 인라인 코드 먼저 임시 토큰으로 추출
         code_spans = {}
         def repl_code(m):
             key = f"{{{{code{len(code_spans)}}}}}"
@@ -36,7 +35,7 @@ def simple_markdown(md):
             return key
         text = re.sub(r'`([^`]+?)`', repl_code, text)
 
-        # 2) 이미지
+        # 이미지
         text = re.sub(
             r'!\[([^\]]*?)\]\((\S+?)(?:\s+"(.*?)")?\)',
             lambda m: (
@@ -46,7 +45,7 @@ def simple_markdown(md):
             ),
             text
         )
-        # 3) 링크
+        # 링크
         text = re.sub(
             r'\[([^\]]+?)\]\((\S+?)(?:\s+"(.*?)")?\)',
             lambda m: (
@@ -56,35 +55,30 @@ def simple_markdown(md):
             ),
             text
         )
-        # 4) 굵은 글씨
+        # 굵은 글씨
         text = re.sub(r'(\*\*|__)(.+?)\1', r'<strong>\2</strong>', text)
-        # 5) 기울임 글씨
+        # 기울임 글씨
         text = re.sub(r'(\*|_)(.+?)\1', r'<em>\2</em>', text)
 
-        # 6) 토큰 복원
+        # 임시 토큰 복원
         for key, val in code_spans.items():
             text = text.replace(key, val)
         return text
 
     for line in lines:
-        # fenced code block 시작/종료 (``` 또는 ```언어)
-        m_fence = re.match(r'^```(\w*)\s*$', line)
-        if m_fence:
-            lang = m_fence.group(1)
+        stripped = line.strip()
+        # ``` 또는 ```lang 형태의 펜스 감지
+        if stripped.startswith('```'):
             if not in_code_block:
-                # 열린 리스트가 있으면 닫고 진입
+                # 열린 리스트 닫기
                 while list_stack:
                     html_lines.append('</ul>')
                     list_stack.pop()
-                code_lang = lang
-                cls = f' class="language-{lang}"' if lang else ''
-                html_lines.append(f'<div class="code-block"><pre><code{cls}>')
+                html_lines.append('<div class="code-block"><pre><code>')
                 in_code_block = True
             else:
-                # 코드 블록 종료
                 html_lines.append('</code></pre></div>')
                 in_code_block = False
-                code_lang = ''
             continue
 
         # 코드 블록 내부는 그대로
@@ -92,7 +86,7 @@ def simple_markdown(md):
             html_lines.append(line)
             continue
 
-        # 헤더 처리 (# ~ ######)
+        # 헤더 처리
         m_h = re.match(r'^(#{1,6})\s+(.*)', line)
         if m_h:
             while list_stack:
@@ -103,7 +97,7 @@ def simple_markdown(md):
             html_lines.append(f'<h{level}>{content}</h{level}>')
             continue
 
-        # 리스트 항목 처리 (들여쓰기 기반 중첩)
+        # 리스트 처리
         m_list = re.match(r'^(\s*)[-*]\s+(.*)', line)
         if m_list:
             indent = len(m_list.group(1))
@@ -118,19 +112,19 @@ def simple_markdown(md):
             html_lines.append(f'<li>{content}</li>')
             continue
 
-        # 리스트 종료 시 닫기
+        # 리스트 닫기
         if list_stack:
             while list_stack:
                 html_lines.append('</ul>')
                 list_stack.pop()
 
         # 빈 줄 또는 단락
-        if line.strip() == '':
+        if stripped == '':
             html_lines.append('')
         else:
-            html_lines.append(f'<p>{process_inline(line.strip())}</p>')
+            html_lines.append(f'<p>{process_inline(stripped)}</p>')
 
-    # 문서 끝에서 남은 코드 블록/리스트 닫기
+    # 문서 끝에서 마무리 태그 닫기
     if in_code_block:
         html_lines.append('</code></pre></div>')
     if list_stack:
