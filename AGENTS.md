@@ -34,12 +34,13 @@ This document defines essential rules that must be followed by the automation ag
 ## 6. Do Not Modify `README.md` or `AGENTS.md`
 - The files `README.md` and `AGENTS.md` are **strictly protected** and must **never be modified or deleted** under any circumstances.
 - These files define essential project rules and structure. All edits must go through the project owner.
+- However, if the project owner explicitly grants permission, modifications may be allowed.
 
 ## 7. `content/` Folder Is Owner-Only
 - The `content/` directory and all of its contents are **manually curated by the project owner**.
 - It is **not** managed by automation and **must not be edited, deleted, or added to by any other contributor or script**.
 - Any proposals for changes to this folder must be submitted as suggestions and approved by the owner.
 
-## Sitemap Commit Exception
+## 8. Sitemap Commit Exception
 Normally, auto-generated files must not be committed to the repository.
-However, if the project owner explicitly authorizes modifications to this file, the automation workflow may commit `docs/sitemap.xml` after the site is built.
+However, the automation workflow may commit the `docs/sitemap.xml` file after the site is built.
