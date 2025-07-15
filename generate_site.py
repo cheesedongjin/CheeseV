@@ -125,20 +125,10 @@ def render_template(template_name, **context):
 def build_nav_links(has_devlog: bool, has_portfolio: bool) -> str:
     links = ['<a href="/CheeseV/">Home</a>']
     if has_devlog:
-        links.append('<a href="devlog">DevLog</a>')
+        links.append('<a href="devlog/">DevLog</a>')
     if has_portfolio:
-        links.append('<a href="portfolio">Portfolio</a>')
+        links.append('<a href="portfolio/">Portfolio</a>')
     return "\n    ".join(links)
-
-
-def automation_comment(section: str) -> str:
-    return (
-        f"<!-- Don't insert {section} section manually.\n"
-        "The code will add it automatically.\n"
-        "This is for GitHub management purposes.\n"
-        "Never delete this comment. -->"
-    )
-
 
 
 def build_devlog(nav_links):
@@ -212,7 +202,6 @@ def build_devlog(nav_links):
                 title=SITE_NAME + ' - ' + cat,
                 content=cat_list,
                 nav_links=nav_links,
-                after_nav=automation_comment('devlog'),
             )
             write_file(os.path.join(OUTPUT_DIR, 'devlog', cat, 'index.html'), cat_page)
         categories_content = '\n'.join(sections)
@@ -226,7 +215,6 @@ def build_devlog(nav_links):
             title=SITE_NAME + ' - ' + 'DevLog',
             content=list_content,
             nav_links=nav_links,
-            after_nav=automation_comment('devlog'),
         )
         write_file(os.path.join(OUTPUT_DIR, 'devlog', 'index.html'), list_page)
     return posts, posts_by_cat
@@ -303,7 +291,6 @@ def build_portfolio(nav_links):
                 title=SITE_NAME + ' - ' + cat,
                 content=cat_list,
                 nav_links=nav_links,
-                after_nav=automation_comment('portfolio'),
             )
             write_file(os.path.join(OUTPUT_DIR, 'portfolio', cat, 'index.html'), cat_page)
         categories_content = '\n'.join(sections)
@@ -317,7 +304,6 @@ def build_portfolio(nav_links):
             title=SITE_NAME + ' - ' + 'Portfolio',
             content=list_content,
             nav_links=nav_links,
-            after_nav=automation_comment('portfolio'),
         )
         write_file(os.path.join(OUTPUT_DIR, 'portfolio', 'index.html'), list_page)
     return programs, programs_by_cat
