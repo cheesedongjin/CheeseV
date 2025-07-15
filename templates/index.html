@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return r.top - rect.top + r.height / 2;
     }
 
-    const CHILD_OFFSET = 15;
+    const CHILD_OFFSET = 25;
 
     function connect(ul, rect, parentY = undefined) {
         const items = Array.from(ul.children).filter(el => el.tagName === 'LI');
