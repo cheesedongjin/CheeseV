@@ -140,14 +140,19 @@ def automation_comment(section: str) -> str:
     )
 
 
+
 def build_devlog(nav_links):
     posts = []
     posts_dir = os.path.join(CONTENT_DIR, 'devlog')
     if not os.path.isdir(posts_dir):
         return posts
-    for filename in sorted(os.listdir(posts_dir)):
-        if filename.endswith('.md'):
-            path = os.path.join(posts_dir, filename)
+
+    posts_by_cat = {}
+    for root, _, files in os.walk(posts_dir):
+        for filename in sorted(files):
+            if not filename.endswith('.md'):
+                continue
+            path = os.path.join(root, filename)
             md = read_file(path)
             lines = md.splitlines()
             title_line = lines[0]
@@ -162,30 +167,66 @@ def build_devlog(nav_links):
                     body_lines.pop(i)
                     break
             body = simple_markdown('\n'.join(body_lines))
-            slug = os.path.splitext(filename)[0]
+            rel_path = os.path.relpath(path, posts_dir)
+            slug = os.path.splitext(rel_path)[0]
             content = render_template('post.html', title=title, date=date_str, body=body)
             page = render_template(
                 'base.html',
                 title=title,
                 content=content,
                 nav_links=nav_links,
-                after_nav=""
+                after_nav="",
             )
             output_path = os.path.join(OUTPUT_DIR, 'devlog', f'{slug}.html')
             write_file(output_path, page)
-            posts.append({'title': title, 'link': f'devlog/{slug}.html', 'date': date_str})
+            item = {'title': title, 'link': f'devlog/{slug}.html', 'date': date_str}
+            posts.append(item)
+            cat = os.path.relpath(root, posts_dir)
+            if cat == '.':
+                cat = ''
+            posts_by_cat.setdefault(cat, []).append(item)
+
     if posts:
-        list_items = []
-        for p in posts:
-            display = f"{p['title']} - {p['date']}" if p['date'] else p['title']
-            list_items.append({'link': p['link'], 'display': display})
-        list_content = render_template('devlog_list.html', title=SITE_NAME+" - "+'DevLog', items=list_items)
+        sections = []
+        if '' in posts_by_cat:
+            items_html = []
+            for p in posts_by_cat['']:
+                disp = f"{p['title']} - {p['date']}" if p['date'] else p['title']
+                items_html.append(f'<li><a href="{p["link"]}">{disp}</a></li>')
+            sections.append('<ul>\n' + '\n'.join(items_html) + '\n</ul>')
+        for cat in sorted(k for k in posts_by_cat.keys() if k):
+            items_html = []
+            for p in posts_by_cat[cat]:
+                disp = f"{p['title']} - {p['date']}" if p['date'] else p['title']
+                items_html.append(f'<li><a href="{p["link"]}">{disp}</a></li>')
+            section = f'<h2><a href="{cat}/">{cat}</a></h2>\n<ul>\n' + '\n'.join(items_html) + '\n</ul>'
+            sections.append(section)
+            cat_content = '<ul>\n' + '\n'.join(items_html) + '\n</ul>'
+            cat_list = render_template(
+                'devlog_list.html',
+                title=SITE_NAME + ' - ' + 'DevLog',
+                categories_content=cat_content,
+            )
+            cat_page = render_template(
+                'base.html',
+                title=SITE_NAME + ' - ' + cat,
+                content=cat_list,
+                nav_links=nav_links,
+                after_nav=automation_comment('devlog'),
+            )
+            write_file(os.path.join(OUTPUT_DIR, 'devlog', cat, 'index.html'), cat_page)
+        categories_content = '\n'.join(sections)
+        list_content = render_template(
+            'devlog_list.html',
+            title=SITE_NAME + ' - ' + 'DevLog',
+            categories_content=categories_content,
+        )
         list_page = render_template(
             'base.html',
-            title=SITE_NAME+" - "+'DevLog',
+            title=SITE_NAME + ' - ' + 'DevLog',
             content=list_content,
             nav_links=nav_links,
-            after_nav=automation_comment('devlog')
+            after_nav=automation_comment('devlog'),
         )
         write_file(os.path.join(OUTPUT_DIR, 'devlog', 'index.html'), list_page)
     return posts
@@ -196,51 +237,90 @@ def build_portfolio(nav_links):
     programs_dir = os.path.join(CONTENT_DIR, 'portfolio')
     if not os.path.isdir(programs_dir):
         return programs
-    for filename in sorted(os.listdir(programs_dir)):
-        path = os.path.join(programs_dir, filename)
-        slug, ext = os.path.splitext(filename)
 
-        if ext == '.md':
-            md = read_file(path)
-            title_line = md.splitlines()[0]
-            title = title_line.lstrip('#').strip()
-            body = simple_markdown('\n'.join(md.splitlines()[1:]))
-        elif ext == '.html':
-            html = read_file(path)
-            import re
-            m = re.search(r'<title>(.*?)</title>', html, re.S)
-            if m:
-                title = m.group(1).strip()
-                body = html.replace(m.group(0), '').strip()
+    programs_by_cat = {}
+    for root, _, files in os.walk(programs_dir):
+        for filename in sorted(files):
+            path = os.path.join(root, filename)
+            slug, ext = os.path.splitext(os.path.relpath(path, programs_dir))
+
+            if ext == '.md':
+                md = read_file(path)
+                title_line = md.splitlines()[0]
+                title = title_line.lstrip('#').strip()
+                body = simple_markdown('\n'.join(md.splitlines()[1:]))
+            elif ext == '.html':
+                html = read_file(path)
+                import re
+                m = re.search(r'<title>(.*?)</title>', html, re.S)
+                if m:
+                    title = m.group(1).strip()
+                    body = html.replace(m.group(0), '').strip()
+                else:
+                    title = slug.replace('-', ' ').title()
+                    body = html
             else:
-                title = slug.replace('-', ' ').title()
-                body = html
-        else:
-            continue
+                continue
 
-        content = render_template('program.html', title=title, body=body)
-        page = render_template(
-            'base.html',
-            title=title,
-            content=content,
-            nav_links=nav_links,
-            after_nav=""
-        )
-        output_path = os.path.join(OUTPUT_DIR, 'portfolio', f'{slug}.html')
-        write_file(output_path, page)
-        programs.append({'title': title, 'link': f'portfolio/{slug}.html'})
+            content = render_template('program.html', title=title, body=body)
+            page = render_template(
+                'base.html',
+                title=title,
+                content=content,
+                nav_links=nav_links,
+                after_nav="",
+            )
+            output_path = os.path.join(OUTPUT_DIR, 'portfolio', f'{slug}.html')
+            write_file(output_path, page)
+            item = {'title': title, 'link': f'portfolio/{slug}.html'}
+            programs.append(item)
+            cat = os.path.relpath(root, programs_dir)
+            if cat == '.':
+                cat = ''
+            programs_by_cat.setdefault(cat, []).append(item)
+
     if programs:
-        list_content = render_template('list.html', title=SITE_NAME+" - "+'Portfolio', items=programs)
+        sections = []
+        if '' in programs_by_cat:
+            items_html = []
+            for p in programs_by_cat['']:
+                items_html.append(f'<li><a href="{p["link"]}">{p["title"]}</a></li>')
+            sections.append('<ul>\n' + '\n'.join(items_html) + '\n</ul>')
+        for cat in sorted(k for k in programs_by_cat.keys() if k):
+            items_html = []
+            for p in programs_by_cat[cat]:
+                items_html.append(f'<li><a href="{p["link"]}">{p["title"]}</a></li>')
+            section = f'<h2><a href="{cat}/">{cat}</a></h2>\n<ul>\n' + '\n'.join(items_html) + '\n</ul>'
+            sections.append(section)
+            cat_content = '<ul>\n' + '\n'.join(items_html) + '\n</ul>'
+            cat_list = render_template(
+                'list.html',
+                title=SITE_NAME + ' - ' + 'Portfolio',
+                categories_content=cat_content,
+            )
+            cat_page = render_template(
+                'base.html',
+                title=SITE_NAME + ' - ' + cat,
+                content=cat_list,
+                nav_links=nav_links,
+                after_nav=automation_comment('portfolio'),
+            )
+            write_file(os.path.join(OUTPUT_DIR, 'portfolio', cat, 'index.html'), cat_page)
+        categories_content = '\n'.join(sections)
+        list_content = render_template(
+            'list.html',
+            title=SITE_NAME + ' - ' + 'Portfolio',
+            categories_content=categories_content,
+        )
         list_page = render_template(
             'base.html',
-            title=SITE_NAME+" - "+'Portfolio',
+            title=SITE_NAME + ' - ' + 'Portfolio',
             content=list_content,
             nav_links=nav_links,
-            after_nav=automation_comment('portfolio')
+            after_nav=automation_comment('portfolio'),
         )
         write_file(os.path.join(OUTPUT_DIR, 'portfolio', 'index.html'), list_page)
     return programs
-
 
 def build_site():
     # Do not perform manually what this function handles automatically.
