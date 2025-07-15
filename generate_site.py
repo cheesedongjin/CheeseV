@@ -325,7 +325,7 @@ def build_portfolio(nav_links):
 
 def build_sitemap(paths):
     """Generate sitemap.xml including the provided relative paths."""
-    base_url = "https://cheesedongjin.github.io/CheeseV/"
+    base_url = "https://cheesedongjin.github.io/CheeseV"
     lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
@@ -337,8 +337,12 @@ def build_sitemap(paths):
             clean = p[:-5]
         else:
             clean = p
+        clean = clean.rstrip('/')
         lines.append('  <url>')
-        loc = f"{base_url}/{clean}" if clean else base_url
+        if clean:
+            loc = f"{base_url}/{clean}"
+        else:
+            loc = f"{base_url}/"
         lines.append(f'    <loc>{loc}</loc>')
         lines.append('  </url>')
     lines.append('</urlset>')
@@ -416,9 +420,6 @@ def build_site():
         sitemap_entries.extend(p['link'] for p in posts)
     if programs:
         sitemap_entries.append('portfolio/index.html')
-        for cat in programs_by_cat:
-            if cat:
-                sitemap_entries.append(f'portfolio/{cat}/index.html')
         sitemap_entries.extend(p['link'] for p in programs)
     build_sitemap(sitemap_entries)
 
