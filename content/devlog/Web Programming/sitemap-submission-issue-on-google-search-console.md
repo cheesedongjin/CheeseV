@@ -42,17 +42,6 @@
       [https://www.xml-sitemaps.com/validate-xml-sitemap.html](https://www.xml-sitemaps.com/validate-xml-sitemap.html)
     * This tool will flag any missing tags, invalid URLs, or other well-formedness issues.
 
-## Lessons Learned
-
-1. **Console UI Messages Can Be Misleading**
-
-   * The new Search Console may display “couldn’t fetch” incorrectly even when Googlebot successfully retrieves the sitemap.
-
-2. **Basic HTTP and Format Verification Are Essential**
-
-   * A simple `curl -I` (with optional `-L`) request can quickly confirm server response codes and rule out redirection issues.
-   * Using an XML validator helps catch structural or schema errors that might otherwise go unnoticed.
-
 ## Additional Information
 
 * If the error persists beyond 24–48 hours, re‑inspect using URL Inspection in Search Console and revisit server or GitHub Pages settings.
