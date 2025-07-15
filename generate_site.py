@@ -123,7 +123,7 @@ def render_template(template_name, **context):
 
 
 def build_nav_links(has_devlog: bool, has_portfolio: bool) -> str:
-    links = ['<a href="/CheeseV">Home</a>']
+    links = ['<a href="/CheeseV/">Home</a>']
     if has_devlog:
         links.append('<a href="devlog">DevLog</a>')
     if has_portfolio:
@@ -325,7 +325,7 @@ def build_portfolio(nav_links):
 
 def build_sitemap(paths):
     """Generate sitemap.xml including the provided relative paths."""
-    base_url = "https://cheesedongjin.github.io/CheeseV"
+    base_url = "https://cheesedongjin.github.io/CheeseV/"
     lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
