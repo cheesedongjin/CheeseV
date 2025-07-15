@@ -24,10 +24,9 @@ def simple_markdown(md):
     lines = md.splitlines()
     html_lines = []
     in_code_block = False
-    list_stack = []
+    list_stack = []  # 각 리스트 레벨의 indent 저장
 
     def process_inline(text):
-        # 인라인 코드 먼저 임시 토큰으로 추출
         code_spans = {}
         def repl_code(m):
             key = f"{{{{code{len(code_spans)}}}}}"
@@ -60,19 +59,20 @@ def simple_markdown(md):
         # 기울임 글씨
         text = re.sub(r'(\*|_)(.+?)\1', r'<em>\2</em>', text)
 
-        # 임시 토큰 복원
+        # 토큰 복원
         for key, val in code_spans.items():
             text = text.replace(key, val)
         return text
 
     for line in lines:
-        # 코드 블록 펜스 감지 (` ``` ` 또는 `    ``` `)
+        stripped = line.lstrip(' ')
+        leading = len(line) - len(stripped)
+
+        # 코드 블록 펜스 감지
         m_fence = re.match(r'^(\s*)(```)', line)
         if m_fence:
             indent = len(m_fence.group(1))
             if not in_code_block:
-                # 열린 리스트는 이어서 유지
-                # 코드 블록 시작, 마진으로 들여쓰기 반영
                 html_lines.append(
                     f'<div class="code-block" style="margin-left: {indent * 8}px"><pre><code>'
                 )
@@ -82,35 +82,36 @@ def simple_markdown(md):
                 in_code_block = False
             continue
 
-        # 코드 블록 내부: 앞서 감지된 indent만큼 제거하고 그대로 출력
         if in_code_block:
-            # 원본 들여쓰기 제거
-            code_line = line[m_fence.end(1):] if m_fence else line
-            html_lines.append(code_line)
+            # 코드 블록 안에서는 모든 선행 공백 제거
+            html_lines.append(line[m_fence.end(1):] if m_fence else line)
             continue
 
-        # 헤더 처리
-        m_h = re.match(r'^(#{1,6})\s+(.*)', line)
+        # 헤더
+        m_h = re.match(r'^(#{1,6})\s+(.*)', stripped)
         if m_h:
-            # 열린 리스트 닫기
             while list_stack:
                 html_lines.append('</ul>')
                 list_stack.pop()
             level = len(m_h.group(1))
-            content = process_inline(m_h.group(2).strip())
+            content = process_inline(m_h.group(2))
             html_lines.append(f'<h{level}>{content}</h{level}>')
             continue
 
-        # 리스트 처리
-        m_list = re.match(r'^(\s*)[-*]\s+(.*)', line)
+        # 리스트
+        m_list = re.match(r'^([-*])\s+(.*)', stripped)
         if m_list:
-            indent = len(m_list.group(1))
-            content = process_inline(m_list.group(2).strip())
-            if not list_stack or indent > list_stack[-1]:
-                html_lines.append('<ul>')
-                list_stack.append(indent)
+            marker, content_raw = m_list.groups()
+            content = process_inline(content_raw)
+            # 새 리스트 레벨
+            if not list_stack or leading > list_stack[-1]:
+                html_lines.append(
+                    f'<ul style="margin-left: {leading * 8}px">'
+                )
+                list_stack.append(leading)
             else:
-                while list_stack and indent < list_stack[-1]:
+                # 레벨 다운
+                while list_stack and leading < list_stack[-1]:
                     html_lines.append('</ul>')
                     list_stack.pop()
             html_lines.append(f'<li>{content}</li>')
@@ -122,13 +123,12 @@ def simple_markdown(md):
                 html_lines.append('</ul>')
                 list_stack.pop()
 
-        # 단락: 원본 선행 공백은 &nbsp;로 변환하여 들여쓰기 반영
-        leading_spaces = len(line) - len(line.lstrip(' '))
-        stripped = line.lstrip(' ')
+        # 문단 및 일반 텍스트
         if stripped == '':
             html_lines.append('')
         else:
-            indent_html = '&nbsp;' * leading_spaces
+            # 선행 공백은 &nbsp;
+            indent_html = '&nbsp;' * leading
             content = process_inline(stripped)
             html_lines.append(f'<p>{indent_html}{content}</p>')
 
