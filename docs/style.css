@@ -819,3 +819,33 @@ input, select {
     0%, 100% { opacity: 0; }
     50% { opacity: 1; }
 }
+
+/* 버튼 스타일 */
+.button {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--neon-cyan);
+    background: transparent;
+    border: 2px solid var(--neon-cyan);
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        background 0.3s ease,
+        color 0.3s ease,
+        transform 0.2s ease,
+        box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 버튼 호버 효과 */
+.button:hover {
+    color: var(--electric-blue);
+    background: rgba(0, 217, 255, 0.1);
+    border-color: var(--electric-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 102, 255, 0.3);
+}
