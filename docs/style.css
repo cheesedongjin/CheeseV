@@ -1,11 +1,15 @@
 :root {
-    --primary-color: #00f2ff;
-    --accent-color: #0080ff;
-    --bg-color: #000010;
+    --primary-color: #00d9ff;
+    --accent-color: #0099ff;
+    --neon-cyan: #00ffff;
+    --neon-blue: #0066ff;
+    --electric-blue: #003dff;
+    --bg-color: #0a0a0f;
+    --bg-secondary: #0f0f1a;
     --text-secondary: #0099cc;
-    --error-color: #ff0066;
-    --terminal-bg: #000020;
-    --scan-line: rgba(0, 242, 255, 0.1);
+    --grid-color: #001a33;
+    --warning-color: #ff0066;
+    --success-color: #00ff99;
 }
 
 * {
@@ -14,170 +18,157 @@
 }
 
 body {
-    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
-    margin: 0;
-    padding: 1rem;
-    max-width: 1200px;
-    background: var(--terminal-bg);
+    font-family: 'JetBrains Mono', 'Fira Code', 'Roboto Mono', monospace;
+    margin: 1rem;
+    padding: 1.5rem;
+    max-width: 1000px;
+    background: var(--bg-color);
     color: var(--primary-color);
     position: relative;
     overflow-x: hidden;
-    line-height: 1.4;
-    text-rendering: optimizeSpeed;
-    -webkit-font-smoothing: none;
-    font-smooth: never;
-    letter-spacing: 0.05em;
-    animation: bootUp 2s ease-out;
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    text-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
 }
 
-@keyframes bootUp {
-    0% {
-        opacity: 0;
-        transform: scale(0.8);
-        filter: blur(10px);
-    }
-    50% {
-        opacity: 0.5;
-        transform: scale(1.05);
-        filter: blur(2px);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1);
-        filter: blur(0);
-    }
-}
-
+/* 배경 그리드 애니메이션 */
 body::before {
     content: '';
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background:
-        repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 2px,
-            var(--scan-line) 2px,
-            var(--scan-line) 4px
-        );
-    pointer-events: none;
-    z-index: 1000;
-    animation: scanlines 0.1s linear infinite;
+    width: 100vw;
+    height: 100vh;
+    background-image:
+        linear-gradient(rgba(0, 26, 51, 0.3) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 26, 51, 0.3) 1px, transparent 1px);
+    background-size: 30px 30px;
+    z-index: -2;
+    animation: gridPulse 4s ease-in-out infinite;
 }
 
-@keyframes scanlines {
-    0% { transform: translateY(0px); }
-    100% { transform: translateY(4px); }
-}
-
-/* Terminal cursor */
+/* 스캔라인 효과 */
 body::after {
     content: '';
     position: fixed;
-    top: 20px;
-    right: 20px;
-    width: 12px;
-    height: 20px;
-    background: var(--primary-color);
-    animation: blink 1s infinite;
-    z-index: 1001;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(
+        transparent 0%,
+        rgba(0, 217, 255, 0.05) 50%,
+        transparent 100%
+    );
+    z-index: -1;
+    animation: scanline 2s linear infinite;
 }
 
-@keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
+@keyframes gridPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+}
+
+@keyframes scanline {
+    0% { transform: translateY(-100vh); }
+    100% { transform: translateY(100vh); }
 }
 
 @media (min-width: 768px) {
     body {
-        margin: 0 auto;
+        margin: 2rem auto;
         padding: 2rem;
     }
 }
 
-/* Glitch effect for links */
+/* 링크 스타일 - 사이버펑크 느낌 */
 a {
-    color: var(--primary-color);
+    color: var(--neon-cyan);
     text-decoration: none;
     transition: all 0.3s ease;
     position: relative;
-    display: inline-block;
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
 }
 
-a::before {
-    content: attr(data-text);
+a::after {
+    content: '';
     position: absolute;
-    top: 0;
+    bottom: -2px;
     left: 0;
-    width: 100%;
-    height: 100%;
-    color: var(--error-color);
-    clip: rect(0, 0, 0, 0);
-    transition: clip 0.3s ease;
-}
-
-a:hover::before {
-    clip: rect(0, 900px, 0, 0);
-    animation: glitch 0.5s infinite;
-}
-
-@keyframes glitch {
-    0% { transform: translate(0); }
-    20% { transform: translate(-2px, 2px); }
-    40% { transform: translate(-2px, -2px); }
-    60% { transform: translate(2px, 2px); }
-    80% { transform: translate(2px, -2px); }
-    100% { transform: translate(0); }
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--electric-blue));
+    transition: width 0.3s ease;
+    box-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
 }
 
 a:hover {
-    color: var(--accent-color);
-    text-shadow:
-        0 0 5px var(--accent-color),
-        0 0 10px var(--accent-color),
-        0 0 15px var(--accent-color);
-    animation: textGlow 0.3s ease-in-out;
+    color: var(--electric-blue);
+    text-shadow: 0 0 10px rgba(0, 102, 255, 0.8);
 }
 
-@keyframes textGlow {
-    0% { text-shadow: 0 0 5px var(--accent-color); }
-    50% { text-shadow: 0 0 20px var(--accent-color); }
-    100% { text-shadow: 0 0 5px var(--accent-color); }
+a:hover::after {
+    width: 100%;
 }
 
-/* Terminal-style navigation */
+/* 네비게이션 - 더 사이버펑크스러운 디자인 */
 nav {
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 1.5rem;
     padding: 1rem 0;
     flex-wrap: wrap;
-    border-bottom: 1px solid var(--primary-color);
-    background: linear-gradient(90deg, transparent 0%, rgba(0, 255, 0, 0.05) 50%, transparent 100%);
+    border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+    background: rgba(15, 15, 26, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
 }
 
 nav::before {
-    content: 'root@system:~$ ';
-    color: var(--accent-color);
-    font-weight: bold;
-    margin-right: 1rem;
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(0, 217, 255, 0.1) 50%,
+        transparent 100%
+    );
+    animation: navSweep 3s ease-in-out infinite;
+}
+
+@keyframes navSweep {
+    0% { left: -100%; }
+    100% { left: 100%; }
 }
 
 nav a {
-    color: var(--primary-color);
+    color: var(--neon-cyan);
     text-decoration: none;
     transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    position: relative;
+    z-index: 1;
 }
 
-nav a:hover {
-    color: var(--accent-color);
+nav a:hover,
+nav a:active {
+    color: var(--electric-blue);
     transform: translateY(-2px);
-    text-shadow: 0 0 10px var(--accent-color);
+    border-color: var(--neon-blue);
+    background: rgba(0, 102, 255, 0.1);
+    box-shadow: 0 5px 15px rgba(0, 102, 255, 0.3);
 }
 
 nav .logo {
@@ -190,12 +181,13 @@ nav .logo-icon {
     width: 4rem;
     height: 4rem;
     transition: all 0.3s ease;
-    filter: drop-shadow(0 0 5px var(--primary-color));
+    filter: drop-shadow(0 0 10px rgba(0, 217, 255, 0.5));
 }
 
 nav .logo-icon:hover {
-    filter: drop-shadow(0 0 15px var(--accent-color));
-    transform: scale(1.1);
+    opacity: 0.8;
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 15px rgba(0, 102, 255, 0.8));
 }
 
 nav a svg.icon {
@@ -203,10 +195,11 @@ nav a svg.icon {
     height: 1.2rem;
     vertical-align: -0.2rem;
     fill: currentColor;
-    transition: all 0.3s ease;
+    transition: fill 0.3s ease;
+    filter: drop-shadow(0 0 3px rgba(0, 217, 255, 0.5));
 }
 
-/* Terminal-style footer */
+/* 푸터 - 미래적 디자인 */
 footer {
     margin-top: 3rem;
     font-size: 0.9rem;
@@ -216,19 +209,37 @@ footer {
     align-items: center;
     flex-wrap: wrap;
     gap: 1rem;
-    padding: 1rem 0;
-    border-top: 1px solid var(--primary-color);
-    border-bottom: 1px solid var(--primary-color);
-    background: linear-gradient(90deg, transparent 0%, rgba(0, 255, 0, 0.05) 50%, transparent 100%);
+    padding: 1.5rem;
+    border-top: 1px solid rgba(0, 217, 255, 0.2);
+    border-radius: 12px;
+    background: rgba(15, 15, 26, 0.6);
+    backdrop-filter: blur(10px);
     opacity: 0;
     animation: fadeIn 1s ease-out forwards;
-    animation-delay: 1s;
+    animation-delay: 0.5s;
+    position: relative;
+    overflow: hidden;
 }
 
 footer::before {
-    content: 'SYSTEM STATUS: ONLINE | UPTIME: 99.99% | ';
-    color: var(--accent-color);
-    font-weight: bold;
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        var(--neon-cyan) 50%,
+        transparent 100%
+    );
+    animation: footerLine 2s ease-in-out infinite;
+}
+
+@keyframes footerLine {
+    0%, 100% { transform: scaleX(0); }
+    50% { transform: scaleX(1); }
 }
 
 @keyframes fadeIn {
@@ -236,18 +247,20 @@ footer::before {
 }
 
 footer a {
-    color: var(--primary-color);
+    color: var(--neon-cyan);
     text-decoration: none;
     transition: all 0.3s ease;
-    text-transform: uppercase;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
 }
 
 footer a:hover {
-    color: var(--accent-color);
-    text-shadow: 0 0 5px var(--accent-color);
+    color: var(--electric-blue);
+    background: rgba(0, 102, 255, 0.1);
+    text-shadow: 0 0 8px rgba(0, 102, 255, 0.6);
 }
 
-/* Matrix-style background */
+/* 배경 캔버스 */
 #bg-canvas {
     position: fixed;
     top: 0;
@@ -256,50 +269,63 @@ footer a:hover {
     height: 100vh;
     z-index: -1;
     filter: blur(1px);
-    opacity: 0.3;
+    opacity: 0.7;
 }
 
+/* 힌트 텍스트 */
 #cheesev-hint {
     font-size: 0.5em;
     cursor: pointer;
     margin-left: 0.75rem;
     color: var(--text-secondary);
     transition: all 0.3s ease;
-    text-transform: uppercase;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid transparent;
 }
 
 #cheesev-hint:hover {
-    color: var(--accent-color);
-    text-shadow: 0 0 5px var(--accent-color);
+    color: var(--neon-cyan);
+    border-color: var(--neon-cyan);
+    background: rgba(0, 217, 255, 0.1);
+    text-shadow: 0 0 8px rgba(0, 217, 255, 0.6);
 }
 
-/* Terminal window style */
+/* 인트로 박스 - 더 사이버펑크한 디자인 */
 #intro {
-    border: 2px solid var(--primary-color);
+    border: 2px solid var(--neon-cyan);
     padding: 1.5rem;
     margin-top: 2rem;
-    display: block;
-    font-family: 'Courier New', monospace;
+    display: inline-block;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Roboto Mono', monospace;
     font-size: 1rem;
     line-height: 1.4;
     color: var(--primary-color);
     position: relative;
     overflow: hidden;
-    background: var(--terminal-bg);
+    border-radius: 8px;
+    background: rgba(15, 15, 26, 0.8);
+    backdrop-filter: blur(10px);
     box-shadow:
-        0 0 20px rgba(0, 255, 0, 0.3),
-        inset 0 0 20px rgba(0, 255, 0, 0.1);
+        0 0 20px rgba(0, 217, 255, 0.3),
+        inset 0 0 20px rgba(0, 217, 255, 0.1);
 }
 
 #intro::before {
-    content: '[SYSTEM INIT] Loading components...';
+    content: '';
     position: absolute;
-    top: -30px;
-    left: 0;
-    color: var(--accent-color);
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(0, 217, 255, 0.4) 50%,
+        transparent 100%
+    );
+    animation: modernLaserSweep 2s ease-out forwards;
+    z-index: 1;
 }
 
 #intro::after {
@@ -309,75 +335,140 @@ footer a:hover {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent 0%, var(--primary-color) 50%, transparent 100%);
-    animation: terminalScan 2s ease-out forwards;
-    z-index: 1;
-    opacity: 0.1;
-}
-
-@keyframes terminalScan {
-    0% {
-        transform: translateX(-100%);
-        opacity: 0.3;
-    }
-    50% {
-        opacity: 0.1;
-    }
-    100% {
-        transform: translateX(100%);
-        opacity: 0;
-    }
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-secondary) 100%);
+    animation: modernRevealMask 2s ease-out forwards;
+    z-index: 2;
 }
 
 #github-link {
     margin-bottom: 2rem;
-    display: block;
 }
 
-#github-link::before {
-    content: '> ';
-    color: var(--accent-color);
-    font-weight: bold;
+@keyframes modernLaserSweep {
+    0% {
+        left: -100%;
+        opacity: 0;
+    }
+    30% {
+        opacity: 1;
+        box-shadow: 0 0 30px rgba(0, 217, 255, 0.8);
+    }
+    70% {
+        opacity: 1;
+        box-shadow: 0 0 35px rgba(0, 217, 255, 0.6);
+    }
+    100% {
+        left: 100%;
+        opacity: 0;
+    }
 }
 
-/* Directory tree - computer file system style */
+@keyframes modernRevealMask {
+    0% {
+        transform: translateX(0%);
+    }
+    20% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+#intro.revealed {
+    color: var(--primary-color);
+    text-shadow: 0 0 12px rgba(0, 217, 255, 0.4);
+    border-color: var(--neon-cyan);
+}
+
+#intro.revealed::before,
+#intro.revealed::after {
+    display: none;
+}
+
+/* 디렉토리 트리 - 사이버펑크 터미널 느낌 */
 .directory-container {
     position: relative;
-    background: #1a1a3a;
-    border: 1px solid var(--primary-color);
-    border-radius: 8px;
-    padding: 1em;
+    background: rgba(15, 15, 26, 0.9);
+    border-radius: 12px;
+    padding: 1.5em;
     box-shadow:
-        0 0 20px rgba(0, 242, 255, 0.3),
-        inset 0 0 20px rgba(0, 242, 255, 0.05);
-    font-family: 'Courier New', monospace;
+        0 0 30px rgba(0, 217, 255, 0.2),
+        inset 0 0 30px rgba(0, 217, 255, 0.05);
+    border: 1px solid rgba(0, 217, 255, 0.3);
+    backdrop-filter: blur(10px);
+    margin: 2rem 0;
+    position: relative;
+    overflow: hidden;
 }
 
 .directory-container::before {
-    content: 'FILE SYSTEM DIRECTORY TREE';
+    content: '> DIRECTORY_TREE.EXE';
     position: absolute;
-    top: -15px;
-    left: 10px;
-    background: #1a1a3a;
-    color: var(--accent-color);
-    padding: 0 10px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, var(--neon-blue), var(--electric-blue));
+    color: white;
     font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border-radius: 12px 12px 0 0;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.directory-container::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+    animation: bottomLine 2s ease-in-out infinite;
+}
+
+@keyframes bottomLine {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
 }
 
 .directory-tree,
 .directory-tree ul {
     list-style: none;
     margin: 0;
-    padding-left: 1.2em;
-    color: var(--primary-color);
+    padding-left: 1.5em;
+    color: var(--neon-cyan);
+    margin-top: 2rem;
 }
 
 .directory-tree li {
-    margin: 0.6em 0;
-    padding-left: 0.8em;
+    margin: 0.8em 0;
+    padding-left: 1em;
     position: relative;
+    transition: all 0.3s ease;
+}
+
+.directory-tree li:hover {
+    color: var(--electric-blue);
+    text-shadow: 0 0 8px rgba(0, 102, 255, 0.6);
+    transform: translateX(5px);
+}
+
+.directory-tree li::before {
+    content: '▸';
+    position: absolute;
+    left: -0.5em;
+    color: var(--neon-blue);
+    font-size: 0.8em;
+    transition: all 0.3s ease;
+}
+
+.directory-tree li:hover::before {
+    color: var(--electric-blue);
+    transform: rotate(90deg);
 }
 
 .directory-tree h2,
@@ -385,17 +476,27 @@ footer a:hover {
 .directory-tree h4,
 .directory-tree h5,
 .directory-tree h6 {
-    margin: 0.4em 0;
+    margin: 0.6em 0;
     font-weight: bold;
-    color: var(--primary-color);
-    text-shadow: 0 0 5px rgba(0, 242, 255, 0.5);
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px rgba(0, 217, 255, 0.5);
+    transition: all 0.3s ease;
 }
 
-.directory-tree h2 { font-size: 1.5em; }
-.directory-tree h3 { font-size: 1.2em; }
-.directory-tree h4 { font-size: 1em; }
-.directory-tree h5 { font-size: 0.9em; }
-.directory-tree h6 { font-size: 0.85em; }
+.directory-tree h2:hover,
+.directory-tree h3:hover,
+.directory-tree h4:hover,
+.directory-tree h5:hover,
+.directory-tree h6:hover {
+    color: var(--electric-blue);
+    text-shadow: 0 0 12px rgba(0, 102, 255, 0.8);
+}
+
+.directory-tree h2 { font-size: 1.6em; }
+.directory-tree h3 { font-size: 1.3em; }
+.directory-tree h4 { font-size: 1.1em; }
+.directory-tree h5 { font-size: 0.95em; }
+.directory-tree h6 { font-size: 0.9em; }
 
 #tree-lines {
     position: absolute;
@@ -407,114 +508,97 @@ footer a:hover {
 }
 
 #tree-lines path {
-    stroke: var(--primary-color);
+    stroke: var(--neon-cyan);
     stroke-width: 2;
-    filter: drop-shadow(0 0 3px rgba(0, 242, 255, 0.7));
+    filter: drop-shadow(0 0 5px rgba(0, 217, 255, 0.8));
+    opacity: 0.7;
+    animation: linePulse 3s ease-in-out infinite;
 }
 
-/* Divider */
-.short-divider {
-    height: 2px;
-    background: linear-gradient(90deg, transparent 0%, var(--primary-color) 50%, transparent 100%);
-    margin: 2rem 0;
-    width: 60%;
-    box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 0.7; }
+@keyframes linePulse {
+    0%, 100% { opacity: 0.5; }
     50% { opacity: 1; }
 }
 
-/* Code blocks */
+/* 구분선 */
+.short-divider {
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        var(--neon-cyan) 50%,
+        transparent 100%
+    );
+    margin: 2rem 0;
+    margin-bottom: 3rem;
+    width: 60%;
+    border-radius: 1px;
+    box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+    animation: dividerGlow 2s ease-in-out infinite;
+}
+
+@keyframes dividerGlow {
+    0%, 100% { box-shadow: 0 0 10px rgba(0, 217, 255, 0.3); }
+    50% { box-shadow: 0 0 20px rgba(0, 217, 255, 0.8); }
+}
+
+/* 코드 블록 */
 .code-block {
-    background: #0a0a2a;
-    border: 1px solid var(--primary-color);
+    background: rgba(10, 10, 15, 0.9);
     border-radius: 8px;
-    padding: 1em;
+    padding: 1.5em;
     overflow-x: auto;
-    position: relative;
+    border: 1px solid rgba(0, 217, 255, 0.3);
     box-shadow:
-        0 0 20px rgba(0, 242, 255, 0.2),
-        inset 0 0 20px rgba(0, 242, 255, 0.05);
+        0 0 20px rgba(0, 217, 255, 0.2),
+        inset 0 0 20px rgba(0, 217, 255, 0.05);
+    position: relative;
+    margin: 1rem 0;
 }
 
 .code-block::before {
-    content: 'EXECUTE CODE';
+    content: '// CODE_BLOCK.CPP';
     position: absolute;
-    top: -15px;
+    top: -10px;
     left: 10px;
-    background: #0a0a2a;
-    color: var(--accent-color);
-    padding: 0 10px;
+    background: var(--bg-color);
+    color: var(--text-secondary);
+    padding: 0.25rem 0.5rem;
     font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 217, 255, 0.3);
 }
 
 .code-block pre {
     margin: 0;
-    color: var(--primary-color);
-    font-family: 'Courier New', monospace;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
 }
 
-/* Typography effects */
-h1, h2, h3, h4, h5, h6 {
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--primary-color);
-    text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
-    animation: typing 2s steps(20, end) forwards;
-}
-
-@keyframes typing {
-    0% { width: 0; }
-    100% { width: 100%; }
-}
-
-/* Computer-style selections */
-::selection {
-    background: var(--primary-color);
-    color: var(--terminal-bg);
-}
-
-::-moz-selection {
-    background: var(--primary-color);
-    color: var(--terminal-bg);
-}
-
-/* Scrollbar styling */
+/* 스크롤바 커스터마이징 */
 ::-webkit-scrollbar {
-    width: 12px;
+    width: 8px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--terminal-bg);
-    border: 1px solid var(--primary-color);
+    background: var(--bg-color);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--primary-color);
-    border: 1px solid var(--terminal-bg);
+    background: linear-gradient(135deg, var(--neon-blue), var(--electric-blue));
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-color);
+    background: linear-gradient(135deg, var(--electric-blue), var(--neon-cyan));
+    box-shadow: 0 0 15px rgba(0, 217, 255, 0.8);
 }
 
-/* Loading animation */
-.loading::after {
-    content: '';
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border: 2px solid var(--primary-color);
-    border-radius: 50%;
-    border-top-color: transparent;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
+/* 선택 텍스트 스타일 */
+::selection {
+    background: rgba(0, 217, 255, 0.3);
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px rgba(0, 217, 255, 0.6);
 }
