@@ -175,6 +175,7 @@ nav .logo {
     display: inline-flex;
     align-items: center;
     margin-right: 2rem;
+    margin-left: 3rem;
 }
 
 nav .logo-icon {
