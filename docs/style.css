@@ -439,14 +439,14 @@ footer a:hover {
 .directory-tree ul {
     list-style: none;
     margin: 0;
-    padding-left: 1.5em;
+    padding-left: 2.5em;
     color: var(--neon-cyan);
     margin-top: 2rem;
 }
 
 .directory-tree li {
     margin: 0.8em 0;
-    padding-left: 1em;
+    padding-left: 1.5em;
     position: relative;
     transition: all 0.3s ease;
 }
@@ -460,7 +460,7 @@ footer a:hover {
 .directory-tree li::before {
     content: '▸';
     position: absolute;
-    left: -0.5em;
+    left: -0.75em;
     color: var(--neon-blue);
     font-size: 0.8em;
     transition: all 0.3s ease;
