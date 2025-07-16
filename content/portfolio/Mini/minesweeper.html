@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<title>Minesweeper</title>
-<style>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minesweeper</title>
+  <style>
     /* 보드 전체를 감싸는 컨테이너 */
     #board-container {
         background-color: rgba(24, 48, 64, 0.8);
@@ -67,201 +70,229 @@
     button:hover {
         background-color: #0cf;
     }
-</style>
+  </style>
+</head>
+<body>
+  <button id="reset">New Game</button>
 
-<button id="reset">New Game</button>
+  <!-- 보드 컨테이너 -->
+  <div id="board-container">
+      <div id="game"></div>
+  </div>
 
-<!-- 보드 컨테이너 -->
-<div id="board-container">
-    <div id="game"></div>
-</div>
+  <script>
+  const rows = 10;
+  const cols = 10;
+  const minesCount = 20;
+  let board = [];
+  let gameActive = true;
+  let firstClick = true;
 
-<script>
-const rows = 10;
-const cols = 10;
-const minesCount = 20;
-let board = [];
-let gameActive = true;
-let firstClick = true;
+  const flagSvg = `
+  <svg xmlns="http://www.w3.org/2000/svg"
+       width="1.2rem" height="1.2rem"
+       viewBox="0 0 512 512"
+       fill="currentColor">
+    <path d="M80 32v448h32V288h320l-64-96 64-96H112V32z"/>
+  </svg>`;
 
-const flagSvg = `
-<svg xmlns="http://www.w3.org/2000/svg"
-     width="1.2rem" height="1.2rem"
-     viewBox="0 0 512 512"
-     fill="currentColor">
-  <path d="M80 32v448h32V288h320l-64-96 64-96H112V32z"/>
-</svg>`;
+  const mineSvg = `
+  <svg xmlns="http://www.w3.org/2000/svg"
+       width="1.2rem" height="1.2rem"
+       viewBox="0 0 496 512"
+       fill="currentColor">
+    <path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 448c-110.3 0-200-89.7-200-200S137.7 56 248 56s200 89.7 200 200-89.7 200-200 200z"/>
+    <circle cx="248" cy="256" r="80"/>
+  </svg>`;
 
-const mineSvg = `
-<svg xmlns="http://www.w3.org/2000/svg"
-     width="1.2rem" height="1.2rem"
-     viewBox="0 0 496 512"
-     fill="currentColor">
-  <path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 448c-110.3 0-200-89.7-200-200S137.7 56 248 56s200 89.7 200 200-89.7 200-200 200z"/>
-  <circle cx="248" cy="256" r="80"/>
-</svg>`;
+  function init() {
+      gameActive = true;
+      firstClick = true;
+      board = [];
+      const gameEl = document.getElementById('game');
+      gameEl.innerHTML = '';
+      createBoard();
+  }
 
-function init() {
-    gameActive = true;
-    firstClick = true;
-    board = [];
-    const gameEl = document.getElementById('game');
-    gameEl.innerHTML = '';
-    createBoard();
-}
+  function createBoard() {
+      for (let r = 0; r < rows; r++) {
+          board[r] = [];
+          for (let c = 0; c < cols; c++) {
+              board[r][c] = { mine: false, adjacent: 0, revealed: false, flagged: false };
+          }
+      }
 
-function createBoard() {
-    for (let r = 0; r < rows; r++) {
-        board[r] = [];
-        for (let c = 0; c < cols; c++) {
-            board[r][c] = { mine: false, adjacent: 0, revealed: false, flagged: false };
-        }
-    }
+      const gameEl = document.getElementById('game');
+      for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+              const btn = document.createElement('button');
+              btn.classList.add('cell');
+              btn.dataset.r = r;
+              btn.dataset.c = c;
+              btn.addEventListener('click', onCellClick);
+              btn.addEventListener('contextmenu', onCellRightClick);
+              btn.addEventListener('mousedown', onCellBothClick);
+              gameEl.appendChild(btn);
+          }
+      }
+  }
 
-    const gameEl = document.getElementById('game');
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-            const btn = document.createElement('button');
-            btn.classList.add('cell');
-            btn.dataset.r = r;
-            btn.dataset.c = c;
-            btn.addEventListener('click', onCellClick);
-            btn.addEventListener('contextmenu', onCellRightClick);
-            gameEl.appendChild(btn);
-        }
-    }
-}
+  function placeMines(firstR, firstC) {
+      let placed = 0;
+      const forbidden = new Set();
+      // 첫 클릭 칸과 주변 3×3 영역 지뢰 배치 금지
+      for (let dr = -1; dr <= 1; dr++) {
+          for (let dc = -1; dc <= 1; dc++) {
+              const nr = firstR + dr, nc = firstC + dc;
+              if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+                  forbidden.add(`${nr},${nc}`);
+              }
+          }
+      }
 
-function placeMines(firstR, firstC) {
-    let placed = 0;
-    const forbidden = new Set();
-    // 첫 클릭 칸과 주변 3x3 영역을 지뢰 배치 금지 구역으로 설정
-    for (let dr = -1; dr <= 1; dr++) {
-        for (let dc = -1; dc <= 1; dc++) {
-            const nr = firstR + dr, nc = firstC + dc;
-            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
-                forbidden.add(`${nr},${nc}`);
-            }
-        }
-    }
+      while (placed < minesCount) {
+          const r = Math.floor(Math.random() * rows);
+          const c = Math.floor(Math.random() * cols);
+          const key = `${r},${c}`;
+          if (!board[r][c].mine && !forbidden.has(key)) {
+              board[r][c].mine = true;
+              placed++;
+          }
+      }
 
-    // 지뢰 배치
-    while (placed < minesCount) {
-        const r = Math.floor(Math.random() * rows);
-        const c = Math.floor(Math.random() * cols);
-        const key = `${r},${c}`;
-        if (!board[r][c].mine && !forbidden.has(key)) {
-            board[r][c].mine = true;
-            placed++;
-        }
-    }
+      // 인접 지뢰 수 계산
+      for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+              if (!board[r][c].mine) {
+                  board[r][c].adjacent = countAdjacent(r, c);
+              }
+          }
+      }
+  }
 
-    // 인접 지뢰 수 계산
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-            if (!board[r][c].mine) {
-                board[r][c].adjacent = countAdjacent(r, c);
-            }
-        }
-    }
-}
+  function countAdjacent(r, c) {
+      let count = 0;
+      for (let dr = -1; dr <= 1; dr++) {
+          for (let dc = -1; dc <= 1; dc++) {
+              const nr = r + dr, nc = c + dc;
+              if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+                  if (board[nr][nc].mine) count++;
+              }
+          }
+      }
+      return count;
+  }
 
-function countAdjacent(r, c) {
-    let count = 0;
-    for (let dr = -1; dr <= 1; dr++) {
-        for (let dc = -1; dc <= 1; dc++) {
-            const nr = r + dr, nc = c + dc;
-            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
-                if (board[nr][nc].mine) count++;
-            }
-        }
-    }
-    return count;
-}
+  function onCellClick(e) {
+      if (!gameActive) return;
+      const r = +e.currentTarget.dataset.r;
+      const c = +e.currentTarget.dataset.c;
 
-function onCellClick(e) {
-    if (!gameActive) return;
-    const r = +e.currentTarget.dataset.r;
-    const c = +e.currentTarget.dataset.c;
+      if (firstClick) {
+          firstClick = false;
+          placeMines(r, c);
+      }
 
-    if (firstClick) {
-        firstClick = false;
-        placeMines(r, c);
-    }
+      openCell(r, c);
+      checkWin();
+  }
 
-    openCell(r, c);
-    checkWin();
-}
+  function onCellRightClick(e) {
+      e.preventDefault();
+      if (!gameActive) return;
+      const r = +e.currentTarget.dataset.r;
+      const c = +e.currentTarget.dataset.c;
+      const cell = board[r][c];
+      if (cell.revealed) return;
 
-function onCellRightClick(e) {
-    e.preventDefault();
-    if (!gameActive) return;
-    const r = +e.currentTarget.dataset.r;
-    const c = +e.currentTarget.dataset.c;
-    const cell = board[r][c];
-    if (cell.revealed) return;
+      const btn = e.currentTarget;
+      cell.flagged = !cell.flagged;
+      btn.classList.toggle('flagged', cell.flagged);
+      btn.innerHTML = cell.flagged ? flagSvg : '';
+  }
 
-    const btn = e.currentTarget;
-    cell.flagged = !cell.flagged;
-    btn.classList.toggle('flagged', cell.flagged);
-    btn.innerHTML = cell.flagged ? flagSvg : '';
-}
+  // 왼+오른쪽 동시 클릭 또는 휠 클릭 시 호출
+  function onCellBothClick(e) {
+      // e.buttons === 3: 왼쪽+오른쪽 동시, e.button === 1: 휠(가운데) 클릭
+      if (!gameActive || (!e.buttons === 3 && e.button !== 1)) return;
+      const btn = e.currentTarget;
+      const r = +btn.dataset.r;
+      const c = +btn.dataset.c;
+      const cell = board[r][c];
+      // 이미 공개된 숫자 칸만 처리
+      if (!cell.revealed || cell.adjacent === 0) return;
 
-function openCell(r, c) {
-    const cell = board[r][c];
-    const btn = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
-    if (cell.revealed || cell.flagged) return;
+      // 주변 8칸 순회하며 열기 시도
+      for (let dr = -1; dr <= 1; dr++) {
+          for (let dc = -1; dc <= 1; dc++) {
+              const nr = r + dr, nc = c + dc;
+              if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+                  openCell(nr, nc);
+              }
+          }
+      }
+      checkWin();
+      // 스크롤 방지
+      e.preventDefault();
+  }
 
-    cell.revealed = true;
-    btn.classList.add('revealed');
+  function openCell(r, c) {
+      const cell = board[r][c];
+      const btn = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+      if (cell.revealed || cell.flagged) return;
 
-    if (cell.mine) {
-        btn.innerHTML = mineSvg;
-        btn.classList.add('mine');
-        revealAllMines();
-        gameActive = false;
-        setTimeout(() => alert('Game Over!'), 10);
-    } else if (cell.adjacent > 0) {
-        btn.textContent = cell.adjacent;
-    } else {
-        for (let dr = -1; dr <= 1; dr++) {
-            for (let dc = -1; dc <= 1; dc++) {
-                const nr = r + dr, nc = c + dc;
-                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
-                    openCell(nr, nc);
-                }
-            }
-        }
-    }
-}
+      cell.revealed = true;
+      btn.classList.add('revealed');
 
-function revealAllMines() {
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-            if (board[r][c].mine && !board[r][c].revealed) {
-                const btn = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
-                board[r][c].revealed = true;
-                btn.classList.add('revealed', 'mine');
-                btn.innerHTML = mineSvg;
-            }
-        }
-    }
-}
+      if (cell.mine) {
+          btn.innerHTML = mineSvg;
+          btn.classList.add('mine');
+          revealAllMines();
+          gameActive = false;
+          setTimeout(() => alert('Game Over!'), 10);
+      } else if (cell.adjacent > 0) {
+          btn.textContent = cell.adjacent;
+      } else {
+          // 인접 지뢰 없는 칸은 재귀적으로 열기
+          for (let dr = -1; dr <= 1; dr++) {
+              for (let dc = -1; dc <= 1; dc++) {
+                  const nr = r + dr, nc = c + dc;
+                  if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+                      openCell(nr, nc);
+                  }
+              }
+          }
+      }
+  }
 
-function checkWin() {
-    let opened = 0;
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-            if (board[r][c].revealed) opened++;
-        }
-    }
-    if (opened === rows * cols - minesCount) {
-        gameActive = false;
-        setTimeout(() => alert('You Win!'), 10);
-    }
-}
+  function revealAllMines() {
+      for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+              if (board[r][c].mine && !board[r][c].revealed) {
+                  const btn = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+                  board[r][c].revealed = true;
+                  btn.classList.add('revealed', 'mine');
+                  btn.innerHTML = mineSvg;
+              }
+          }
+      }
+  }
 
-window.addEventListener("DOMContentLoaded", init);
-document.getElementById("reset").addEventListener("click", init);
-</script>
+  function checkWin() {
+      let opened = 0;
+      for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+              if (board[r][c].revealed) opened++;
+          }
+      }
+      if (opened === rows * cols - minesCount) {
+          gameActive = false;
+          setTimeout(() => alert('You Win!'), 10);
+      }
+  }
+
+  window.addEventListener("DOMContentLoaded", init);
+  document.getElementById("reset").addEventListener("click", init);
+  </script>
+</body>
 </html>
