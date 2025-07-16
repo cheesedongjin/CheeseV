@@ -79,6 +79,7 @@ def simple_markdown(md):
                 data_attr = f' data-language="{code_lang.upper()}"'
                 html_lines.append(
                     f'<div{class_attr}{data_attr} style="margin-left: {indent * 8}px">'
+                    f'<button class="copy-button">Copy</button>'
                     f'<pre><code>'
                 )
                 in_code_block = True

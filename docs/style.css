@@ -562,7 +562,7 @@ footer a:hover {
 .code-block::before {
     content: attr(data-language);
     position: absolute;
-    top: 2px;
+    top: 5px;
     left: 10px;
     background: var(--bg-color);
     color: var(--text-secondary);
@@ -576,6 +576,26 @@ footer a:hover {
     margin: 0;
     color: var(--neon-cyan);
     text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
+}
+
+.code-block .copy-button {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    background: var(--bg-color, #0a0a0f);
+    color: var(--neon-cyan, #00d9ff);
+    border: 1px solid rgba(0, 217, 255, 0.3);
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
+}
+
+.code-block .copy-button:hover {
+    background: rgba(0, 217, 255, 0.1);
+    box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
 }
 
 /* Language-specific classes */

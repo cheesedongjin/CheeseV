@@ -157,6 +157,29 @@
                 introElement.classList.add('revealed');
             }
         }, 2000);
+
+        document.querySelectorAll('.copy-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const codeElement = button.closest('.code-block').querySelector('code');
+                const text = codeElement.innerText;
+                navigator.clipboard.writeText(text).then(() => {
+                    button.textContent = 'Copied!';
+                    button.style.color = '#00ff00'; // Neon green for feedback
+                    setTimeout(() => {
+                        button.textContent = 'Copy';
+                        button.style.color = 'var(--neon-cyan, #00d9ff)';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    button.textContent = 'Error';
+                    button.style.color = '#ff3333'; // Neon red for error
+                    setTimeout(() => {
+                        button.textContent = 'Copy';
+                        button.style.color = 'var(--neon-cyan, #00d9ff)';
+                    }, 2000);
+                });
+            });
+        });
     </script>
 </body>
 </html>
