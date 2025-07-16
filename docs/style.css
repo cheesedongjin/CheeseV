@@ -463,7 +463,7 @@ footer a:hover {
     position: absolute;
     left: 0.5em;
     color: var(--neon-blue);
-    font-size: 1.6em;
+    font-size: 1em;
     transition: all 0.3s ease;
 }
 
