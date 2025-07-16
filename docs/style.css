@@ -634,9 +634,6 @@ footer a:hover {
 .language-d::before { content: 'D'; }
 .language-pascal::before { content: 'PASCAL'; }
 
-/* Fallback for unknown languages */
-.language-unknown::before { content: 'CODE'; }
-
 /* 스크롤바 커스터마이징 */
 ::-webkit-scrollbar {
     width: 8px;
