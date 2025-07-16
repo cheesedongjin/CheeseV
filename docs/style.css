@@ -449,6 +449,9 @@ footer a:hover {
     padding-left: 1.5em;
     position: relative;
     transition: all 0.3s ease;
+    line-height: 1.5em; /* 텍스트 높이 고정 */
+    display: flex; /* 텍스트와 화살표를 수직 정렬하기 위해 */
+    align-items: center; /* 수직 중앙 정렬 */
 }
 
 .directory-tree li:hover {
@@ -463,14 +466,15 @@ footer a:hover {
     left: 0.5em;
     color: var(--neon-blue);
     font-size: 1em;
-    top: 50%; /* Center vertically */
-    transform: translateY(-50%); /* Offset by half the arrow's height */
+    line-height: 1.5em; /* li와 동일한 line-height로 텍스트 중앙 정렬 */
+    top: 0; /* flex와 align-items로 중앙 정렬하므로 top은 0 */
+    transform: none; /* translateY 제거, flex로 처리 */
     transition: all 0.3s ease;
 }
 
 .directory-tree li:hover::before {
     color: var(--electric-blue);
-    transform: rotate(90deg);
+    transform: rotate(90deg); /* hover 시 회전만 적용 */
 }
 
 .directory-tree h2,
