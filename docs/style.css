@@ -562,7 +562,7 @@ footer a:hover {
 .code-block::before {
     content: attr(data-language);
     position: absolute;
-    top: -10px;
+    top: 2px;
     left: 10px;
     background: var(--bg-color);
     color: var(--text-secondary);
