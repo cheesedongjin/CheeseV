@@ -160,6 +160,7 @@ nav a {
     letter-spacing: 0.5px;
     position: relative;
     z-index: 1;
+    display: inline-block;
 }
 
 nav a:hover,
