@@ -29,6 +29,7 @@ def simple_markdown(md):
     # 1단계=disc, 2단계=circle, 3단계=none(대시)
     style_map = {1: 'disc', 2: 'circle', 3: 'none'}
     code_lines = []  # To store lines within a code block
+    code_indents = []  # To store indentation levels of code lines
 
     def process_inline(text):
         code_spans = {}
@@ -68,12 +69,12 @@ def simple_markdown(md):
 
     for line in lines:
         stripped = line.lstrip(' ')
-        leading = len(line) - len(stripped)
+        leading = len(line) - len(stripped)  # Count each space as one indent
 
         # 코드 블록 펜스 처리 (```lang)
         m_fence = re.match(r'^(\s*)(```)(\w+)?\s*$', line)
         if m_fence:
-            indent = len(m_fence.group(1))
+            indent = len(m_fence.group(1))  # Count spaces for fence indent
             if not in_code_block:
                 code_lang = m_fence.group(3) or 'unknown'
                 class_attr = f' class="code-block language-{code_lang}"'
@@ -85,23 +86,28 @@ def simple_markdown(md):
                 )
                 in_code_block = True
                 code_lines = []
+                code_indents = []
             else:
-                # 코드 블록 종료: 각 줄의 들여쓰기를 1칸으로 고정
-                for code_line in code_lines:
-                    stripped_line = code_line.lstrip(' ')
-                    if stripped_line:  # 비어 있지 않은 줄
-                        html_lines.append(' ' + stripped_line)
-                    else:
-                        html_lines.append('')
+                # 코드 블록 종료: 공통 들여쓰기 제거
+                if code_lines:
+                    min_indent = min(code_indents) if code_indents else 0
+                    for code_line in code_lines:
+                        if code_line.strip():  # 비어 있지 않은 줄만 처리
+                            html_lines.append(code_line[min_indent:])
+                        else:
+                            html_lines.append(code_line)
                 html_lines.append('</code></pre></div>')
                 in_code_block = False
                 code_lang = ''
                 code_lines = []
+                code_indents = []
             continue
 
         if in_code_block:
-            # 코드 블록 내부: 줄을 수집
+            # 코드 블록 내부: 줄을 수집하고 들여쓰기 기록
             code_lines.append(line)
+            if stripped:  # 비어 있지 않은 줄만 들여쓰기 계산
+                code_indents.append(len(line) - len(line.lstrip(' ')))
             continue
 
         # 헤더
@@ -155,12 +161,13 @@ def simple_markdown(md):
 
     # 마무리: 열린 코드 블록 및 리스트 닫기
     if in_code_block:
-        for code_line in code_lines:
-            stripped_line = code_line.lstrip(' ')
-            if stripped_line:  # 비어 있지 않은 줄
-                html_lines.append(' ' + stripped_line)
-            else:
-                html_lines.append('')
+        if code_lines:
+            min_indent = min(code_indents) if code_indents else 0
+            for code_line in code_lines:
+                if code_line.strip():
+                    html_lines.append(code_line[min_indent:])
+                else:
+                    html_lines.append(code_line)
         html_lines.append('</code></pre></div>')
     if list_stack:
         while list_stack:
