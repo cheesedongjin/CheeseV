@@ -20,14 +20,13 @@ def write_file(path, content):
         f.write(content)
 
 
-import re
-
 def simple_markdown(md):
     lines = md.splitlines()
     html_lines = []
     in_code_block = False
-    list_stack = []  # 각 리스트 레벨의 indent 저장
-    # 리스트 스타일 매핑: 1단계=disc, 2단계=circle, 3단계=none(대시)
+    code_lang = ''
+    list_stack = []
+    # 1단계=disc, 2단계=circle, 3단계=none(대시)
     style_map = {1: 'disc', 2: 'circle', 3: 'none'}
 
     def process_inline(text):
@@ -70,22 +69,27 @@ def simple_markdown(md):
         stripped = line.lstrip(' ')
         leading = len(line) - len(stripped)
 
-        # 코드 블록 펜스
-        m_fence = re.match(r'^(\s*)(```)', line)
+        # 코드 블록 펜스 처리 (```lang)
+        m_fence = re.match(r'^(\s*)(```)(\w+)?\s*$', line)
         if m_fence:
             indent = len(m_fence.group(1))
             if not in_code_block:
+                code_lang = m_fence.group(3) or ''
+                class_attr = f' class="language-{code_lang}"' if code_lang else ''
                 html_lines.append(
-                    f'<div class="code-block" style="margin-left: {indent * 8}px"><pre><code>'
+                    f'<div class="code-block" style="margin-left: {indent*8}px">'
+                    f'<pre><code{class_attr}>'
                 )
                 in_code_block = True
             else:
                 html_lines.append('</code></pre></div>')
                 in_code_block = False
+                code_lang = ''
             continue
 
         if in_code_block:
-            html_lines.append(line[m_fence.end(1):] if m_fence else line)
+            # 코드 블록 내부는 그대로 추가
+            html_lines.append(line)
             continue
 
         # 헤더
@@ -104,13 +108,12 @@ def simple_markdown(md):
         if m_list:
             marker, content_raw = m_list.groups()
             content = process_inline(content_raw)
-            # 현재 리스트 depth
             depth = len(list_stack) + 1 if not list_stack or leading > list_stack[-1] else len(list_stack)
             # 새 리스트 시작
             if not list_stack or leading > list_stack[-1]:
                 style = style_map.get(depth, 'disc')
                 html_lines.append(
-                    f'<ul style="margin-left: {leading * 8}px; list-style-type: {style}">'
+                    f'<ul style="margin-left: {leading*8}px; list-style-type: {style}">'
                 )
                 list_stack.append(leading)
             else:
@@ -118,19 +121,19 @@ def simple_markdown(md):
                     html_lines.append('</ul>')
                     list_stack.pop()
                 style = style_map.get(depth, 'disc')
-            # 리스트 항목, 3단계(none)인 경우 앞에 대시 추가
+            # 3단계(none)인 경우 항목 앞에 대시 추가
             if style_map.get(depth) == 'none':
                 content = '- ' + content
             html_lines.append(f'<li>{content}</li>')
             continue
 
-        # 리스트 닫기
+        # 열린 리스트 닫기
         if list_stack:
             while list_stack:
                 html_lines.append('</ul>')
                 list_stack.pop()
 
-        # 일반 문단
+        # 단락
         if stripped == '':
             html_lines.append('')
         else:
@@ -138,7 +141,7 @@ def simple_markdown(md):
             content = process_inline(stripped)
             html_lines.append(f'<p>{indent_html}{content}</p>')
 
-    # 마무리
+    # 마무리: 열린 코드 블록 및 리스트 닫기
     if in_code_block:
         html_lines.append('</code></pre></div>')
     if list_stack:
