@@ -74,11 +74,12 @@ def simple_markdown(md):
         if m_fence:
             indent = len(m_fence.group(1))
             if not in_code_block:
-                code_lang = m_fence.group(3) or ''
-                class_attr = f' class="code-block language-{code_lang}"' if code_lang else ''
+                code_lang = m_fence.group(3) or 'unknown'
+                class_attr = f' class="code-block language-{code_lang}"'
+                data_attr = f' data-language="{code_lang.upper()}"'
                 html_lines.append(
-                    f'<div class="code-block" style="margin-left: {indent*8}px">'
-                    f'<pre><code{class_attr}>'
+                    f'<div{class_attr}{data_attr} style="margin-left: {indent * 8}px">'
+                    f'<pre><code>'
                 )
                 in_code_block = True
             else:
