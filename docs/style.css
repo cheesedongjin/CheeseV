@@ -558,7 +558,7 @@ footer a:hover {
 }
 
 .code-block::before {
-    content: '// CODE_BLOCK.CPP';
+    content: attr(data-language);
     position: absolute;
     top: -10px;
     left: 10px;
@@ -575,6 +575,65 @@ footer a:hover {
     color: var(--neon-cyan);
     text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
 }
+
+/* Language-specific classes */
+.language-bash::before { content: 'BASH'; }
+.language-python::before { content: 'PYTHON'; }
+.language-javascript::before { content: 'JAVASCRIPT'; }
+.language-java::before { content: 'JAVA'; }
+.language-c::before { content: 'C'; }
+.language-cpp::before { content: 'C++'; }
+.language-csharp::before { content: 'C#'; }
+.language-html::before { content: 'HTML'; }
+.language-css::before { content: 'CSS'; }
+.language-typescript::before { content: 'TYPESCRIPT'; }
+.language-php::before { content: 'PHP'; }
+.language-ruby::before { content: 'RUBY'; }
+.language-go::before { content: 'GO'; }
+.language-rust::before { content: 'RUST'; }
+.language-sql::before { content: 'SQL'; }
+.language-json::before { content: 'JSON'; }
+.language-yaml::before { content: 'YAML'; }
+.language-xml::before { content: 'XML'; }
+.language-markdown::before { content: 'MARKDOWN'; }
+.language-shell::before { content: 'SHELL'; }
+.language-powershell::before { content: 'POWERSHELL'; }
+.language-kotlin::before { content: 'KOTLIN'; }
+.language-swift::before { content: 'SWIFT'; }
+.language-r::before { content: 'R'; }
+.language-matlab::before { content: 'MATLAB'; }
+.language-perl::before { content: 'PERL'; }
+.language-scala::before { content: 'SCALA'; }
+.language-haskell::before { content: 'HASKELL'; }
+.language-lua::before { content: 'LUA'; }
+.language-dart::before { content: 'DART'; }
+.language-elixir::before { content: 'ELIXIR'; }
+.language-erlang::before { content: 'ERLANG'; }
+.language-clojure::before { content: 'CLOJURE'; }
+.language-fsharp::before { content: 'F#'; }
+.language-fortran::before { content: 'FORTRAN'; }
+.language-groovy::before { content: 'GROOVY'; }
+.language-lisp::before { content: 'LISP'; }
+.language-ocaml::before { content: 'OCAML'; }
+.language-vb::before { content: 'VB'; }
+.language-asm::before { content: 'ASSEMBLY'; }
+.language-dockerfile::before { content: 'DOCKERFILE'; }
+.language-graphql::before { content: 'GRAPHQL'; }
+.language-toml::before { content: 'TOML'; }
+.language-julia::before { content: 'JULIA'; }
+.language-coffeescript::before { content: 'COFFEESCRIPT'; }
+.language-sass::before { content: 'SASS'; }
+.language-scss::before { content: 'SCSS'; }
+.language-less::before { content: 'LESS'; }
+.language-vhdl::before { content: 'VHDL'; }
+.language-verilog::before { content: 'VERILOG'; }
+.language-ada::before { content: 'ADA'; }
+.language-cobol::before { content: 'COBOL'; }
+.language-d::before { content: 'D'; }
+.language-pascal::before { content: 'PASCAL'; }
+
+/* Fallback for unknown languages */
+.language-unknown::before { content: 'CODE'; }
 
 /* 스크롤바 커스터마이징 */
 ::-webkit-scrollbar {
