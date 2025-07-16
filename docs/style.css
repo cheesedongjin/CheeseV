@@ -463,6 +463,8 @@ footer a:hover {
     left: 0.5em;
     color: var(--neon-blue);
     font-size: 1em;
+    top: 50%; /* Center vertically */
+    transform: translateY(-50%); /* Offset by half the arrow's height */
     transition: all 0.3s ease;
 }
 
