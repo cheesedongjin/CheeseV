@@ -460,8 +460,9 @@ footer a:hover {
 .directory-tree li::before {
     content: '▸';
     position: absolute;
+    left: 0.3em;
     color: var(--neon-blue);
-    font-size: 1.2em;
+    font-size: 2em;
     transition: all 0.3s ease;
 }
 
