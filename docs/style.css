@@ -183,6 +183,7 @@ nav .logo-icon {
     height: 4rem;
     transition: all 0.3s ease;
     filter: drop-shadow(0 0 10px rgba(0, 217, 255, 0.5));
+    display: inline-block;
 }
 
 nav .logo-icon:hover {
@@ -450,6 +451,7 @@ footer a:hover {
     padding-left: 1.5em;
     position: relative;
     transition: all 0.3s ease;
+    display: inline-block;
 }
 
 .directory-tree li:hover {
