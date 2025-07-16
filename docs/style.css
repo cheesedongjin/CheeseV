@@ -1,11 +1,11 @@
 :root {
-    --primary-color: #00ff00;
-    --accent-color: #ffff00;
-    --bg-color: #000000;
-    --text-secondary: #00aa00;
-    --error-color: #ff0000;
-    --terminal-bg: #0a0a0a;
-    --scan-line: rgba(0, 255, 0, 0.1);
+    --primary-color: #00f2ff;
+    --accent-color: #0080ff;
+    --bg-color: #000010;
+    --text-secondary: #0099cc;
+    --error-color: #ff0066;
+    --terminal-bg: #000020;
+    --scan-line: rgba(0, 242, 255, 0.1);
 }
 
 * {
@@ -343,13 +343,13 @@ footer a:hover {
 /* Directory tree - computer file system style */
 .directory-container {
     position: relative;
-    background: var(--terminal-bg);
+    background: #1a1a3a;
     border: 1px solid var(--primary-color);
-    border-radius: 0;
+    border-radius: 8px;
     padding: 1em;
     box-shadow:
-        0 0 20px rgba(0, 255, 0, 0.3),
-        inset 0 0 20px rgba(0, 255, 0, 0.05);
+        0 0 20px rgba(0, 242, 255, 0.3),
+        inset 0 0 20px rgba(0, 242, 255, 0.05);
     font-family: 'Courier New', monospace;
 }
 
@@ -358,7 +358,7 @@ footer a:hover {
     position: absolute;
     top: -15px;
     left: 10px;
-    background: var(--terminal-bg);
+    background: #1a1a3a;
     color: var(--accent-color);
     padding: 0 10px;
     font-size: 0.8rem;
@@ -370,25 +370,14 @@ footer a:hover {
 .directory-tree ul {
     list-style: none;
     margin: 0;
-    padding-left: 1.5em;
+    padding-left: 1.2em;
     color: var(--primary-color);
 }
 
 .directory-tree li {
-    margin: 0.8em 0;
-    padding-left: 1em;
+    margin: 0.6em 0;
+    padding-left: 0.8em;
     position: relative;
-}
-
-.directory-tree li::before {
-    content: '├── ';
-    position: absolute;
-    left: -0.5em;
-    color: var(--text-secondary);
-}
-
-.directory-tree li:last-child::before {
-    content: '└── ';
 }
 
 .directory-tree h2,
@@ -399,16 +388,14 @@ footer a:hover {
     margin: 0.4em 0;
     font-weight: bold;
     color: var(--primary-color);
-    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    text-shadow: 0 0 5px rgba(0, 242, 255, 0.5);
 }
 
-.directory-tree h2 { font-size: 1.3em; }
-.directory-tree h3 { font-size: 1.1em; }
+.directory-tree h2 { font-size: 1.5em; }
+.directory-tree h3 { font-size: 1.2em; }
 .directory-tree h4 { font-size: 1em; }
 .directory-tree h5 { font-size: 0.9em; }
-.directory-tree h6 { font-size: 0.8em; }
+.directory-tree h6 { font-size: 0.85em; }
 
 #tree-lines {
     position: absolute;
@@ -421,8 +408,8 @@ footer a:hover {
 
 #tree-lines path {
     stroke: var(--primary-color);
-    stroke-width: 1;
-    filter: drop-shadow(0 0 3px rgba(0, 255, 0, 0.7));
+    stroke-width: 2;
+    filter: drop-shadow(0 0 3px rgba(0, 242, 255, 0.7));
 }
 
 /* Divider */
@@ -431,7 +418,7 @@ footer a:hover {
     background: linear-gradient(90deg, transparent 0%, var(--primary-color) 50%, transparent 100%);
     margin: 2rem 0;
     width: 60%;
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
     animation: pulse 2s infinite;
 }
 
@@ -442,15 +429,15 @@ footer a:hover {
 
 /* Code blocks */
 .code-block {
-    background: var(--terminal-bg);
+    background: #0a0a2a;
     border: 1px solid var(--primary-color);
-    border-radius: 0;
+    border-radius: 8px;
     padding: 1em;
     overflow-x: auto;
     position: relative;
     box-shadow:
-        0 0 20px rgba(0, 255, 0, 0.2),
-        inset 0 0 20px rgba(0, 255, 0, 0.05);
+        0 0 20px rgba(0, 242, 255, 0.2),
+        inset 0 0 20px rgba(0, 242, 255, 0.05);
 }
 
 .code-block::before {
@@ -458,7 +445,7 @@ footer a:hover {
     position: absolute;
     top: -15px;
     left: 10px;
-    background: var(--terminal-bg);
+    background: #0a0a2a;
     color: var(--accent-color);
     padding: 0 10px;
     font-size: 0.7rem;
@@ -477,7 +464,7 @@ h1, h2, h3, h4, h5, h6 {
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--primary-color);
-    text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
     animation: typing 2s steps(20, end) forwards;
 }
 
