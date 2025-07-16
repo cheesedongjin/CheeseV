@@ -461,7 +461,7 @@ footer a:hover {
     content: '▸';
     position: absolute;
     color: var(--neon-blue);
-    font-size: 0.8em;
+    font-size: 1.2em;
     transition: all 0.3s ease;
 }
 
