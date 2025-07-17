@@ -483,7 +483,7 @@ def build_site():
     )
     write_file(os.path.join(OUTPUT_DIR, 'index.html'), index_page)
 
-    sitemap_entries = ['index.html']
+    sitemap_entries = ['index.html', '404.html']
     if posts:
         sitemap_entries.append('devlog/index.html')
         for cat in posts_by_cat:
