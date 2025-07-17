@@ -738,7 +738,6 @@ footer a:hover {
 #info {
     pointer-events: none;
     position: relative;
-    top: 2rem;
     left: 1rem;
     bottom: 1rem;
     color: #0ff;
