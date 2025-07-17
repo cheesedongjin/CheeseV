@@ -13,6 +13,18 @@
     <div id="board-container">
         <div id="game"></div>
     </div>
+    <div id="rules">
+        <strong>Game Rules:</strong>
+        <ul>
+            <li>Left‑click: Reveal a cell.</li>
+            <li>Right‑click: Flag/unflag a cell as a mine.</li>
+            <li>Both‑click (Chord): Open adjacent hidden cells if flagged count matches the number.</li>
+            <li>Reveal all non‑mine cells to win.</li>
+            <li>Clicking a mine ends the game immediately.</li>
+            <li>“Mines” shows remaining bombs (total – flags).</li>
+            <li>Timer starts on first click and stops on win/lose.</li>
+        </ul>
+    </div>
 
     <script>
         const rows = 10;
