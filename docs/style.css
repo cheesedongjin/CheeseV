@@ -735,15 +735,6 @@ footer a:hover {
     vertical-align: middle;
 }
 
-#info {
-    pointer-events: none;
-    position: relative;
-    top: 1rem;
-    left: 1rem;
-    color: #0ff;
-    font-size: 1rem;
-    z-index: 10;
-}
 canvas {
     display: block;
 }
