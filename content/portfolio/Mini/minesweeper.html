@@ -8,7 +8,7 @@
     <button class="button" id="reset">New Game</button>
     <div id="board-container">
         <div id="info">
-            <div id="mines-remaining">Mines: 10</div>
+            <div id="mines-remaining">Mines: 20</div>
             <div id="timer">Time: 00:00</div>
         </div>
         <div id="game"></div>
@@ -36,6 +36,7 @@
         let flaggedCount = 0;
         let timerInterval = null;
         let startTime = 0;
+        // 현재 프리뷰 중인 셀
         let chordCell = null;
 
         const flagSvg = `
@@ -93,6 +94,7 @@
         function placeMines(firstR, firstC) {
             let placed = 0;
             const forbidden = new Set();
+            // 첫 클릭 주변 3x3 영역 지뢰 금지
             for (let dr = -1; dr <= 1; dr++) {
                 for (let dc = -1; dc <= 1; dc++) {
                     const nr = firstR + dr, nc = firstC + dc;
@@ -109,6 +111,7 @@
                     placed++;
                 }
             }
+            // 인접 지뢰 수 계산
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
                     if (!board[r][c].mine) {
@@ -141,10 +144,7 @@
                 startTimer();
             }
             openCell(r, c);
-            // 게임이 아직 진행 중일 때만 승리 체크
-            if (gameActive) {
-                checkWin();
-            }
+            checkWin();
         }
 
         function onCellRightClick(e) {
@@ -163,6 +163,7 @@
         }
 
         function onCellMouseDown(e) {
+            // 좌+우 동시에 눌렀을 때 (버튼 비트 3)
             if (!gameActive || e.buttons !== 3) return;
             const r = +e.currentTarget.dataset.r;
             const c = +e.currentTarget.dataset.c;
@@ -193,6 +194,7 @@
         }
 
         function performChord(r, c) {
+            if (!gameActive) return; // Stop if game is inactive
             const needed = board[r][c].adjacent;
             const flagged = countFlaggedAdjacent(r, c);
             if (flagged !== needed) return;
@@ -203,26 +205,39 @@
                         const neighbor = board[nr][nc];
                         if (!neighbor.revealed && !neighbor.flagged) {
                             openCell(nr, nc);
+                            if (!gameActive) return; // Stop if a mine was hit
                         }
                     }
                 }
             }
         }
 
-        // 전역 마우스업 → 체ording 실행 및 미리보기 해제
         window.addEventListener('mouseup', () => {
-            if (chordCell && gameActive) {
+            if (chordCell && gameActive) { // Only proceed if game is active
                 performChord(chordCell.r, chordCell.c);
                 clearPreview();
-                checkWin();
+                if (gameActive) checkWin(); // Only check win if game is still active
             }
             chordCell = null;
         });
 
+        function countFlaggedAdjacent(r, c) {
+            let count = 0;
+            for (let dr = -1; dr <= 1; dr++) {
+                for (let dc = -1; dc <= 1; dc++) {
+                    const nr = r + dr, nc = c + dc;
+                    if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && board[nr][nc].flagged) {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+
         function openCell(r, c) {
             const cell = board[r][c];
             const btn = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
-            if (cell.revealed || cell.flagged) return;
+            if (cell.revealed || cell.flagged || !gameActive) return; // Stop if game is inactive
             cell.revealed = true;
             btn.classList.add('revealed');
             if (cell.mine) {
@@ -232,10 +247,11 @@
                 gameActive = false;
                 clearInterval(timerInterval);
                 setTimeout(() => alert('Game Over!'), 10);
+                return; // Immediately exit to prevent further recursion
             } else if (cell.adjacent > 0) {
                 btn.textContent = cell.adjacent;
             } else {
-                // 인접 0인 경우 재귀 열기
+                // Recursively open adjacent cells if no adjacent mines
                 for (let dr = -1; dr <= 1; dr++) {
                     for (let dc = -1; dc <= 1; dc++) {
                         const nr = r + dr, nc = c + dc;
