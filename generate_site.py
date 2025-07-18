@@ -21,6 +21,7 @@ def write_file(path, content):
 
 
 def simple_markdown(md):
+    import re  # Import re module for regular expressions
     lines = md.splitlines()
     html_lines = []
     in_code_block = False
@@ -48,11 +49,11 @@ def simple_markdown(md):
             ),
             text
         )
-        # 링크
+        # 링크: target="_blank" 추가
         text = re.sub(
             r'\[([^\]]+?)\]\((\S+?)(?:\s+"(.*?)")?\)',
             lambda m: (
-                f'<a href="{m.group(2)}"'
+                f'<a href="{m.group(2)}" target="_blank"'
                 + (f' title="{m.group(3)}"' if m.group(3) else '')
                 + f'>{m.group(1)}</a>'
             ),
