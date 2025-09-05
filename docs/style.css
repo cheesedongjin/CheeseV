@@ -865,7 +865,7 @@ input, select {
     background-color: rgba(0, 255, 255, 0.3);
 }
 
-/* Branching Novel Tools page styles */
+/* Branching Novel Tools 페이지 스타일 */
 .wrap {
     max-width: 64rem;
     margin: 2rem auto;
@@ -893,19 +893,19 @@ h1 {
 }
 
 .button.brand {
-    border-color: var(--accent-color);
-    color: var(--accent-color);
+    border-color: var(--brand);
+    color: var(--brand);
 }
 
 .button.accent {
-    border-color: var(--success-color);
-    color: var(--success-color);
+    border-color: var(--accent);
+    color: var(--accent);
 }
 
 .button.ghost {
     background: transparent;
-    border-color: var(--grid-color);
-    color: var(--text-secondary);
+    border-color: var(--border);
+    color: var(--muted);
 }
 
 .board {
