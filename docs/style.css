@@ -474,7 +474,7 @@ footer a:hover {
     left: 0.5em;
     color: var(--neon-blue);
     font-size: 1em;
-    transform: translateY(10%); /* Offset by half the arrow's height */
+    transform: translateY(10%);
     transition: all 0.3s ease;
 }
 
@@ -698,9 +698,11 @@ footer a:hover {
 #board-container {
     background-color: rgba(24, 48, 64, 0.8);
     padding: 3rem;
-    border: 2px solid #0ff;
+    border: 2px solid var(--neon-cyan);
     border-radius: 0.5rem;
     display: inline-block;
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+    backdrop-filter: blur(10px);
 }
 
 #game {
@@ -714,13 +716,20 @@ footer a:hover {
     width: 2rem;
     height: 2rem;
     background-color: #001020;
-    color: #0ff;
-    border: none;
+    color: var(--neon-cyan);
+    border: 1px solid rgba(0, 217, 255, 0.3);
     cursor: pointer;
     font-size: 1rem;
     text-align: center;
     line-height: 2rem;
     user-select: none;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 5px rgba(0, 217, 255, 0.5);
+}
+
+.cell:hover {
+    background-color: rgba(0, 217, 255, 0.1);
+    box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
 }
 
 .cell:focus {
@@ -728,19 +737,20 @@ footer a:hover {
 }
 
 .cell.revealed {
-    background-color: #0ff;
+    background-color: var(--neon-cyan);
     color: #000;
     cursor: default;
 }
 
 .cell.mine.revealed {
-    background-color: #f00;
+    background-color: var(--warning-color);
     color: #000;
 }
 
 .cell.flagged {
-    color: #f00;
+    color: var(--warning-color);
 }
+
 .cell.flagged svg {
     vertical-align: middle;
 }
@@ -750,9 +760,10 @@ footer a:hover {
     position: relative;
     left: 1rem;
     bottom: 1rem;
-    color: #0ff;
+    color: var(--neon-cyan);
     font-size: 1rem;
     z-index: 10;
+    text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
 }
 
 canvas {
@@ -765,25 +776,35 @@ canvas {
 }
 
 input, select {
-    background-color: #000;
-    color: #0ff;
-    border: 1px solid #0ff;
+    background-color: var(--bg-color);
+    color: var(--neon-cyan);
+    border: 1px solid var(--neon-cyan);
     font-family: 'Roboto Mono', monospace;
     font-size: 1rem;
     margin: 0.5rem 0;
     padding: 0.3rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
+}
+
+input:hover, select:hover {
+    box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
 }
 
 #dropZone {
-    border: 2px dashed #0ff;
+    border: 2px dashed var(--neon-cyan);
     padding: 1rem;
     text-align: center;
     margin: 1rem 0;
     cursor: pointer;
+    background: rgba(15, 15, 26, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
 }
 
 #dropZone.dragover {
-    background-color: rgba(0, 255, 255, 0.1);
+    background-color: rgba(0, 217, 255, 0.2);
 }
 
 #dropZone img {
@@ -791,17 +812,21 @@ input, select {
     max-height: 200px;
     display: block;
     margin: 0.5rem auto;
+    filter: drop-shadow(0 0 5px rgba(0, 217, 255, 0.5));
 }
 
 #dropZone p {
     margin: 0.5rem 0 0;
-    color: #0ff;
+    color: var(--neon-cyan);
     font-size: 0.9rem;
+    text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
 }
 
 #result {
     margin-top: 1rem;
     word-break: break-all;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
 }
 
 #qualityInput {
@@ -813,6 +838,8 @@ input, select {
     white-space: pre-wrap;
     position: relative;
     font-family: 'Roboto Mono', monospace;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
 }
 
 #typewriter::after {
@@ -821,7 +848,7 @@ input, select {
     display: inline-block;
     width: 2px;
     height: 1.4rem;
-    background-color: #0ff;
+    background-color: var(--neon-cyan);
     animation: blink 1s step-end infinite;
     transform: translateY(0.15rem);
 }
@@ -835,7 +862,7 @@ input, select {
 .button {
     display: inline-block;
     padding: 0.5rem 1rem;
-    font-family: inherit;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Roboto Mono', monospace;
     font-size: 1rem;
     color: var(--neon-cyan);
     background: transparent;
@@ -852,49 +879,113 @@ input, select {
     overflow: hidden;
 }
 
-/* 버튼 호버 효과 */
+.button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(0, 217, 255, 0.2) 50%,
+        transparent 100%
+    );
+    animation: buttonSweep 3s ease-in-out infinite;
+}
+
+@keyframes buttonSweep {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
 .button:hover {
     color: var(--electric-blue);
     background: rgba(0, 217, 255, 0.1);
     border-color: var(--electric-blue);
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(0, 102, 255, 0.3);
+    text-shadow: 0 0 8px rgba(0, 102, 255, 0.6);
 }
 
 .cell.preview {
-    background-color: rgba(0, 255, 255, 0.3);
+    background-color: rgba(0, 217, 255, 0.3);
 }
 
 /* Branching Novel Tools page styles */
 .wrap {
     max-width: 1024px;
-    margin: 32px auto;
-    padding: 0 16px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    background: rgba(15, 15, 26, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border: 1px solid rgba(0, 217, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.wrap::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(0, 217, 255, 0.1) 50%,
+        transparent 100%
+    );
+    animation: navSweep 3s ease-in-out infinite;
 }
 
 header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 16px;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: rgba(15, 15, 26, 0.9);
+    border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 217, 255, 0.2);
 }
 
 h1 {
     font-size: 1.6rem;
     margin: 0;
-    letter-spacing: 0.2px;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px rgba(0, 217, 255, 0.5);
+    transition: all 0.3s ease;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Roboto Mono', monospace;
+}
+
+h1:hover {
+    color: var(--electric-blue);
+    text-shadow: 0 0 12px rgba(0, 102, 255, 0.8);
 }
 
 .toolbar {
     display: flex;
-    gap: 10px;
+    gap: 0.75rem;
     flex-wrap: wrap;
 }
 
 .button.brand {
-    border-color: var(--accent-color);
-    color: var(--accent-color);
+    border-color: var(--neon-blue);
+    color: var(--neon-blue);
+}
+
+.button.brand:hover {
+    color: var(--electric-blue);
+    background: rgba(0, 102, 255, 0.1);
+    border-color: var(--electric-blue);
+    box-shadow: 0 4px 10px rgba(0, 102, 255, 0.3);
 }
 
 .button.accent {
@@ -902,93 +993,149 @@ h1 {
     color: var(--success-color);
 }
 
+.button.accent:hover {
+    color: var(--electric-blue);
+    background: rgba(0, 217, 255, 0.1);
+    border-color: var(--electric-blue);
+    box-shadow: 0 4px 10px rgba(0, 102, 255, 0.3);
+}
+
 .button.ghost {
     background: transparent;
-    border-color: var(--grid-color);
+    border-color: rgba(0, 217, 255, 0.3);
     color: var(--text-secondary);
 }
 
+.button.ghost:hover {
+    color: var(--neon-cyan);
+    background: rgba(0, 217, 255, 0.1);
+    border-color: var(--neon-cyan);
+    box-shadow: 0 4px 10px rgba(0, 217, 255, 0.3);
+}
+
 .board {
-    background: linear-gradient(180deg, var(--panel), var(--panel-2));
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 16px;
-    box-shadow: 0 16px 40px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03) inset;
+    background: linear-gradient(135deg, var(--bg-color), var(--bg-secondary));
+    border: 1px solid var(--neon-cyan);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow:
+        0 0 20px rgba(0, 217, 255, 0.2),
+        inset 0 0 20px rgba(0, 217, 255, 0.05);
+    backdrop-filter: blur(10px);
 }
 
 .info {
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 14px;
-    border-bottom: 1px dashed #2a305a;
-    padding-bottom: 12px;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+    padding-bottom: 0.75rem;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
 }
 
 .badges {
     display: flex;
-    gap: 8px;
+    gap: 0.5rem;
     flex-wrap: wrap;
 }
 
 .badge {
     font-size: 0.85rem;
-    color: #e7edff;
-    background: rgba(106, 166, 255, 0.12);
-    border: 1px solid rgba(106, 166, 255, 0.25);
-    padding: 6px 10px;
+    color: var(--neon-cyan);
+    background: rgba(0, 217, 255, 0.1);
+    border: 1px solid rgba(0, 217, 255, 0.3);
+    padding: 0.4rem 0.75rem;
     border-radius: 999px;
+    text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.badge:hover {
+    color: var(--electric-blue);
+    background: rgba(0, 102, 255, 0.2);
+    border-color: var(--electric-blue);
+    box-shadow: 0 0 10px rgba(0, 102, 255, 0.5);
 }
 
 .download-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 12px;
-    margin-bottom: 14px;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
 }
 
 .tile {
-    border: 1px solid var(--border);
-    background: linear-gradient(180deg, #13193a, #0f1534);
+    border: 1px solid rgba(0, 217, 255, 0.3);
+    background: linear-gradient(135deg, var(--bg-color), var(--bg-secondary));
     border-radius: 12px;
-    padding: 14px;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+    gap: 0.5rem;
+    box-shadow:
+        0 0 15px rgba(0, 217, 255, 0.2),
+        inset 0 0 15px rgba(0, 217, 255, 0.05);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.tile:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 0 20px rgba(0, 217, 255, 0.3),
+        inset 0 0 20px rgba(0, 217, 255, 0.1);
 }
 
 .tile h3 {
     margin: 0;
     font-size: 1.05rem;
-    letter-spacing: 0.2px;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px rgba(0, 217, 255, 0.5);
+    transition: all 0.3s ease;
+}
+
+.tile h3:hover {
+    color: var(--electric-blue);
+    text-shadow: 0 0 12px rgba(0, 102, 255, 0.8);
 }
 
 .muted {
-    color: var(--muted);
+    color: var(--text-secondary);
+    text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
 }
 
 .rules {
-    margin-top: 16px;
-    border: 1px dashed #2a305a;
+    margin-top: 1rem;
+    border: 1px solid rgba(0, 217, 255, 0.3);
     border-radius: 12px;
-    padding: 12px 14px;
-    background: #101535;
+    padding: 0.75rem 1rem;
+    background: rgba(15, 15, 26, 0.9);
+    backdrop-filter: blur(10px);
+    box-shadow:
+        0 0 15px rgba(0, 217, 255, 0.2),
+        inset 0 0 15px rgba(0, 217, 255, 0.05);
 }
 
 .rules strong {
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 0.5rem;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px rgba(0, 217, 255, 0.5);
 }
 
 .content {
-    margin-top: 24px;
-    padding: 18px;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    background: linear-gradient(180deg, #151a3b, #121736);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4) inset;
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border: 1px solid rgba(0, 217, 255, 0.3);
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--bg-color), var(--bg-secondary));
+    box-shadow:
+        0 0 20px rgba(0, 217, 255, 0.2),
+        inset 0 0 20px rgba(0, 217, 255, 0.05);
+    backdrop-filter: blur(10px);
 }
 
 .content h1,
@@ -997,6 +1144,16 @@ h1 {
     margin-top: 1.4em;
     margin-bottom: 0.5em;
     line-height: 1.25;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px rgba(0, 217, 255, 0.5);
+    transition: all 0.3s ease;
+}
+
+.content h1:hover,
+.content h2:hover,
+.content h3:hover {
+    color: var(--electric-blue);
+    text-shadow: 0 0 12px rgba(0, 102, 255, 0.8);
 }
 
 .content h1 {
@@ -1013,49 +1170,56 @@ h1 {
 
 .content p {
     margin: 0.6em 0;
-    color: #e3e7f3;
+    color: var(--primary-color);
+    text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
 }
 
 .content ul,
 .content ol {
     margin: 0.6em 0 0.6em 1.3em;
+    color: var(--primary-color);
 }
 
 .content code {
     background: var(--code-bg);
-    color: #dfe7ff;
-    border: 1px solid #1c2246;
+    color: var(--neon-cyan);
+    border: 1px solid rgba(0, 217, 255, 0.3);
     padding: 0.05em 0.4em;
     border-radius: 6px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Roboto Mono', monospace;
     font-size: 0.95em;
+    text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
 }
 
 .content pre {
     background: var(--code-bg);
-    border: 1px solid #1c2246;
+    border: 1px solid rgba(0, 217, 255, 0.3);
     border-radius: 10px;
-    padding: 14px;
+    padding: 1rem;
     overflow: auto;
-    box-shadow: 0 6px 22px rgba(0,0,0,0.35) inset;
+    box-shadow:
+        0 0 15px rgba(0, 217, 255, 0.2),
+        inset 0 0 15px rgba(0, 217, 255, 0.05);
 }
 
 .content pre code {
     background: transparent;
     border: 0;
     padding: 0;
-    color: #f0f3ff;
+    color: var(--neon-cyan);
     font-size: 0.92rem;
     display: block;
     white-space: pre;
+    text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
 }
 
 .content blockquote {
     margin: 0.6em 0;
     padding: 0.1em 1em;
-    border-left: 3px solid var(--border);
-    background: #101535;
-    color: #c5cee0;
+    border-left: 3px solid var(--neon-cyan);
+    background: rgba(15, 15, 26, 0.9);
+    color: var(--primary-color);
+    text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
 }
 
 .content table {
@@ -1066,14 +1230,20 @@ h1 {
 
 .content th,
 .content td {
-    border: 1px solid var(--border);
+    border: 1px solid rgba(0, 217, 255, 0.3);
     padding: 0.4em 0.6em;
 }
 
 .content th {
-    background: #101535;
+    background: rgba(15, 15, 26, 0.9);
     color: var(--neon-cyan);
     text-align: left;
+    text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
+}
+
+.content td {
+    color: var(--primary-color);
+    text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
 }
 
 .content img {
@@ -1081,13 +1251,15 @@ h1 {
     height: auto;
     display: block;
     margin: 0.6em auto;
+    filter: drop-shadow(0 0 5px rgba(0, 217, 255, 0.5));
 }
 
 footer {
-    margin: 28px 0 8px;
+    margin: 2rem 0 0.5rem;
     text-align: center;
-    color: var(--muted);
+    color: var(--text-secondary);
     font-size: 0.9rem;
+    text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
 }
 
 @media (max-width: 520px) {
