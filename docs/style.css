@@ -31,7 +31,7 @@ body {
     font-family: 'JetBrains Mono', 'Fira Code', 'Roboto Mono', monospace;
     margin: 1rem;
     padding: 1.5rem;
-    max-width: 1000px;
+    max-width: 62.5rem;
     background: var(--bg-color);
     color: var(--primary-color);
     position: relative;
@@ -85,7 +85,7 @@ body::after {
     100% { transform: translateY(100vh); }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 48rem) {
     body {
         margin: 2rem auto;
         padding: 2rem;
@@ -132,7 +132,7 @@ nav {
     border-bottom: 1px solid rgba(0, 217, 255, 0.2);
     background: rgba(15, 15, 26, 0.8);
     backdrop-filter: blur(10px);
-    border-radius: 12px;
+    border-radius: 0.75rem;
     margin-bottom: 2rem;
     position: relative;
     overflow: hidden;
@@ -164,7 +164,7 @@ nav a {
     text-decoration: none;
     transition: all 0.3s ease;
     padding: 0.5rem 1rem;
-    border-radius: 6px;
+    border-radius: 0.375rem;
     border: 1px solid transparent;
     font-weight: 500;
     letter-spacing: 0.5px;
@@ -222,7 +222,7 @@ footer {
     gap: 1rem;
     padding: 1.5rem;
     border-top: 1px solid rgba(0, 217, 255, 0.2);
-    border-radius: 12px;
+    border-radius: 0.75rem;
     background: rgba(15, 15, 26, 0.6);
     backdrop-filter: blur(10px);
     opacity: 0;
@@ -262,7 +262,7 @@ footer a {
     text-decoration: none;
     transition: all 0.3s ease;
     padding: 0.25rem 0.5rem;
-    border-radius: 4px;
+    border-radius: 0.25rem;
 }
 
 footer a:hover {
@@ -291,7 +291,7 @@ footer a:hover {
     color: var(--text-secondary);
     transition: all 0.3s ease;
     padding: 0.25rem 0.5rem;
-    border-radius: 4px;
+    border-radius: 0.25rem;
     border: 1px solid transparent;
 }
 
@@ -314,7 +314,7 @@ footer a:hover {
     color: var(--primary-color);
     position: relative;
     overflow: hidden;
-    border-radius: 8px;
+    border-radius: 0.5rem;
     background: rgba(15, 15, 26, 0.8);
     backdrop-filter: blur(10px);
     box-shadow:
@@ -401,7 +401,7 @@ footer a:hover {
 .directory-container {
     position: relative;
     background: rgba(15, 15, 26, 0.9);
-    border-radius: 12px;
+    border-radius: 0.75rem;
     padding: 1.5em;
     box-shadow:
         0 0 30px rgba(0, 217, 255, 0.2),
@@ -425,7 +425,7 @@ footer a:hover {
     font-size: 0.8rem;
     font-weight: bold;
     letter-spacing: 1px;
-    border-radius: 12px 12px 0 0;
+    border-radius: 0.75rem 0.75rem 0 0;
     margin-bottom: 1rem;
     text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
@@ -544,7 +544,7 @@ footer a:hover {
     margin: 2rem 0;
     margin-bottom: 3rem;
     width: 60%;
-    border-radius: 1px;
+    border-radius: 0.0625rem;
     box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
     animation: dividerGlow 2s ease-in-out infinite;
 }
@@ -557,7 +557,7 @@ footer a:hover {
 /* 코드 블록 */
 .code-block {
     background: rgba(10, 10, 15, 0.9);
-    border-radius: 8px;
+    border-radius: 0.5rem;
     padding: 1.5em;
     overflow-x: auto;
     border: 1px solid rgba(0, 217, 255, 0.3);
@@ -577,7 +577,7 @@ footer a:hover {
     color: var(--text-secondary);
     padding: 0.25rem 0.5rem;
     font-size: 0.7rem;
-    border-radius: 4px;
+    border-radius: 0.25rem;
     border: 1px solid rgba(0, 217, 255, 0.3);
 }
 
@@ -594,7 +594,7 @@ footer a:hover {
     background: var(--bg-color, #0a0a0f);
     color: var(--neon-cyan, #00d9ff);
     border: 1px solid rgba(0, 217, 255, 0.3);
-    border-radius: 4px;
+    border-radius: 0.25rem;
     padding: 0.25rem 0.5rem;
     font-size: 0.7rem;
     cursor: pointer;
@@ -678,7 +678,7 @@ footer a:hover {
 
 ::-webkit-scrollbar-thumb {
     background: linear-gradient(135deg, var(--neon-blue), var(--electric-blue));
-    border-radius: 4px;
+    border-radius: 0.25rem;
     box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
 }
 
@@ -707,7 +707,7 @@ footer a:hover {
     display: grid;
     grid-template-columns: repeat(9, 2rem);
     grid-template-rows: repeat(9, 2rem);
-    gap: 2px;
+    gap: 0.125rem;
 }
 
 .cell {
@@ -840,7 +840,7 @@ input, select {
     color: var(--neon-cyan);
     background: transparent;
     border: 2px solid var(--neon-cyan);
-    border-radius: 6px;
+    border-radius: 0.375rem;
     text-decoration: none;
     cursor: pointer;
     transition:
@@ -867,17 +867,17 @@ input, select {
 
 /* Branching Novel Tools page styles */
 .wrap {
-    max-width: 1024px;
-    margin: 32px auto;
-    padding: 0 16px;
+    max-width: 64rem;
+    margin: 2rem auto;
+    padding: 0 1rem;
 }
 
 header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 16px;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
 }
 
 h1 {
@@ -888,7 +888,7 @@ h1 {
 
 .toolbar {
     display: flex;
-    gap: 10px;
+    gap: 0.625rem;
     flex-wrap: wrap;
 }
 
@@ -911,8 +911,8 @@ h1 {
 .board {
     background: linear-gradient(180deg, var(--panel), var(--panel-2));
     border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 16px;
+    border-radius: 0.875rem;
+    padding: 1rem;
     box-shadow: 0 16px 40px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03) inset;
 }
 
@@ -920,15 +920,15 @@ h1 {
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 14px;
+    gap: 0.75rem;
+    margin-bottom: 0.875rem;
     border-bottom: 1px dashed #2a305a;
-    padding-bottom: 12px;
+    padding-bottom: 0.75rem;
 }
 
 .badges {
     display: flex;
-    gap: 8px;
+    gap: 0.5rem;
     flex-wrap: wrap;
 }
 
@@ -937,25 +937,25 @@ h1 {
     color: #e7edff;
     background: rgba(106, 166, 255, 0.12);
     border: 1px solid rgba(106, 166, 255, 0.25);
-    padding: 6px 10px;
+    padding: 0.375rem 0.625rem;
     border-radius: 999px;
 }
 
 .download-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 12px;
-    margin-bottom: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 0.875rem;
 }
 
 .tile {
     border: 1px solid var(--border);
     background: linear-gradient(180deg, #13193a, #0f1534);
-    border-radius: 12px;
-    padding: 14px;
+    border-radius: 0.75rem;
+    padding: 0.875rem;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 0.5rem;
     box-shadow: 0 10px 24px rgba(0,0,0,0.35);
 }
 
@@ -970,23 +970,23 @@ h1 {
 }
 
 .rules {
-    margin-top: 16px;
+    margin-top: 1rem;
     border: 1px dashed #2a305a;
-    border-radius: 12px;
-    padding: 12px 14px;
+    border-radius: 0.75rem;
+    padding: 0.75rem 0.875rem;
     background: #101535;
 }
 
 .rules strong {
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 0.375rem;
 }
 
 .content {
-    margin-top: 24px;
-    padding: 18px;
+    margin-top: 1.5rem;
+    padding: 1.125rem;
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 0.875rem;
     background: linear-gradient(180deg, #151a3b, #121736);
     box-shadow: 0 10px 30px rgba(0,0,0,0.4) inset;
 }
@@ -1013,7 +1013,7 @@ h1 {
 
 .content p {
     margin: 0.6em 0;
-    color: #e3e7f3;
+    color: var(--text);
 }
 
 .content ul,
@@ -1026,7 +1026,7 @@ h1 {
     color: #dfe7ff;
     border: 1px solid #1c2246;
     padding: 0.05em 0.4em;
-    border-radius: 6px;
+    border-radius: 0.375rem;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
     font-size: 0.95em;
 }
@@ -1034,8 +1034,8 @@ h1 {
 .content pre {
     background: var(--code-bg);
     border: 1px solid #1c2246;
-    border-radius: 10px;
-    padding: 14px;
+    border-radius: 0.625rem;
+    padding: 0.875rem;
     overflow: auto;
     box-shadow: 0 6px 22px rgba(0,0,0,0.35) inset;
 }
@@ -1084,13 +1084,13 @@ h1 {
 }
 
 footer {
-    margin: 28px 0 8px;
+    margin: 1.75rem 0 0.5rem;
     text-align: center;
     color: var(--muted);
     font-size: 0.9rem;
 }
 
-@media (max-width: 520px) {
+@media (max-width: 32.5rem) {
     header {
         flex-direction: column;
         align-items: flex-start;
