@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Branching Novel Tools – Downloads & Docs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0f1220;
+      --panel: #151933;
+      --panel-2: #10142b;
+      --text: #e9ecf1;
+      --muted: #aeb6c7;
+      --brand: #6aa6ff;
+      --accent: #28d7a6;
+      --danger: #ff5874;
+      --border: #242a4d;
+      --code-bg: #0c0f1d;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      color: var(--text);
+      background: radial-gradient(1200px 800px at 20% -10%, #16204d 0%, #0f1220 60%, #0b0d18 100%) fixed;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple SD Gothic Neo", "Noto Sans", "Malgun Gothic", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+      line-height: 1.55;
+    }
+
+    .wrap {
+      max-width: 1024px;
+      margin: 32px auto;
+      padding: 0 16px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin: 0;
+      letter-spacing: 0.2px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, #1a2042, #121738);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset, 0 6px 18px rgba(0,0,0,0.35);
+      transition: transform 0.06s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    .button:hover {
+      border-color: #2a3364;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.45);
+      transform: translateY(-1px);
+    }
+    .button:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    }
+    .button.brand { border-color: #294a88; color: #dfeaff; }
+    .button.accent { border-color: #1d6d59; color: #dff7f1; }
+    .button.ghost {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--muted);
+    }
+
+    .board {
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03) inset;
+    }
+
+    .info {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      border-bottom: 1px dashed #2a305a;
+      padding-bottom: 12px;
+    }
+
+    .badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 0.85rem;
+      color: #e7edff;
+      background: rgba(106, 166, 255, 0.12);
+      border: 1px solid rgba(106, 166, 255, 0.25);
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+
+    .download-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .tile {
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, #13193a, #0f1534);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+    }
+
+    .tile h3 {
+      margin: 0;
+      font-size: 1.05rem;
+      letter-spacing: 0.2px;
+    }
+
+    .muted { color: var(--muted); }
+
+    .rules {
+      margin-top: 16px;
+      border: 1px dashed #2a305a;
+      border-radius: 12px;
+      padding: 12px 14px;
+      background: #101535;
+    }
+    .rules strong { display: block; margin-bottom: 6px; }
+
+    /* README content styles */
+    .content {
+      margin-top: 24px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: linear-gradient(180deg, #151a3b, #121736);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4) inset;
+    }
+
+    .content h1, .content h2, .content h3 {
+      margin-top: 1.4em;
+      margin-bottom: 0.5em;
+      line-height: 1.25;
+    }
+    .content h1 { font-size: 1.6rem; }
+    .content h2 { font-size: 1.3rem; }
+    .content h3 { font-size: 1.1rem; }
+
+    .content p { margin: 0.6em 0; color: #e3e7f3; }
+    .content ul, .content ol { margin: 0.6em 0 0.6em 1.3em; }
+    .content code {
+      background: var(--code-bg);
+      color: #dfe7ff;
+      border: 1px solid #1c2246;
+      padding: 0.05em 0.4em;
+      border-radius: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 0.95em;
+    }
+    .content pre {
+      background: var(--code-bg);
+      border: 1px solid #1c2246;
+      border-radius: 10px;
+      padding: 14px;
+      overflow: auto;
+      box-shadow: 0 6px 22px rgba(0,0,0,0.35) inset;
+    }
+    .content pre code {
+      background: transparent;
+      border: 0;
+      padding: 0;
+      color: #f0f3ff;
+      font-size: 0.92rem;
+      display: block;
+      white-space: pre;
+    }
+
+    footer {
+      margin: 28px 0 8px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 520px) {
+      header { flex-direction: column; align-items: flex-start; }
+      .info { grid-template-columns: 1fr; }
+      .toolbar { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Branching Novel Tools</h1>
+      <div class="toolbar">
+        <a class="button brand" href="https://github.com/cheesedongjin/Branching-Novel-Tools/releases/latest/download/BranchingNovelEditor-Online-Setup.exe" rel="noopener">Download Editor (Windows)</a>
+        <a class="button brand" href="https://github.com/cheesedongjin/Branching-Novel-Tools/releases/latest/download/BranchingNovelGUI-Online-Setup.exe" rel="noopener">Download Viewer (Windows)</a>
+        <a class="button accent" href="https://github.com/cheesedongjin/Branching-Novel-Tools/releases/latest" rel="noopener">Latest Release (Linux & macOS)</a>
+        <a class="button ghost" href="https://github.com/cheesedongjin/Branching-Novel-Tools" rel="noopener">GitHub Repo</a>
+      </div>
+    </header>
+
+    <section class="board">
+      <div class="info">
+        <div class="badges">
+          <span class="badge">Windows installers</span>
+          <span class="badge">Cross-platform source</span>
+          <span class="badge">Plain-text scripts</span>
+        </div>
+        <div class="muted">Timer starts on first click? Not here—we ship instantly.</div>
+      </div>
+
+      <div class="download-grid">
+        <div class="tile">
+          <h3>Editor (Windows)</h3>
+          <div class="muted">BranchingNovelEditor-Online-Setup.exe</div>
+          <a class="button brand" href="https://github.com/cheesedongjin/Branching-Novel-Tools/releases/latest/download/BranchingNovelEditor-Online-Setup.exe" rel="noopener">Download</a>
+        </div>
+        <div class="tile">
+          <h3>Viewer (Windows)</h3>
+          <div class="muted">BranchingNovelGUI-Online-Setup.exe</div>
+          <a class="button brand" href="https://github.com/cheesedongjin/Branching-Novel-Tools/releases/latest/download/BranchingNovelGUI-Online-Setup.exe" rel="noopener">Download</a>
+        </div>
+        <div class="tile">
+          <h3>Linux & macOS</h3>
+          <div class="muted">Grab the latest release assets</div>
+          <a class="button accent" href="https://github.com/cheesedongjin/Branching-Novel-Tools/releases/latest" rel="noopener">Latest Release Page</a>
+        </div>
+      </div>
+
+      <div class="rules">
+        <strong>How this page works:</strong>
+        <ul>
+          <li>Two buttons provide direct Windows installers (Editor & Viewer).</li>
+          <li>Linux/macOS users should visit the Latest Release page to download appropriate assets.</li>
+          <li>The documentation below is converted from your Markdown to HTML.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="content" id="docs">
+      <h1>Branching Novel Tools</h1>
+      <p>Branching Novel Tools is a lightweight toolkit for creating interactive stories
+      that branch based on player choices. It pairs a simple <code>.bnov</code> text format with
+      Python-based viewer and editor applications, letting writers draft and test
+      visual novels without a complex build process. Key features include:</p>
+      <ul>
+        <li>Plain-text scripts that work well with version control.</li>
+        <li>A reference viewer for playing stories locally.</li>
+        <li>Optional editor utilities for previewing and authoring narratives.</li>
+      </ul>
+
+      <h2>Branching Novel Script Syntax</h2>
+      <p>Branching Novel Script is a plain-text format for writing branching visual
+      novels. Scripts usually use the <code>.bnov</code> extension and must be encoded in UTF-8.</p>
+
+      <h2>Metadata lines</h2>
+      <p>Directives at the top of the file configure global story settings:</p>
+      <ul>
+        <li><code>@title: &lt;title&gt;</code> – story title (<code>Untitled</code> if omitted).</li>
+        <li><code>@start: &lt;branch_id&gt;</code> – starting branch id (defaults to the first branch in the file).</li>
+        <li><code>@ending: &lt;text&gt;</code> – message shown when the story ends with no choices (<code>The End</code> by default).</li>
+        <li><code>@show-disabled: true</code> – display unavailable choices as disabled buttons.</li>
+        <li><code>! &lt;var&gt; = &lt;value or expression&gt;</code> – define an initial variable before any chapter. Expressions may reference previously defined variables.</li>
+      </ul>
+
+      <h2>Chapters and branches</h2>
+      <ul>
+        <li><code>@chapter &lt;chapter_id&gt;: &lt;title&gt;</code> – declare a chapter; the title is optional.</li>
+        <li><code># &lt;branch_id&gt;: &lt;title&gt;</code> – begin a branch inside the current chapter; the title is optional.</li>
+      </ul>
+      <p>Chapter and branch identifiers must be unique across the file.</p>
+
+      <h2>Narrative paragraphs and interpolation</h2>
+      <p>Inside a branch, plain text lines form the body. Blank lines separate
+      paragraphs. Any <code>__var__</code> tokens in titles, paragraph text, or choice labels are
+      replaced with the current value of that variable; if the variable is undefined
+      the placeholder remains unchanged.</p>
+      <p>Variable names may contain letters, digits and underscores but cannot start or
+      end with <code>_</code> or contain <code>__</code>.</p>
+
+      <h2>State actions</h2>
+      <p>Lines beginning with <code>!</code> inside a branch modify variables. Supported forms are</p>
+      <ul>
+        <li><code>! &lt;var&gt; = &lt;value or expression&gt;</code> – assignment. If the right-hand side is not a literal it is evaluated as an expression.</li>
+        <li><code>! &lt;var&gt; += &lt;value&gt;</code>, <code>-=</code>, <code>*=</code>, <code>/=</code>, <code>//=</code>, <code>%=</code> , <code>**=</code> – arithmetic updates.</li>
+        <li><code>! set &lt;var&gt; = &lt;value&gt;</code> and <code>! add &lt;var&gt; += &lt;value&gt;</code> – explicit assignment and addition.</li>
+      </ul>
+      <p>Values may be numbers, strings, booleans (<code>true</code>/<code>false</code>) or other variable names.
+      When used with arithmetic operators booleans are treated as <code>0</code> or <code>1</code>.
+      Undefined variables evaluate to <code>0</code>.</p>
+
+      <h2>Choices</h2>
+      <ul>
+        <li><code>* &lt;text&gt; -&gt; &lt;target_branch_id&gt;</code> – create a choice leading to another branch.</li>
+        <li><code>* [&lt;condition&gt;] &lt;text&gt; -&gt; &lt;target_branch_id&gt;</code> – conditional choice.</li>
+      </ul>
+
+      <h2>Condition and expression syntax</h2>
+      <p>Conditions and expressions support:</p>
+      <ul>
+        <li>Variables, numeric literals, quoted strings, and <code>true</code>/<code>false</code> (case-insensitive).</li>
+        <li>Arithmetic: <code>+ - * / // % **</code> and unary <code>-</code>.</li>
+        <li>Comparisons: <code>== != &lt; &lt;= &gt; &gt;=</code>.</li>
+        <li>Logical operators: <code>!</code> (not), <code>&amp;</code>/<code>&amp;&amp;</code> (and), <code>|</code>/<code>||</code> (or).</li>
+        <li>Parentheses for grouping.</li>
+      </ul>
+      <p>No separate comment syntax is supported; empty lines only serve as paragraph
+      separators.</p>
+
+      <h2>Example</h2>
+      <pre><code class="language-bnov">@title: Sample Adventure
+@start: intro
+@show-disabled: true
+! coins = 5
+
+@chapter intro: Prologue
+# intro
+You wake up with __coins__ coins.
+! coins += 3
+
+* Search the room -&gt; search
+* [coins &gt;= 10] Buy a snack -&gt; shop
+</code></pre>
+
+      <h2>Running the viewer</h2>
+      <pre><code>python branching_novel.py path/to/story.bnov
+</code></pre>
+    </section>
+
+    <footer>© Branching Novel Tools</footer>
+  </div>
+</body>
+</html>
