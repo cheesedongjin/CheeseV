@@ -314,7 +314,7 @@ def build_site():
                 items_html.append(f'<li><a href="{p["link"]}">{p["title"]}</a></li>')
             cat_ul = '<ul>\n' + '\n'.join(items_html) + '\n</ul>'
             root_items.append(f'<li><h3>{cat}</h3>\n{cat_ul}</li>')
-        portfolio_section = '<h2>Web Portfolio</h2>\n<ul>\n' + '\n'.join(root_items) + '\n</ul>'
+        portfolio_section = '<h2>Portfolio</h2>\n<ul>\n' + '\n'.join(root_items) + '\n</ul>'
 
     index_content = render_template('index.html', devlog_section=devlog_section, portfolio_section=portfolio_section)
     index_page = render_template(
