@@ -31,13 +31,6 @@
 
 ---
 
-## How this page works
-- Two buttons provide direct Windows installers (Editor & Viewer).
-- Linux/macOS users should visit the Latest Release page to download appropriate assets.
-- The documentation below is converted from your Markdown to HTML.
-
----
-
 # Branching Novel Tools
 
 Branching Novel Tools is a lightweight toolkit for creating interactive stories
