@@ -41,7 +41,12 @@ def simple_markdown(md):
                 .replace("<", "&lt;")
                 .replace(">", "&gt;")
             )
-            code_spans[key] = f"<code>{code_content}</code>"
+            code_spans[key] = (
+                "<span class=\"inline-code\">"
+                "<button class=\"copy-button\">Copy</button>"
+                f"<code>{code_content}</code>"
+                "</span>"
+            )
             return key
         text = re.sub(r'`([^`]+?)`', repl_code, text)
         # 이미지
