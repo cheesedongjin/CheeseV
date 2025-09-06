@@ -122,6 +122,13 @@ a:hover::after {
     width: 100%;
 }
 
+hr {
+    border: none;
+    border-top: 1px solid rgba(0, 217, 255, 0.3);
+    margin: 2rem 0;
+    box-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+}
+
 /* 네비게이션 - 더 사이버펑크스러운 디자인 */
 nav {
     display: flex;
@@ -603,6 +610,42 @@ footer a:hover {
 }
 
 .code-block .copy-button:hover {
+    background: rgba(0, 217, 255, 0.1);
+    box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+}
+
+.inline-code {
+    display: inline-block;
+    position: relative;
+    background: var(--bg-color, #0a0a0f);
+    border: 1px solid rgba(0, 217, 255, 0.3);
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    margin: 0 0.2rem;
+}
+
+.inline-code code {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
+    padding-right: 1.5rem;
+}
+
+.inline-code .copy-button {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: var(--bg-color, #0a0a0f);
+    color: var(--neon-cyan, #00d9ff);
+    border: 1px solid rgba(0, 217, 255, 0.3);
+    border-radius: 4px;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.6rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
+}
+
+.inline-code .copy-button:hover {
     background: rgba(0, 217, 255, 0.1);
     box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
 }

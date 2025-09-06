@@ -160,7 +160,8 @@
 
         document.querySelectorAll('.copy-button').forEach(button => {
             button.addEventListener('click', () => {
-                const codeElement = button.closest('.code-block').querySelector('code');
+                const container = button.closest('.code-block, .inline-code');
+                const codeElement = container.querySelector('code');
                 const text = codeElement.innerText;
                 navigator.clipboard.writeText(text).then(() => {
                     button.textContent = 'Copied!';
