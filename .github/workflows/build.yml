@@ -28,6 +28,9 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Install dependencies
+        run: pip install markdown
+
       - name: Generate static site
         run: python generate_site.py
 
