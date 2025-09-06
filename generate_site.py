@@ -35,7 +35,13 @@ def simple_markdown(md):
         code_spans = {}
         def repl_code(m):
             key = f"{{{{code{len(code_spans)}}}}}"
-            code_spans[key] = f"<code>{m.group(1)}</code>"
+            code_content = (
+                m.group(1)
+                .replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+            )
+            code_spans[key] = f"<code>{code_content}</code>"
             return key
         text = re.sub(r'`([^`]+?)`', repl_code, text)
         # 이미지
@@ -150,6 +156,11 @@ def simple_markdown(md):
             while list_stack:
                 html_lines.append('</ul>')
                 list_stack.pop()
+
+        # 수평선
+        if re.match(r'^-{3,}\s*$', stripped):
+            html_lines.append('<hr>')
+            continue
 
         # 단락
         if stripped == '':
