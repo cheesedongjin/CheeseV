@@ -1,18 +1,6 @@
 import os
 import re
 
-try:
-    import markdown
-except ImportError:
-    markdown = None
-
-
-def md_to_html(text: str) -> str:
-    """Convert markdown text to HTML."""
-    if markdown is None:
-        return text
-    return markdown.markdown(text, extensions=["fenced_code", "tables"])
-
 CONTENT_DIR = 'content'
 OUTPUT_DIR = 'docs'
 TEMPLATES_DIR = 'templates'
@@ -94,7 +82,7 @@ def build_devlog(nav_links):
                     date_str = m.group(0)
                     body_lines.pop(i)
                     break
-            body = md_to_html('\n'.join(body_lines))
+            body = '\n'.join(body_lines)
             rel_path = os.path.relpath(path, posts_dir)
             slug = os.path.splitext(rel_path)[0]
             content = render_template('post.html', title=title, date=date_str, body=body)
@@ -176,7 +164,7 @@ def build_portfolio(nav_links):
                 md = read_file(path)
                 title_line = md.splitlines()[0]
                 title = title_line.lstrip('#').strip()
-                body = md_to_html('\n'.join(md.splitlines()[1:]))
+                body = '\n'.join(md.splitlines()[1:])
             elif ext == '.html':
                 html = read_file(path)
                 import re
