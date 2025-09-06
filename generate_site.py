@@ -1,5 +1,4 @@
 import os
-import re
 
 CONTENT_DIR = 'content'
 OUTPUT_DIR = 'docs'
@@ -21,7 +20,6 @@ def write_file(path, content):
 
 
 def simple_markdown(md):
-    import re  # Import re module for regular expressions
     lines = md.splitlines()
     html_lines = []
     in_code_block = False
@@ -192,17 +190,18 @@ def render_template(template_name, **context):
     pattern = re.compile(r'{% for (\w+) in (\w+) %}(.*?){% endfor %}', re.S)
     while True:
         m = pattern.search(result)
-        if not m:
+        if m:
+            var_name, list_name, body = m.groups()
+            items = context.get(list_name, [])
+            rendered = ''
+            for item in items:
+                temp = body
+                for k, v in item.items():
+                    temp = temp.replace(f"{{{{ {var_name}['{k}'] }}}}", str(v))
+                rendered += temp
+            result = result[:m.start()] + rendered + result[m.end():]
+        else:
             break
-        var_name, list_name, body = m.groups()
-        items = context.get(list_name, [])
-        rendered = ''
-        for item in items:
-            temp = body
-            for k, v in item.items():
-                temp = temp.replace(f"{{{{ {var_name}['{k}'] }}}}", str(v))
-            rendered += temp
-        result = result[:m.start()] + rendered + result[m.end():]
     return result
 
 
@@ -307,6 +306,7 @@ def build_devlog(nav_links):
 
 
 def build_portfolio(nav_links):
+    global re
     programs = []
     programs_dir = os.path.join(CONTENT_DIR, 'portfolio')
     if not os.path.isdir(programs_dir):
@@ -320,9 +320,19 @@ def build_portfolio(nav_links):
 
             if ext == '.md':
                 md = read_file(path)
-                title_line = md.splitlines()[0]
+                lines = md.splitlines()
+                title_line = lines[0]
                 title = title_line.lstrip('#').strip()
-                body = '\n'.join(md.splitlines()[1:])
+                body_lines = lines[1:]
+                date_str = None
+                date_re = re.compile(r'\d{4}-\d{2}-\d{2}')
+                for i, line in enumerate(body_lines):
+                    m = date_re.search(line)
+                    if m:
+                        date_str = m.group(0)
+                        body_lines.pop(i)
+                        break
+                body = simple_markdown('\n'.join(body_lines))
             elif ext == '.html':
                 html = read_file(path)
                 import re
