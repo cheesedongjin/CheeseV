@@ -627,27 +627,6 @@ footer a:hover {
 .inline-code code {
     color: var(--neon-cyan);
     text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
-    padding-right: 1.5rem;
-}
-
-.inline-code .copy-button {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    background: var(--bg-color, #0a0a0f);
-    color: var(--neon-cyan, #00d9ff);
-    border: 1px solid rgba(0, 217, 255, 0.3);
-    border-radius: 4px;
-    padding: 0.1rem 0.3rem;
-    font-size: 0.6rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
-}
-
-.inline-code .copy-button:hover {
-    background: rgba(0, 217, 255, 0.1);
-    box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
 }
 
 /* Language-specific classes */
