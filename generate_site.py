@@ -43,7 +43,6 @@ def simple_markdown(md):
             )
             code_spans[key] = (
                 "<span class=\"inline-code\">"
-                "<button class=\"copy-button\">Copy</button>"
                 f"<code>{code_content}</code>"
                 "</span>"
             )
