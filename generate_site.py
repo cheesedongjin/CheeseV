@@ -20,6 +20,10 @@ def write_file(path, content):
         f.write(content)
 
 
+def simple_markdown(md):
+    """Markdown conversion removed."""
+    return md
+
 def render_template(template_name, **context):
     template_path = os.path.join(TEMPLATES_DIR, template_name)
     template = read_file(template_path)
