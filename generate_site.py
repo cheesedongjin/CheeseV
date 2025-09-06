@@ -240,7 +240,7 @@ def build_devlog(nav_links):
                     date_str = m.group(0)
                     body_lines.pop(i)
                     break
-            body = '\n'.join(body_lines)
+            body = simple_markdown('\n'.join(body_lines))
             rel_path = os.path.relpath(path, posts_dir)
             slug = os.path.splitext(rel_path)[0]
             content = render_template('post.html', title=title, date=date_str, body=body)
