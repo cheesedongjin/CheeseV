@@ -1,4 +1,5 @@
 import os
+import re
 
 CONTENT_DIR = 'content'
 OUTPUT_DIR = 'docs'
@@ -39,7 +40,7 @@ def simple_markdown(md):
         text = re.sub(r'`([^`]+?)`', repl_code, text)
         # 이미지
         text = re.sub(
-            r'!\[([^\]]*?)\]\((\S+?)(?:\s+"(.*?)")?\)',
+            r'!\[([^]]*?)]\((\S+?)(?:\s+"(.*?)")?\)',
             lambda m: (
                 f'<img src="{m.group(2)}" alt="{m.group(1)}"'
                 + (f' title="{m.group(3)}"' if m.group(3) else '')
@@ -49,7 +50,7 @@ def simple_markdown(md):
         )
         # 링크: target="_blank" 추가
         text = re.sub(
-            r'\[([^\]]+?)\]\((\S+?)(?:\s+"(.*?)")?\)',
+            r'\[([^]]+?)]\((\S+?)(?:\s+"(.*?)")?\)',
             lambda m: (
                 f'<a href="{m.group(2)}" target="_blank"'
                 + (f' title="{m.group(3)}"' if m.group(3) else '')
@@ -60,7 +61,7 @@ def simple_markdown(md):
         # 굵은 글씨
         text = re.sub(r'(\*\*|__)(.+?)\1', r'<strong>\2</strong>', text)
         # 기울임
-        text = re.sub(r'(\*|_)(.+?)\1', r'<em>\2</em>', text)
+        text = re.sub(r'([*_])(.+?)\1', r'<em>\2</em>', text)
         # 토큰 복원
         for key, val in code_spans.items():
             text = text.replace(key, val)
@@ -185,8 +186,6 @@ def render_template(template_name, **context):
     for key, value in context.items():
         if isinstance(value, str):
             result = result.replace(f"{{{{ {key} }}}}", value)
-    # handle loops
-    import re
     pattern = re.compile(r'{% for (\w+) in (\w+) %}(.*?){% endfor %}', re.S)
     while True:
         m = pattern.search(result)
@@ -306,7 +305,6 @@ def build_devlog(nav_links):
 
 
 def build_portfolio(nav_links):
-    global re
     programs = []
     programs_dir = os.path.join(CONTENT_DIR, 'portfolio')
     if not os.path.isdir(programs_dir):
@@ -335,7 +333,6 @@ def build_portfolio(nav_links):
                 body = simple_markdown('\n'.join(body_lines))
             elif ext == '.html':
                 html = read_file(path)
-                import re
                 m = re.search(r'<title>(.*?)</title>', html, re.S)
                 if m:
                     title = m.group(1).strip()
