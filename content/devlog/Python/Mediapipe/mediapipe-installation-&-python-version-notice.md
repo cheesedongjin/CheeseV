@@ -20,3 +20,4 @@ source mediapipe-env/bin/activate
 
 # Install Mediapipe
 pip install mediapipe
+```
